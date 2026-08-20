@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Placar Minutera - Firebase</title>
+<style>
+  body { font-family: Arial, sans-serif; background: #111; color: #fff; padding: 20px; max-width: 800px; margin: auto; }
+  h1 { color: #FFD700; text-align: center; }
+  #status { padding: 10px; border-radius: 5px; margin-bottom: 15px; text-align: center; font-weight: bold; }
+  input, select, button { padding: 10px; margin: 5px; border-radius: 5px; border: none; font-size: 16px; }
+  button { background: #FFD700; color: #000; font-weight: bold; cursor: pointer; }
+  button:hover { background: #FFA500; }
+  .lista { margin-top: 20px; background: #222; padding: 15px; border-radius: 8px; }
+  .item { padding: 8px; border-bottom: 1px solid #333; }
+</style>
+</head>
+<body>
+
+<h1>Placar Minutera - Operador</h1>
+<div id="status">Conectando Firebase...</div>
+
+<div>
+  <input type="text" id="nome" placeholder="Nome do Atirador">
+  <input type="text" id="prova" placeholder="Prova">
+  <input type="number" id="pontos" placeholder="Pontos" step="0.1">
+  <button onclick="lancar()">Lançar</button>
+</div>
+
+<div class="lista">
+  <h3>SÉRIES LANÇADAS</h3>
+  <div id="listaLancamentos">Carregando...</div>
+</div>
+
+
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+<script>
+// SUA CONFIGURAÇÃO DO FIREBASE
+const firebaseConfig = {
+  apiKey: "AIzaSyCTEXeRjxq0_3doBNyWm5AkQ0kmBXmjlSk",
+  authDomain: "placar-minutera.firebaseapp.com",
+  databaseURL: "https://placar-minutera-default-rtdb.firebaseio.com",
+  projectId: "placar-minutera",
+  storageBucket: "placar-minutera.firebasestorage.app",
+  messagingSenderId: "689991648080",
+  appId: "1:689991648080:web:9deeb958183eaeae23e255"
+};
+
+// INICIALIZA FIREBASE
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+const statusEl = document.getElementById('status');
+const listaEl = document.getElementById('listaLancamentos');
+
+// VERIFICA CONEXÃO
+db.ref('.info/connected').on('value', snap => {
+  if(snap.val() === true){
+    statusEl.innerText = 'Sincronizado: ' + new Date().toLocaleTimeString();
+    statusEl.style.background = '#2d5016';
+  } else {
+    statusEl.innerText = 'Conectando Firebase...';
+    statusEl.style.background = '#8B0000';
+  }
+});
+
+// FUNÇÃO LANÇAR
+function lancar(){
+  const nome = document.getElementById('nome').value;
+  const prova = document.getElementById('prova').value;
+  const pontos = parseFloat(document.getElementById('pontos').value);
+  
+  if(!nome || !prova || isNaN(pontos)){
+    alert('Preencha todos os campos!');
+    return;
+  }
+  
+  db.ref('rankingMinutera').push({
+    nome: nome,
+    prova: prova,
+    pontos: pontos,
+    hora: new Date().toLocaleTimeString()
+  });
+  
+  document.getElementById('nome').value = '';
+  document.getElementById('prova').value = '';
+  document.getElementById('pontos').value = '';
+}
+
+// LER DADOS E MOSTRAR NA LISTA
+db.ref('rankingMinutera').on('value', snap => {
+  const dados = snap.val();
+  listaEl.innerHTML = '';
+  if(dados){
+    Object.values(dados).reverse().forEach(item => {
+      listaEl.innerHTML += `<div class="item">LANÇADO: ${item.nome} - ${item.prova} - ${item.pontos} PTS</div>`;
+    });
+  } else {
+    listaEl.innerHTML = 'Nenhum lançamento ainda.';
+  }
+});
+</script>
+
+</body>
+</html>
