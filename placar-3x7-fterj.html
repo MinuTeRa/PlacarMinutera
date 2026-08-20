@@ -55,7 +55,7 @@ const LOGOS = [
 .logos-lado { display: flex; gap: 15px; align-items: center; }
 
 /* TV PLACAR */
-#lista { padding: 10px 10px 120px 10px; } /* MARGEM INFERIOR DA TV TAMBEM */
+#lista { padding: 10px 10px 120px 10px; }
 .placar { display: flex; justify-content: space-around; align-items: center; font-size: 1.8vw; margin: 5px 10px; padding: 8px; background: #1a1a1a; border-left: 8px solid #555; border-radius: 10px; transition: 0.3s; color: #fff; }
 .placar.empate { border-left: 8px solid #FFD700; background: #2a2a00; color: #FFD700; }
 .placar.p1 { background: linear-gradient(90deg, #FFD700, #FFA500); color: #000; border-left: 8px solid #FFD700; font-size: 2.2vw; font-weight: bold; box-shadow: 0 0 20px #FFD700; }
@@ -72,9 +72,9 @@ const LOGOS = [
 .detalhe { font-size: 1.2vw; color: #ccc; width: 38%; }
 
 /* TELA OPERADOR - CORES SUAVES COM MARGEM AUMENTADA */
-.container-operador { display: flex; gap: 15px; padding: 15px 15px 80px 15px; height: calc(100vh - 80px); background: #0f0f0f; } /* 80px embaixo */
-.coluna-lancamento { width: 40%; background: #1a1a1a; padding: 15px 15px 40px 15px; border-radius: 10px; overflow-y: auto; border: 1px solid #333; } /* 40px embaixo */
-.coluna-lista { width: 60%; background: #1a1a1a; padding: 15px 15px 40px 15px; border-radius: 10px; overflow-y: auto; border: 1px solid #333; } /* 40px embaixo */
+.container-operador { display: flex; gap: 15px; padding: 15px 15px 80px 15px; height: calc(100vh - 80px); background: #0f0f0f; }
+.coluna-lancamento { width: 40%; background: #1a1a1a; padding: 15px 15px 40px 15px; border-radius: 10px; overflow-y: auto; border: 1px solid #333; }
+.coluna-lista { width: 60%; background: #1a1a1a; padding: 15px 15px 40px 15px; border-radius: 10px; overflow-y: auto; border: 1px solid #333; }
 
 .cabecalho { display: flex; justify-content: center; gap: 8px; margin-bottom: 8px; }
 .cabecalho input {
@@ -103,13 +103,13 @@ button {
 }
 button:hover { opacity: 0.8; transform: scale(1.02); }
 
-.btn-lancar { background: #D2691E; color: #fff; } /* Laranja queimado */
-.btn-excel { background: #2E8B57; color: #fff; } /* Verde mar */
-.btn-editar { background: #B8860B; color: #fff; font-size: 12px; padding: 5px 8px; } /* Dourado escuro */
-.btn-excluir { background: #B22222; color: #fff; font-size: 12px; padding: 5px 8px; } /* Vermelho suave */
+.btn-lancar { background: #D2691E; color: #fff; }
+.btn-excel { background: #2E8B57; color: #fff; }
+.btn-editar { background: #B8860B; color: #fff; font-size: 12px; padding: 5px 8px; }
+.btn-excluir { background: #B22222; color: #fff; font-size: 12px; padding: 5px 8px; }
 
 .item {
-  display: flex; justify-content: space-between; padding: 6px;
+  display: flex; justify-content: space-between; align-items: center; padding: 6px;
   border-bottom: 1px solid #2a2a2a; font-size: 15px; color: #ddd;
 }
 .item-header {
@@ -118,8 +118,8 @@ button:hover { opacity: 0.8; transform: scale(1.02); }
 }
 
 .legenda { font-size: 12px; color: #888; margin-bottom: 8px; }
-.total-parcial { font-size: 20px; color: #4FC3F7; margin: 8px; font-weight: bold; } /* Azul suave */
-.status { font-size: 12px; color: #81C784; } /* Verde suave */
+.total-parcial { font-size: 20px; color: #4FC3F7; margin: 8px; font-weight: bold; }
+.status { font-size: 12px; color: #81C784; }
 #ultimo { color: #FFA500; }
 </style>
 </head>
@@ -175,6 +175,7 @@ firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 let ranking = [];
 let historico = [];
+let editandoId = null; // variavel pra controlar edição
 
 function montarTopo(idElemento) {
   let logosEsq = '<div class="logos-lado">';
@@ -274,21 +275,49 @@ function lancar() {
     tiros.push(t); pontos += valorTiro(t);
   }
   let contagem = contarTiros(tiros);
-  let id = gerarID();
+  let id = editandoId? editandoId : gerarID();
   let atirador = {id: id, nome: nome, prova: prova, pontos: pontos, tiros: tiros, contagem: contagem, timestamp: Date.now(), data: new Date().toLocaleString()};
+
   db.ref(NOME_BANCO + '/' + id).set(atirador).then(()=>{
-    document.getElementById('ultimo').innerText = `LANÇADO: ${nome} - P${prova} - ${pontos.toFixed(2)}`;
+    document.getElementById('ultimo').innerText = editandoId? `ATUALIZADO: ${nome}` : `LANÇADO: ${nome} - P${prova} - ${pontos.toFixed(2)}`;
+    editandoId = null;
+    document.getElementById('btnSalvar').innerText = "SALVAR [F2]";
     cancelarEdicao();
   });
 }
 
 function novaSerie() { cancelarEdicao(); }
 function cancelarEdicao() {
+  editandoId = null;
+  document.getElementById('btnSalvar').innerText = "SALVAR [F2]";
   document.getElementById('nome').value = "";
   document.getElementById('prova').value = "";
   for(let i=1; i<=10; i++) { document.getElementById('t'+i).value = ""; }
   document.getElementById('parcial').innerText = `TOTAL: 0.00`;
   document.getElementById('nome').focus();
+}
+
+function editar(id) {
+  editandoId = id;
+  let a = historico.find(x => x.id === id);
+  if(!a) return;
+
+  document.getElementById('nome').value = a.nome;
+  document.getElementById('prova').value = a.prova;
+  for(let i=1; i<=10; i++) {
+    document.getElementById('t'+i).value = a.tiros[i-1] || "";
+  }
+  calcularParcial();
+  document.getElementById('btnSalvar').innerText = "ATUALIZAR [F2]";
+  document.getElementById('status').innerText = `Editando: ${a.nome}`;
+  window.scrollTo(0,0);
+}
+
+function excluir(id) {
+  if(confirm("EXCLUIR ESSE LANÇAMENTO?")) {
+    db.ref(NOME_BANCO + '/' + id).remove();
+    document.getElementById('status').innerText = "Excluído com sucesso!";
+  }
 }
 
 function exportarExcel() {
@@ -341,12 +370,16 @@ function atualizarTela() {
 }
 
 function atualizarListaAdmin() {
-  let html = `<div class="item-header"><span># | ATLETA | P | TOTAL | X | 10 | 9</span></div>`;
+  let html = `<div class="item-header"><span># | ATLETA | P | TOTAL | X | 10 | 9</span><span>AÇÕES</span></div>`;
   for(let i = 0; i < historico.length; i++) {
     let a = historico[i];
     let detalhe = `X:${a.contagem.x12_01} | 10:${a.contagem.x10} | 9:${a.contagem.x9}`;
     html += `<div class="item">
       <span>${i+1}º ${a.nome} | P:${a.prova} | ${a.pontos.toFixed(2)} | ${detalhe}</span>
+      <span>
+        <button class="btn-editar" onclick="editar('${a.id}')">EDITAR</button>
+        <button class="btn-excluir" onclick="excluir('${a.id}')">EXCLUIR</button>
+      </span>
     </div>`;
   }
   document.getElementById('lista-admin').innerHTML = html || "Nenhum lançamento ainda.";
