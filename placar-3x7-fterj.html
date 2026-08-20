@@ -2,6 +2,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>DESAFIO DA MinuT&Ra - PLACAR</title>
 
 <script>
@@ -20,8 +21,8 @@ const LOGOS = ["logo1.png","logo2.png","logo3.png"];
 .logos-lado { display: flex; gap: 15px; align-items: center; }
 
 /* TV PLACAR */
-#lista { padding: 10px; min-height: calc(100vh - 200px); } /* altura minima pra empurrar rodape pra baixo */
-.placar { display: flex; justify-content: space-around; align-items: center; font-size: 1.8vw; margin: 5px 10px; padding: 8px; background: #1a1a1a; border-left: 8px solid #555; border-radius: 10px; transition: 0.3s; color: #fff; }
+#lista { padding: 10px; min-height: calc(100vh - 200px); }
+.placar { display: flex; justify-content: space-around; align-items: center; font-size: 1.8vw; margin: 5px 10px; padding: 8px; background: #1a1a1a; border-left: 8px solid #555; border-radius: 10px; color: #fff; }
 .placar.empate { border-left: 8px solid #FFD700; background: #2a2a00; color: #FFD700; }
 .placar.p1 { background: linear-gradient(90deg, #FFD700, #FFA500); color: #000; border-left: 8px solid #FFD700; font-size: 2.2vw; font-weight: bold; box-shadow: 0 0 20px #FFD700; }
 .placar.p2 { background: linear-gradient(90deg, #C0C0C0, #A9A9A9); color: #000; border-left: 8px solid #C0C0C0; font-size: 2.0vw; font-weight: bold; }
@@ -36,34 +37,23 @@ const LOGOS = ["logo1.png","logo2.png","logo3.png"];
 .total { color: #FFD700; width: 14%; font-weight: bold; }
 .detalhe { font-size: 1.2vw; color: #ccc; width: 38%; }
 
-/* RODAPE NORMAL - NAO FIXO */
-.rodape {
-  background: linear-gradient(90deg, #000, #1a1a1a, #000);
-  border-top: 4px solid #FF8C00;
-  padding: 15px 0;
-  width: 100%;
-  display: none; /* So aparece no modo TV */
-}
-.rodape-conteudo {
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  font-size: 1.1vw;
-  flex-wrap: wrap;
-  gap: 10px;
-}
-.rodape-prop {
-  color: #FFD700;
-  font-size: 1.6vw;
-  font-weight: bold;
-  text-shadow: 2px 2px 4px #000;
-}
-.rodape-contato {
-  color: #fff;
-  font-size: 1.1vw;
-}
+/* MODO CELULAR - IGUAL TV MAS COM TODOS */
+.titulo-prova { font-size: 5vw; color: #FFD700; margin: 15px 0; text-shadow: 2px 2px #000; }
+.placar-mobile { font-size: 3.5vw!important; padding: 10px 5px!important; margin: 4px 5px!important; }
+.placar-mobile.pos { width: 10%!important; }
+.placar-mobile.nome { width: 35%!important; font-size: 3.2vw!important; }
+.placar-mobile.prova { width: 12%!important; font-size: 3vw!important; }
+.placar-mobile.total { width: 18%!important; font-size: 3.5vw!important; }
+.placar-mobile.detalhe { width: 25%!important; font-size: 2.5vw!important; }
+
+/* RODAPE */
+.rodape { background: linear-gradient(90deg, #000, #1a1a1a, #000); border-top: 4px solid #FF8C00; padding: 15px 0; width: 100%; display: none; }
+.rodape-conteudo { display: flex; justify-content: space-around; align-items: center; font-size: 1.1vw; flex-wrap: wrap; gap: 10px; }
+.rodape-prop { color: #FFD700; font-size: 1.6vw; font-weight: bold; text-shadow: 2px 2px 4px #000; }
+.rodape-contato { color: #fff; font-size: 1.1vw; }
 .rodape-contato b { color: #4FC3F7; }
 
+/* OPERADOR */
 .container-operador { display: flex; gap: 15px; padding: 15px; height: calc(100vh - 80px); background: #0f0f0f; }
 .coluna-lancamento { width: 40%; background: #1a1a1a; padding: 15px; border-radius: 10px; overflow-y: auto; border: 1px solid #333; }
 .coluna-lista { width: 60%; background: #1a1a1a; padding: 15px; border-radius: 10px; overflow-y: auto; border: 1px solid #333; }
@@ -88,6 +78,11 @@ button:hover { opacity: 0.8; transform: scale(1.02); }
 .total-parcial { font-size: 20px; color: #4FC3F7; margin: 8px; font-weight: bold; }
 .status { font-size: 12px; color: #81C784; }
 #ultimo { color: #FFA500; }
+
+@media (max-width: 768px) {
+.topo h1 { font-size: 4vw; }
+.topo img { height: 50px; }
+}
 </style>
 </head>
 <body>
@@ -95,8 +90,6 @@ button:hover { opacity: 0.8; transform: scale(1.02); }
 <div id="tela-placar" style="display:none;">
   <div class="topo" id="topo-tv"></div>
   <div id="lista"></div>
-
-  <!-- RODAPE NORMAL ABAIXO DO PLACAR -->
   <div class="rodape" id="rodape-tv">
     <div class="rodape-conteudo">
       <div class="rodape-prop">🔥 ADQUIRA JÁ SUA MINUTERA! 🔥</div>
@@ -135,9 +128,35 @@ montarTopo('topo-tv'); montarTopo('topo-operador');
 
 db.ref('.info/connected').on('value', snap => { const statusEl = document.getElementById('status'); if(snap.val() === true){ statusEl.innerText = `Online: ${new Date().toLocaleTimeString()}`; statusEl.style.color = '#81C784'; } else { statusEl.innerText = 'Conectando...'; statusEl.style.color = '#B22222'; } });
 
-const urlParams = new URLSearchParams(window.location.search); const modo = urlParams.get('modo'); if(modo === 'tv') { document.getElementById('tela-placar').style.display = 'block'; document.getElementById('tela-lancamento').style.display = 'none'; document.getElementById('rodape-tv').style.display = 'block'; } else { montarTabela(); }
+const urlParams = new URLSearchParams(window.location.search);
+const modo = urlParams.get('modo');
+const provaFiltro = urlParams.get('prova');
 
-db.ref(NOME_BANCO).on('value', snap => { ranking = []; historico = []; snap.forEach(child => { let val = child.val(); if(val && val.contagem && val.contagem.x12_01!== undefined){ ranking.push(val); historico.push(val); } }); ranking.sort((a,b) => { if(b.pontos!== a.pontos) return b.pontos - a.pontos; if(b.contagem.x12_01!== a.contagem.x12_01) return b.contagem.x12_01 - a.contagem.x12_01; for(let i=10; i>=0; i--){ let k = i===10? 'x10' : i; if(b.contagem[k]!== a.contagem[k]) return b.contagem[k] - a.contagem[k]; } return 0; }); if(modo === 'tv') atualizarTela(); else atualizarListaAdmin(); });
+if(modo === 'tv') {
+  document.getElementById('tela-placar').style.display = 'block';
+  document.getElementById('tela-lancamento').style.display = 'none';
+  document.getElementById('rodape-tv').style.display = 'block';
+} else if(modo === 'celular') {
+  document.getElementById('tela-placar').style.display = 'block';
+  document.getElementById('tela-lancamento').style.display = 'none';
+  document.getElementById('rodape-tv').style.display = 'block';
+} else { montarTabela(); }
+
+db.ref(NOME_BANCO).on('value', snap => {
+  ranking = []; historico = [];
+  snap.forEach(child => { let val = child.val(); if(val && val.contagem && val.contagem.x12_01!== undefined){ ranking.push(val); historico.push(val); } });
+
+  ranking.sort((a,b) => {
+    if(b.pontos!== a.pontos) return b.pontos - a.pontos;
+    if(b.contagem.x12_01!== a.contagem.x12_01) return b.contagem.x12_01 - a.contagem.x12_01;
+    for(let i=10; i>=0; i--){ let k = i===10? 'x10' : i; if(b.contagem[k]!== a.contagem[k]) return b.contagem[k] - a.contagem[k]; }
+    return 0;
+  });
+
+  if(modo === 'tv') atualizarTela();
+  else if(modo === 'celular') atualizarTelaCelular(provaFiltro);
+  else atualizarListaAdmin();
+});
 
 function montarTabela() { let html = ""; for(let i=1; i<=10; i++){ html += `<tr><td>${i}º</td><td><input type="text" id="t${i}" onkeyup="proximoTiro(event, ${i})" oninput="calcularParcial()"></td></tr>`; } document.getElementById('corpo-tabela').innerHTML = html; }
 function proximoTiro(e, num) { if(e.key === 'Enter' || e.key === 'Tab'){ e.preventDefault(); if(num < 10) document.getElementById('t'+(num+1)).focus(); else document.getElementById('btnSalvar').focus(); } }
@@ -156,6 +175,35 @@ function exportarExcel() { if(ranking.length === 0) { alert("Nenhum dado para ex
 function saoIguais(a,b) { if(a.pontos!== b.pontos) return false; if(a.contagem.x12_01!== b.contagem.x12_01) return false; for(let i=10; i>=0; i--){ let k = i===10? 'x10' : i; if(a.contagem[k]!== b.contagem[k]) return false; } return true; }
 
 function atualizarTela() { let html = ""; let posicao = 1; for(let i = 0; i < 10 && i < ranking.length; i++) { let a = ranking[i]; let empatado = i > 0 && saoIguais(a, ranking[i-1]); if(!empatado) posicao = i + 1; let classe = ''; if(posicao === 1) classe = 'p1'; else if(posicao === 2) classe = 'p2'; else if(posicao === 3) classe = 'p3'; else if(empatado) classe = 'empate'; let detalhe = `X:${a.contagem.x12_01} | 10:${a.contagem.x10} | 9:${a.contagem.x9}`; html += `<div class="placar ${classe}"><span class="pos">${posicao}º</span><span class="nome">${a.nome}</span><span class="prova">P:${a.prova}</span><span class="total">${a.pontos.toFixed(2)}</span><span class="detalhe">${detalhe}</span></div>`; } document.getElementById('lista').innerHTML = html || `<div class="placar"><span class="pos">1º</span> <span class="nome">AGUARDANDO 1º ATLETA</span></div>`; }
+
+function atualizarTelaCelular(prova) {
+  let filtrados = prova? ranking.filter(a => a.prova == prova) : ranking;
+
+  let html = `<div class="titulo-prova">RESULTADO PROVA ${prova || 'GERAL'} - ${filtrados.length} ATIRADORES</div>`;
+  let posicao = 1;
+
+  for(let i = 0; i < filtrados.length; i++) {
+    let a = filtrados[i];
+    let empatado = i > 0 && saoIguais(a, filtrados[i-1]);
+    if(!empatado) posicao = i + 1;
+    let classe = '';
+    if(posicao === 1) classe = 'p1';
+    else if(posicao === 2) classe = 'p2';
+    else if(posicao === 3) classe = 'p3';
+    else if(empatado) classe = 'empate';
+
+    let detalhe = `X:${a.contagem.x12_01} | 10:${a.contagem.x10} | 9:${a.contagem.x9}`;
+    html += `<div class="placar ${classe} placar-mobile">
+      <span class="pos">${posicao}º</span>
+      <span class="nome">${a.nome}</span>
+      <span class="prova">P:${a.prova}</span>
+      <span class="total">${a.pontos.toFixed(2)}</span>
+      <span class="detalhe">${detalhe}</span>
+    </div>`;
+  }
+
+  document.getElementById('lista').innerHTML = html || `<div class="placar"><span class="pos">1º</span> <span class="nome">Nenhum atirador na Prova ${prova}</span></div>`;
+}
 
 function atualizarListaAdmin() { let html = `<div class="item-header"><span># | ATLETA | P | TOTAL | X | 10 | 9</span><span>AÇÕES</span></div>`; for(let i = 0; i < historico.length; i++) { let a = historico[i]; let detalhe = `X:${a.contagem.x12_01} | 10:${a.contagem.x10} | 9:${a.contagem.x9}`; html += `<div class="item"><span>${i+1}º ${a.nome} | P:${a.prova} | ${a.pontos.toFixed(2)} | ${detalhe}</span><span><button class="btn-editar" onclick="editar('${a.id}')">EDITAR</button><button class="btn-excluir" onclick="excluir('${a.id}')">EXCLUIR</button></span></div>`; } document.getElementById('lista-admin').innerHTML = html || "Nenhum lançamento ainda."; }
 function limparTudo() { if(confirm("APAGAR TODO O PLACAR?")) { db.ref(NOME_BANCO).remove(); document.getElementById('ultimo').innerText = "PLACAR ZERADO"; cancelarEdicao(); } }
