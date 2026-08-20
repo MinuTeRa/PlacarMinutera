@@ -21,11 +21,26 @@ const LOGOS = [
   "logo2.png", // Logo 2 - Direita
   "logo3.png" // Logo 3 - Direita Extra
 ];
+
+// NOVA: LOGO MARCA DAGUA
+const LOGO_MARCA_DAGUA = "logo-minutera.png"; // <- COLOQUE O NOME DA SUA LOGO GRANDE AQUI
 // ========================================
 </script>
 
 <style>
   body { background: #000; color: #fff; font-family: 'Arial Black', Arial; text-align: center; margin: 0; overflow: hidden; }
+
+/* NOVA: MARCA DAGUA NO FUNDO */
+#marca-dagua {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 60vw; /* Tamanho da logo. Aumenta pra ficar maior */
+  opacity: 0.07; /* Transparencia. 0.05 = bem fraquinha */
+  z-index: 0; /* Fica atras de tudo */
+  pointer-events: none; /* Nao atrapalha clique */
+}
 
 /* TOPO COM 1 A 3 LOGOS */
 .topo {
@@ -35,6 +50,8 @@ const LOGOS = [
   align-items: center;
   justify-content: space-between;
   border-bottom: 5px solid #FFD700;
+  position: relative;
+  z-index: 2; /* Fica na frente da marca dagua */
 }
 .topo img {
   height: 75px;
@@ -55,12 +72,12 @@ const LOGOS = [
 .logos-lado { display: flex; gap: 15px; align-items: center; }
 
 /* TV PLACAR */
-#lista { padding: 10px 10px 120px 10px; }
-.placar { display: flex; justify-content: space-around; align-items: center; font-size: 1.8vw; margin: 5px 10px; padding: 8px; background: #1a1a1a; border-left: 8px solid #555; border-radius: 10px; transition: 0.3s; color: #fff; }
-.placar.empate { border-left: 8px solid #FFD700; background: #2a2a00; color: #FFD700; }
-.placar.p1 { background: linear-gradient(90deg, #FFD700, #FFA500); color: #000; border-left: 8px solid #FFD700; font-size: 2.2vw; font-weight: bold; box-shadow: 0 0 20px #FFD700; }
-.placar.p2 { background: linear-gradient(90deg, #C0C0C0, #A9A9A9); color: #000; border-left: 8px solid #C0C0C0; font-size: 2.0vw; font-weight: bold; }
-.placar.p3 { background: linear-gradient(90deg, #CD7F32, #8B4513); color: #000; border-left: 8px solid #CD7F32; font-size: 1.9vw; font-weight: bold; }
+#lista { padding: 10px 10px 120px 10px; position: relative; z-index: 2; } /* z-index pra ficar na frente */
+.placar { display: flex; justify-content: space-around; align-items: center; font-size: 1.8vw; margin: 5px 10px; padding: 8px; background: rgba(26,26,26,0.85); border-left: 8px solid #555; border-radius: 10px; transition: 0.3s; color: #fff; backdrop-filter: blur(2px); } /* fundo semi transparente */
+.placar.empate { border-left: 8px solid #FFD700; background: rgba(42,42,0,0.85); color: #FFD700; }
+.placar.p1 { background: linear-gradient(90deg, rgba(255,215,0,0.95), rgba(255,165,0,0.95)); color: #000; border-left: 8px solid #FFD700; font-size: 2.2vw; font-weight: bold; box-shadow: 0 0 20px #FFD700; }
+.placar.p2 { background: linear-gradient(90deg, rgba(192,192,192,0.95), rgba(169,169,169,0.95)); color: #000; border-left: 8px solid #C0C0C0; font-size: 2.0vw; font-weight: bold; }
+.placar.p3 { background: linear-gradient(90deg, rgba(205,127,50,0.95), rgba(139,69,19,0.95)); color: #000; border-left: 8px solid #CD7F32; font-size: 1.9vw; font-weight: bold; }
 .placar.p1 span,.placar.p2 span,.placar.p3 span { color: #000; }
 .placar.p1.prova,.placar.p2.prova,.placar.p3.prova { color: #000; }
 .placar.p1.detalhe,.placar.p2.detalhe,.placar.p3.detalhe { color: #000; }
@@ -71,8 +88,8 @@ const LOGOS = [
 .total { color: #FFD700; width: 14%; font-weight: bold; }
 .detalhe { font-size: 1.2vw; color: #ccc; width: 38%; }
 
-/* TELA OPERADOR - CORES SUAVES COM MARGEM AUMENTADA */
-.container-operador { display: flex; gap: 15px; padding: 15px 15px 80px 15px; height: calc(100vh - 80px); background: #0f0f0f; }
+/* TELA OPERADOR */
+.container-operador { display: flex; gap: 15px; padding: 15px 15px 80px 15px; height: calc(100vh - 80px); background: #0f0f0f; position: relative; z-index: 2; }
 .coluna-lancamento { width: 40%; background: #1a1a1a; padding: 15px 15px 40px 15px; border-radius: 10px; overflow-y: auto; border: 1px solid #333; }
 .coluna-lista { width: 60%; background: #1a1a1a; padding: 15px 15px 40px 15px; border-radius: 10px; overflow-y: auto; border: 1px solid #333; }
 
@@ -125,6 +142,8 @@ button:hover { opacity: 0.8; transform: scale(1.02); }
 </head>
 <body>
 
+<img id="marca-dagua" src="" alt="Marca Dagua"> <!-- NOVA LINHA: LOGO DE FUNDO -->
+
 <div id="tela-placar" style="display:none;">
   <div class="topo" id="topo-tv"></div>
   <div id="lista"></div>
@@ -175,7 +194,9 @@ firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 let ranking = [];
 let historico = [];
-let editandoId = null; // variavel pra controlar edição
+let editandoId = null;
+
+document.getElementById('marca-dagua').src = LOGO_MARCA_DAGUA; // COLOCA A LOGO NA MARCA DAGUA
 
 function montarTopo(idElemento) {
   let logosEsq = '<div class="logos-lado">';
