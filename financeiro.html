@@ -20,7 +20,7 @@ firebase.initializeApp(firebaseConfig);
   <p class="text-zinc-600 text-xs mb-8 tracking-widest">MINUT&RA</p>
   <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 w-full max-w-sm">
     <input id="senha" type="password" placeholder="••••••••" class="w-full p-4 rounded-xl bg-zinc-800 border border-zinc-700 mb-3 text-center text-lg tracking-[0.3em]">
-    <button onclick="entrar()" class="w-full bg-green-600 hover:bg-green-500 py-4 rounded-xl font-black">DESBLOQUEAR</button>
+    <button onclick="entrar()" class="w-full bg-green-600 hover:bg-green-500 py-4 rounded-xl font-black cursor-pointer">DESBLOQUEAR</button>
     <p id="erro" class="text-red-500 text-xs mt-3 hidden text-center">Senha incorreta!</p>
   </div>
 </div>
@@ -30,42 +30,49 @@ firebase.initializeApp(firebaseConfig);
     <h1 class="text-2xl font-black text-yellow-400">💰 FINANCEIRO MINUT&RA</h1>
     <div class="flex gap-2 items-center">
       <span class="text-xs text-zinc-500">SALDO:</span><span id="saldoTop" class="text-xl font-black">R$ 0,00</span>
-      <button onclick="location.reload()" class="ml-3 text-xs bg-zinc-800 px-3 py-1 rounded-full">Sair</button>
+      <button onclick="location.reload()" class="ml-3 text-xs bg-zinc-800 px-3 py-1 rounded-full cursor-pointer">Sair</button>
     </div>
   </div>
 
   <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
-    <div class="bg-zinc-900 border-2 border-green-600 rounded-2xl p-5 sticky top-4">
+    <!-- ESQUERDA -->
+    <div class="bg-zinc-900 border-2 border-green-600 rounded-2xl p-5 lg:sticky lg:top-4 z-10">
       <h2 id="tituloForm" class="font-bold mb-4 text-green-400 text-lg">+ Novo Lançamento</h2>
       <input id="desc" placeholder="Descrição (ex: Aluguel quadra, Inscrições)" class="w-full p-3 rounded-xl bg-zinc-800 border border-zinc-700 mb-2">
       <div class="grid grid-cols-2 gap-2 mb-2">
         <input id="valor" type="number" step="0.01" placeholder="Valor R$" class="p-3 rounded-xl bg-zinc-800 border border-zinc-700">
         <input id="data" type="date" class="p-3 rounded-xl bg-zinc-800 border border-zinc-700">
       </div>
-      <select id="tipo" class="w-full p-3 rounded-xl bg-zinc-800 border border-zinc-700 mb-3">
+      <select id="tipo" class="w-full p-3 rounded-xl bg-zinc-800 border border-zinc-700 mb-3 cursor-pointer">
         <option value="despesa">🔴 Despesa</option>
         <option value="receita">🟢 Receita</option>
       </select>
-      <label class="text-xs text-yellow-400">📎 Comprovante (PDF/Foto do Pix)</label>
-      <input id="file" type="file" accept=".pdf,image/*" class="w-full p-2 rounded-xl bg-zinc-800 border border-zinc-700 mb-2">
+
+      <label class="block text-xs text-yellow-400 mb-1">📎 Comprovante (PDF/Foto do Pix) - CLIQUE AQUI</label>
+      <input id="file" type="file" accept=".pdf,image/*" class="w-full p-3 rounded-xl bg-zinc-800 border border-zinc-700 mb-2 cursor-pointer file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:bg-yellow-500 file:text-black file:font-bold hover:file:bg-yellow-400">
+
       <p id="status" class="text-xs text-zinc-500 mb-2"></p>
-      <button id="btn" onclick="salvar()" class="w-full bg-green-600 py-4 rounded-xl font-black text-lg">💾 SALVAR COM COMPROVANTE</button>
-      <button id="btnCancelar" onclick="cancelarEdicao()" class="w-full bg-zinc-700 mt-2 py-3 rounded-xl font-bold text-sm hidden">CANCELAR EDIÇÃO</button>
+      <button id="btn" onclick="salvar()" class="w-full bg-green-600 hover:bg-green-500 py-4 rounded-xl font-black text-lg cursor-pointer">💾 SALVAR COM COMPROVANTE</button>
+      <button id="btnCancelar" onclick="cancelarEdicao()" class="w-full bg-zinc-700 mt-2 py-3 rounded-xl font-bold text-sm hidden cursor-pointer">CANCELAR EDIÇÃO</button>
     </div>
 
+    <!-- DIREITA -->
     <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-5">
-      <div class="flex justify-between items-center mb-3 gap-2">
-        <h2 class="font-bold whitespace-nowrap">Histórico (<span id="totalCount">0</span>)</h2>
-        <select id="ordenacao" onchange="aplicarOrdenacao()" class="bg-zinc-800 border border-zinc-700 text-xs rounded-lg p-2 w-48">
-          <option value="timestamp_desc">🆕 Novos no topo</option>
-          <option value="timestamp_asc">📜 Antigos no topo</option>
-          <option value="data_desc">📅 Data recente → antiga</option>
-          <option value="data_asc">📅 Data antiga → recente</option>
-          <option value="valor_desc">💰 Maior valor primeiro</option>
-          <option value="valor_asc">💸 Menor valor primeiro</option>
-        </select>
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-2">
+        <h2 class="font-bold">Histórico (<span id="totalCount">0</span>)</h2>
+        <div class="flex items-center gap-2 w-full sm:w-auto">
+          <span class="text-[11px] text-zinc-400 whitespace-nowrap">Organizar:</span>
+          <select id="ordenacao" onchange="aplicarOrdenacao()" class="bg-zinc-800 border border-yellow-500/50 text-xs rounded-lg p-2.5 w-full sm:w-52 cursor-pointer text-white font-bold">
+            <option value="timestamp_desc">🆕 Novos no topo</option>
+            <option value="timestamp_asc">📜 Antigos no topo</option>
+            <option value="data_desc">📅 Data recente → antiga</option>
+            <option value="data_asc">📅 Data antiga → recente</option>
+            <option value="valor_desc">💰 Maior valor primeiro</option>
+            <option value="valor_asc">💸 Menor valor primeiro</option>
+          </select>
+        </div>
       </div>
-      <div id="lista" class="space-y-2 max-h-[80vh] overflow-y-auto pr-2"></div>
+      <div id="lista" class="space-y-3 max-h-[80vh] overflow-y-auto pr-2"></div>
       <div class="mt-4 pt-4 border-t border-zinc-800 flex justify-between text-xl font-black">
         <span>SALDO TOTAL:</span><span id="saldo">R$ 0,00</span>
       </div>
@@ -75,7 +82,7 @@ firebase.initializeApp(firebaseConfig);
 
 <script>
 const db=firebase.database(); const storage=firebase.storage();
-let editandoId=null; let editandoPath=null; let cacheDados=[]; let listaAtual=[];
+let editandoId=null; let editandoPath=null; let cacheDados=[];
 document.getElementById('data').valueAsDate=new Date();
 function entrar(){
   if(document.getElementById('senha').value===SENHA_FIN){
@@ -147,20 +154,22 @@ function aplicarOrdenacao(){
   render(arr);
 }
 function render(lista){
-  listaAtual=lista;
   let html=''; let saldo=0;
   cacheDados.forEach(l=>{ saldo+= l.tipo==='despesa'? -Math.abs(l.valor) : Math.abs(l.valor); });
   lista.forEach(l=>{
     let v = Math.abs(l.valor);
-    html+=`<div class="flex justify-between items-center bg-zinc-800 p-3 rounded-xl border-l-4 ${l.tipo==='receita'?'border-green-500':'border-red-500'}">
-      <div class="text-left text-sm flex-1">
-        <b class="uppercase">${l.desc}</b> <span class="text-[10px] text-zinc-500">${l.data}</span><br>
-        <span class="${l.tipo==='receita'?'text-green-400':'text-red-400'} font-bold">${l.tipo==='despesa'?'-':'+'} R$ ${v.toFixed(2)}</span>
-        ${l.urlComprovante?` | <a href="${l.urlComprovante}" target="_blank" class="text-cyan-400 underline text-xs">📎 Ver</a>`:''}
-      </div>
-      <div class="flex gap-1 ml-2">
-        <button onclick="editar('${l.id}')" class="bg-zinc-700 hover:bg-zinc-600 px-2 py-1 rounded text-xs">✏️</button>
-        <button onclick="apagarPorPath('${l.path}','${l.nomeArquivo||''}')" class="bg-red-900/50 px-2 py-1 rounded text-xs">🗑️</button>
+    let temComprovante = l.urlComprovante? `<a href="${l.urlComprovante}" target="_blank" class="mt-2 inline-block bg-cyan-600 hover:bg-cyan-500 text-white text-[11px] font-black px-3 py-1.5 rounded-full cursor-pointer">📎 VER COMPROVANTE</a>` : `<span class="text-[10px] text-zinc-600">sem comprovante</span>`;
+    html+=`<div class="bg-zinc-800 p-3 rounded-xl border-l-4 ${l.tipo==='receita'?'border-green-500':'border-red-500'}">
+      <div class="flex justify-between items-start">
+        <div class="text-left text-sm flex-1">
+          <b class="uppercase text-white">${l.desc}</b> <span class="text-[10px] text-zinc-500 ml-1">${l.data}</span><br>
+          <span class="${l.tipo==='receita'?'text-green-400':'text-red-400'} font-bold text-[15px]">${l.tipo==='despesa'?'-':'+'} R$ ${v.toFixed(2)}</span>
+          <div class="mt-1">${temComprovante}</div>
+        </div>
+        <div class="flex gap-2 ml-3">
+          <button onclick="editar('${l.id}')" class="bg-zinc-700 hover:bg-yellow-600 w-8 h-8 rounded-lg text-sm cursor-pointer flex items-center justify-center" title="Editar">✏️</button>
+          <button onclick="apagarPorPath('${l.path}','${l.nomeArquivo||''}')" class="bg-zinc-700 hover:bg-red-600 w-8 h-8 rounded-lg text-sm cursor-pointer flex items-center justify-center" title="Apagar">🗑️</button>
+        </div>
       </div>
     </div>`;
   });
