@@ -15,7 +15,6 @@ firebase.initializeApp(firebaseConfig);
 </script>
 </head>
 <body class="bg-black text-white min-h-screen font-sans">
-
 <div id="login" class="flex flex-col items-center justify-center min-h-screen p-4">
   <h1 class="text-3xl font-black text-yellow-400 mb-1">💰 FINANCEIRO</h1>
   <p class="text-zinc-600 text-xs mb-8 tracking-widest">MINUT&RA</p>
@@ -25,13 +24,11 @@ firebase.initializeApp(firebaseConfig);
     <p id="erro" class="text-red-500 text-xs mt-3 hidden text-center">Senha incorreta!</p>
   </div>
 </div>
-
 <div id="app" class="hidden max-w-2xl mx-auto p-4">
   <div class="flex justify-between items-center mb-6">
     <h1 class="text-xl font-black text-yellow-400">💰 FINANCEIRO</h1>
     <button onclick="location.reload()" class="text-xs bg-zinc-800 px-3 py-1 rounded-full">Sair</button>
   </div>
-
   <div class="bg-zinc-900 border-2 border-green-600 rounded-2xl p-5 mb-6">
     <h2 id="tituloForm" class="font-bold mb-4 text-green-400">+ Novo Lançamento</h2>
     <input id="desc" placeholder="Descrição (ex: Aluguel quadra, Inscrições)" class="w-full p-3 rounded-xl bg-zinc-800 border border-zinc-700 mb-2">
@@ -49,7 +46,6 @@ firebase.initializeApp(firebaseConfig);
     <button id="btn" onclick="salvar()" class="w-full bg-green-600 py-4 rounded-xl font-black text-lg">💾 SALVAR COM COMPROVANTE</button>
     <button id="btnCancelar" onclick="cancelarEdicao()" class="w-full bg-zinc-700 mt-2 py-3 rounded-xl font-bold text-sm hidden">CANCELAR EDIÇÃO</button>
   </div>
-
   <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-5">
     <h2 class="font-bold mb-3">Histórico (<span id="totalCount">0</span>)</h2>
     <div id="lista" class="space-y-2 max-h-[60vh] overflow-y-auto"></div>
@@ -58,10 +54,9 @@ firebase.initializeApp(firebaseConfig);
     </div>
   </div>
 </div>
-
 <script>
 const db=firebase.database(); const storage=firebase.storage();
-let editandoId=null; let cacheDados=[];
+let editandoId=null; let editandoPath=null; let cacheDados=[];
 function entrar(){
   if(document.getElementById('senha').value===SENHA_FIN){
     document.getElementById('login').classList.add('hidden');
@@ -70,7 +65,6 @@ function entrar(){
   } else document.getElementById('erro').classList.remove('hidden');
 }
 document.getElementById('senha').addEventListener('keydown',e=>{if(e.key==='Enter') entrar();});
-
 async function salvar(){
   const desc=document.getElementById('desc').value.trim();
   const valor=parseFloat(document.getElementById('valor').value);
@@ -94,30 +88,32 @@ async function salvar(){
       document.getElementById('status').innerText='✅ Comprovante OK';
     }
     const obj={desc,valor,data,tipo,urlComprovante:url,nomeArquivo:nomeArq,timestamp: dadoExistente? dadoExistente.timestamp : Date.now()};
-    if(editandoId){ await db.ref('FINANCEIRO/'+editandoId).set(obj); }
+    if(editandoPath){ await db.ref(editandoPath).set(obj); }
     else { await db.ref('FINANCEIRO').push(obj); }
     cancelarEdicao();
-    document.getElementById('status').innerText='✅ Salvo!';
-    setTimeout(()=>document.getElementById('status').innerText='',3000);
-  }catch(e){alert('Erro: '+e.message);document.getElementById('status').innerText='❌ '+e.message;}
+    document.getElementById('status').innerText='✅ Salvo!'; setTimeout(()=>document.getElementById('status').innerText='',3000);
+  }catch(e){alert('Erro: '+e.message);}
   btn.innerText='💾 SALVAR COM COMPROVANTE'; btn.disabled=false;
 }
-
 function carregar(){
-  db.ref('FINANCEIRO').on('value',snap=>{
+  db.ref('/').on('value',snapRoot=>{
     let arr=[];
-    snap.forEach(c=>{
-      let v=c.val(); if(!v) return;
-      arr.push({
-        id:c.key,
-        desc:v.desc||'Sem desc',
-        valor:parseFloat(v.valor)||0,
-        data:v.data||'2026-08-24',
-        tipo:v.tipo||'receita',
-        urlComprovante:v.urlComprovante||'',
-        nomeArquivo:v.nomeArquivo||'',
-        timestamp:v.timestamp||0
+    // 1. Pega de dentro de FINANCEIRO
+    if(snapRoot.child('FINANCEIRO').exists()){
+      snapRoot.child('FINANCEIRO').forEach(c=>{
+        let v=c.val(); if(!v) return;
+        arr.push({id:c.key, path:'FINANCEIRO/'+c.key, desc:v.desc||'Sem desc', valor:parseFloat(v.valor)||0, data:v.data||'', tipo:v.tipo||'receita', urlComprovante:v.urlComprovante||'', nomeArquivo:v.nomeArquivo||'', timestamp:v.timestamp||0});
       });
+    }
+    // 2. Pega também os soltos na raiz (seu bug antigo)
+    snapRoot.forEach(c=>{
+      let v=c.val();
+      if(v && v.valor!==undefined && v.desc && c.key.startsWith('-')){
+        // evita duplicar se já pegou em FINANCEIRO
+        if(!arr.find(x=>x.id===c.key)){
+          arr.push({id:c.key, path:c.key, desc:v.desc, valor:parseFloat(v.valor)||0, data:v.data||'', tipo:v.tipo||'receita', urlComprovante:v.urlComprovante||'', nomeArquivo:v.nomeArquivo||'', timestamp:v.timestamp||0});
+        }
+      }
     });
     cacheDados=arr;
     arr.sort((a,b)=>(b.timestamp||0)-(a.timestamp||0));
@@ -125,13 +121,13 @@ function carregar(){
     arr.forEach(l=>{
       saldo+=l.valor;
       html+=`<div class="flex justify-between items-center bg-zinc-800 p-3 rounded-xl border-l-4 ${l.tipo=='receita'?'border-green-500':'border-red-500'}">
-        <div class="text-left text-sm flex-1"><b>${l.desc}</b> <span class="text-[10px] text-zinc-500">${l.data}</span><br>
+        <div class="text-left text-sm flex-1"><b>${l.desc}</b> <span class="text-[10px] text-zinc-500">${l.data} ${l.path.includes('FINANCEIRO')?'':' (raiz)'}</span><br>
         <span class="${l.valor>=0?'text-green-400':'text-red-400'} font-bold">R$ ${l.valor.toFixed(2)}</span>
         ${l.urlComprovante?` | <a href="${l.urlComprovante}" target="_blank" class="text-cyan-400 underline text-xs">📎 Ver</a>`:''}
         </div>
         <div class="flex gap-1 ml-2">
           <button onclick="editar('${l.id}')" class="bg-zinc-700 hover:bg-zinc-600 px-2 py-1 rounded text-xs">✏️</button>
-          <button onclick="apagar('${l.id}','${l.nomeArquivo||''}')" class="bg-red-900/50 px-2 py-1 rounded text-xs">🗑️</button>
+          <button onclick="apagarPorPath('${l.path}','${l.nomeArquivo||''}')" class="bg-red-900/50 px-2 py-1 rounded text-xs">🗑️</button>
         </div>
       </div>`;
     });
@@ -142,7 +138,7 @@ function carregar(){
 }
 function editar(id){
   const l=cacheDados.find(x=>x.id===id); if(!l) return;
-  editandoId=id;
+  editandoId=id; editandoPath=l.path;
   document.getElementById('desc').value=l.desc;
   document.getElementById('valor').value=l.valor;
   document.getElementById('data').value=l.data;
@@ -154,14 +150,14 @@ function editar(id){
   window.scrollTo({top:0,behavior:'smooth'});
 }
 function cancelarEdicao(){
-  editandoId=null;
+  editandoId=null; editandoPath=null;
   document.getElementById('desc').value='';document.getElementById('valor').value='';document.getElementById('file').value='';
   document.getElementById('tituloForm').innerText='+ Novo Lançamento';
   document.getElementById('btn').innerText='💾 SALVAR COM COMPROVANTE';
   document.getElementById('btn').classList.replace('bg-yellow-500','bg-green-600');
   document.getElementById('btnCancelar').classList.add('hidden');
 }
-function apagar(id,nome){if(!confirm('Apagar este lançamento?'))return; db.ref('FINANCEIRO/'+id).remove().then(()=>{if(nome) storage.ref('comprovantes/'+nome).delete().catch(()=>{});});}
+function apagarPorPath(path,nome){if(!confirm('Apagar este lançamento?'))return; db.ref(path).remove().then(()=>{if(nome) storage.ref('comprovantes/'+nome).delete().catch(()=>{});});}
 </script>
 </body>
 </html>
