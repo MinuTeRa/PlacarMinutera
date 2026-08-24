@@ -24,39 +24,57 @@ firebase.initializeApp(firebaseConfig);
     <p id="erro" class="text-red-500 text-xs mt-3 hidden text-center">Senha incorreta!</p>
   </div>
 </div>
-<div id="app" class="hidden max-w-2xl mx-auto p-4">
+
+<div id="app" class="hidden w-full max-w-7xl mx-auto p-4">
   <div class="flex justify-between items-center mb-6">
-    <h1 class="text-xl font-black text-yellow-400">💰 FINANCEIRO</h1>
-    <button onclick="location.reload()" class="text-xs bg-zinc-800 px-3 py-1 rounded-full">Sair</button>
-  </div>
-  <div class="bg-zinc-900 border-2 border-green-600 rounded-2xl p-5 mb-6">
-    <h2 id="tituloForm" class="font-bold mb-4 text-green-400">+ Novo Lançamento</h2>
-    <input id="desc" placeholder="Descrição (ex: Aluguel quadra, Inscrições)" class="w-full p-3 rounded-xl bg-zinc-800 border border-zinc-700 mb-2">
-    <div class="grid grid-cols-2 gap-2 mb-2">
-      <input id="valor" type="number" step="0.01" placeholder="Valor" class="p-3 rounded-xl bg-zinc-800 border border-zinc-700">
-      <input id="data" type="date" class="p-3 rounded-xl bg-zinc-800 border border-zinc-700">
+    <h1 class="text-2xl font-black text-yellow-400">💰 FINANCEIRO MINUT&RA</h1>
+    <div class="flex gap-2 items-center">
+      <span class="text-xs text-zinc-500">SALDO:</span><span id="saldoTop" class="text-xl font-black">R$ 0,00</span>
+      <button onclick="location.reload()" class="ml-3 text-xs bg-zinc-800 px-3 py-1 rounded-full">Sair</button>
     </div>
-    <select id="tipo" class="w-full p-3 rounded-xl bg-zinc-800 border border-zinc-700 mb-3">
-      <option value="despesa">🔴 Despesa</option>
-      <option value="receita">🟢 Receita</option>
-    </select>
-    <label class="text-xs text-yellow-400">📎 Comprovante (PDF/Foto do Pix)</label>
-    <input id="file" type="file" accept=".pdf,image/*" class="w-full p-2 rounded-xl bg-zinc-800 border border-zinc-700 mb-2">
-    <p id="status" class="text-xs text-zinc-500 mb-2"></p>
-    <button id="btn" onclick="salvar()" class="w-full bg-green-600 py-4 rounded-xl font-black text-lg">💾 SALVAR COM COMPROVANTE</button>
-    <button id="btnCancelar" onclick="cancelarEdicao()" class="w-full bg-zinc-700 mt-2 py-3 rounded-xl font-bold text-sm hidden">CANCELAR EDIÇÃO</button>
   </div>
-  <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-5">
-    <h2 class="font-bold mb-3">Histórico (<span id="totalCount">0</span>)</h2>
-    <div id="lista" class="space-y-2 max-h-[60vh] overflow-y-auto"></div>
-    <div class="mt-4 pt-4 border-t border-zinc-800 flex justify-between text-xl font-black">
-      <span>SALDO:</span><span id="saldo">R$ 0,00</span>
+
+  <!-- LADO A LADO -->
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+
+    <!-- ESQUERDA: FORM -->
+    <div class="bg-zinc-900 border-2 border-green-600 rounded-2xl p-5 sticky top-4">
+      <h2 id="tituloForm" class="font-bold mb-4 text-green-400 text-lg">+ Novo Lançamento</h2>
+      <input id="desc" placeholder="Descrição (ex: Aluguel quadra, Inscrições)" class="w-full p-3 rounded-xl bg-zinc-800 border border-zinc-700 mb-2">
+      <div class="grid grid-cols-2 gap-2 mb-2">
+        <input id="valor" type="number" step="0.01" placeholder="Valor R$" class="p-3 rounded-xl bg-zinc-800 border border-zinc-700">
+        <input id="data" type="date" class="p-3 rounded-xl bg-zinc-800 border border-zinc-700">
+      </div>
+      <select id="tipo" class="w-full p-3 rounded-xl bg-zinc-800 border border-zinc-700 mb-3">
+        <option value="despesa">🔴 Despesa</option>
+        <option value="receita">🟢 Receita</option>
+      </select>
+      <label class="text-xs text-yellow-400">📎 Comprovante (PDF/Foto do Pix)</label>
+      <input id="file" type="file" accept=".pdf,image/*" class="w-full p-2 rounded-xl bg-zinc-800 border border-zinc-700 mb-2">
+      <p id="status" class="text-xs text-zinc-500 mb-2"></p>
+      <button id="btn" onclick="salvar()" class="w-full bg-green-600 py-4 rounded-xl font-black text-lg">💾 SALVAR COM COMPROVANTE</button>
+      <button id="btnCancelar" onclick="cancelarEdicao()" class="w-full bg-zinc-700 mt-2 py-3 rounded-xl font-bold text-sm hidden">CANCELAR EDIÇÃO</button>
     </div>
+
+    <!-- DIREITA: HISTÓRICO -->
+    <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-5">
+      <div class="flex justify-between items-center mb-3">
+        <h2 class="font-bold">Histórico (<span id="totalCount">0</span>)</h2>
+        <span class="text-[10px] text-zinc-500">↑ Novos no topo</span>
+      </div>
+      <div id="lista" class="space-y-2 max-h-[80vh] overflow-y-auto pr-2"></div>
+      <div class="mt-4 pt-4 border-t border-zinc-800 flex justify-between text-xl font-black">
+        <span>SALDO TOTAL:</span><span id="saldo">R$ 0,00</span>
+      </div>
+    </div>
+
   </div>
 </div>
+
 <script>
 const db=firebase.database(); const storage=firebase.storage();
 let editandoId=null; let editandoPath=null; let cacheDados=[];
+document.getElementById('data').valueAsDate=new Date();
 function entrar(){
   if(document.getElementById('senha').value===SENHA_FIN){
     document.getElementById('login').classList.add('hidden');
@@ -85,45 +103,44 @@ async function salvar(){
       const ref=storage.ref('comprovantes/'+nomeArq);
       await ref.put(file);
       url=await ref.getDownloadURL();
-      document.getElementById('status').innerText='✅ Comprovante OK';
     }
-    const obj={desc,valor,data,tipo,urlComprovante:url,nomeArquivo:nomeArq,timestamp: dadoExistente? dadoExistente.timestamp : Date.now()};
+    const obj={desc,valor:Math.abs(valor),data,tipo,urlComprovante:url,nomeArquivo:nomeArq,timestamp: dadoExistente? dadoExistente.timestamp : Date.now()};
     if(editandoPath){ await db.ref(editandoPath).set(obj); }
     else { await db.ref('FINANCEIRO').push(obj); }
     cancelarEdicao();
-    document.getElementById('status').innerText='✅ Salvo!'; setTimeout(()=>document.getElementById('status').innerText='',3000);
+    document.getElementById('status').innerText='✅ Salvo!';
   }catch(e){alert('Erro: '+e.message);}
   btn.innerText='💾 SALVAR COM COMPROVANTE'; btn.disabled=false;
 }
 function carregar(){
   db.ref('/').on('value',snapRoot=>{
     let arr=[];
-    // 1. Pega de dentro de FINANCEIRO
     if(snapRoot.child('FINANCEIRO').exists()){
       snapRoot.child('FINANCEIRO').forEach(c=>{
         let v=c.val(); if(!v) return;
         arr.push({id:c.key, path:'FINANCEIRO/'+c.key, desc:v.desc||'Sem desc', valor:parseFloat(v.valor)||0, data:v.data||'', tipo:v.tipo||'receita', urlComprovante:v.urlComprovante||'', nomeArquivo:v.nomeArquivo||'', timestamp:v.timestamp||0});
       });
     }
-    // 2. Pega também os soltos na raiz (seu bug antigo)
     snapRoot.forEach(c=>{
       let v=c.val();
       if(v && v.valor!==undefined && v.desc && c.key.startsWith('-')){
-        // evita duplicar se já pegou em FINANCEIRO
         if(!arr.find(x=>x.id===c.key)){
           arr.push({id:c.key, path:c.key, desc:v.desc, valor:parseFloat(v.valor)||0, data:v.data||'', tipo:v.tipo||'receita', urlComprovante:v.urlComprovante||'', nomeArquivo:v.nomeArquivo||'', timestamp:v.timestamp||0});
         }
       }
     });
     cacheDados=arr;
+    // MAIS NOVOS NO TOPO
     arr.sort((a,b)=>(b.timestamp||0)-(a.timestamp||0));
     let html=''; let saldo=0;
     arr.forEach(l=>{
-      saldo+=l.valor;
-      html+=`<div class="flex justify-between items-center bg-zinc-800 p-3 rounded-xl border-l-4 ${l.tipo=='receita'?'border-green-500':'border-red-500'}">
-        <div class="text-left text-sm flex-1"><b>${l.desc}</b> <span class="text-[10px] text-zinc-500">${l.data} ${l.path.includes('FINANCEIRO')?'':' (raiz)'}</span><br>
-        <span class="${l.valor>=0?'text-green-400':'text-red-400'} font-bold">R$ ${l.valor.toFixed(2)}</span>
-        ${l.urlComprovante?` | <a href="${l.urlComprovante}" target="_blank" class="text-cyan-400 underline text-xs">📎 Ver</a>`:''}
+      let v = Math.abs(l.valor);
+      saldo+= l.tipo==='despesa'? -v : v;
+      html+=`<div class="flex justify-between items-center bg-zinc-800 p-3 rounded-xl border-l-4 ${l.tipo==='receita'?'border-green-500':'border-red-500'}">
+        <div class="text-left text-sm flex-1">
+          <b class="uppercase">${l.desc}</b> <span class="text-[10px] text-zinc-500">${l.data}</span><br>
+          <span class="${l.tipo==='receita'?'text-green-400':'text-red-400'} font-bold">${l.tipo==='despesa'?'-':'+'} R$ ${v.toFixed(2)}</span>
+          ${l.urlComprovante?` | <a href="${l.urlComprovante}" target="_blank" class="text-cyan-400 underline text-xs">📎 Ver</a>`:''}
         </div>
         <div class="flex gap-1 ml-2">
           <button onclick="editar('${l.id}')" class="bg-zinc-700 hover:bg-zinc-600 px-2 py-1 rounded text-xs">✏️</button>
@@ -133,7 +150,11 @@ function carregar(){
     });
     document.getElementById('lista').innerHTML=html||'<p class="text-zinc-600 text-sm">Nenhum lançamento</p>';
     document.getElementById('totalCount').innerText=arr.length;
-    const sEl=document.getElementById('saldo'); sEl.innerText='R$ '+saldo.toFixed(2); sEl.className=saldo>=0?'text-green-400 font-black':'text-red-400 font-black';
+    const txt='R$ '+saldo.toFixed(2);
+    document.getElementById('saldo').innerText=txt;
+    document.getElementById('saldoTop').innerText=txt;
+    const sEl=document.getElementById('saldo'); sEl.className=saldo>=0?'text-green-400 font-black text-xl':'text-red-400 font-black text-xl';
+    document.getElementById('saldoTop').className=saldo>=0?'text-green-400 font-black text-xl':'text-red-400 font-black text-xl';
   });
 }
 function editar(id){
@@ -152,10 +173,12 @@ function editar(id){
 function cancelarEdicao(){
   editandoId=null; editandoPath=null;
   document.getElementById('desc').value='';document.getElementById('valor').value='';document.getElementById('file').value='';
+  document.getElementById('data').valueAsDate=new Date();
   document.getElementById('tituloForm').innerText='+ Novo Lançamento';
   document.getElementById('btn').innerText='💾 SALVAR COM COMPROVANTE';
   document.getElementById('btn').classList.replace('bg-yellow-500','bg-green-600');
   document.getElementById('btnCancelar').classList.add('hidden');
+  document.getElementById('status').innerText='';
 }
 function apagarPorPath(path,nome){if(!confirm('Apagar este lançamento?'))return; db.ref(path).remove().then(()=>{if(nome) storage.ref('comprovantes/'+nome).delete().catch(()=>{});});}
 </script>
