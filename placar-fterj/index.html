@@ -5,18 +5,17 @@ let PATROCINADORES_RODAPE=[];let PATROCINADORES_FULL=[];
 const LISTA_TESTE=["THIAGO BORGES","RUAM CAMPOS","MARCOS SILVA"];
 let SENHA_MESTRA=null;const CHAVE_SENHA_FIREBASE='CONFIG_SENHA_OPERADOR_'+NOME_BANCO;
 const CHAVE_RODAPE='CONFIG_RODAPE_GLOBAL';const CHAVE_FULL='CONFIG_FULL_GLOBAL';const CHAVE_TEMPOS='CONFIG_TEMPOS_GLOBAL';
-// === CONTROLES ===
+// === CONTROLES FINAIS ===
 const MOSTRAR_VOLTAMOS_EM = false;
-const ESCALA_PLACAR = 1.35; // só tamanho da letra, altura sempre até o relógio
+const ESCALA_PLACAR = 0.90;
 const MODO_VISAO_LANCAMENTO = "TIROS"; // TIROS ou PONTOS
 </script><style>
 html,body{height:100vh!important;overflow:hidden!important;background:#000;color:#fff;font-family:'Arial Black',Arial;margin:0;text-align:center}
 #tela-placar{position:fixed!important;top:0;left:0;width:100vw;height:100vh;overflow:hidden!important;background:#000;z-index:5}
-.topo{background:linear-gradient(90deg,#FF8C00,#FF4500);padding:5px 20px;display:flex;align-items:center;justify-content:space-between;border-bottom:4px solid #FFD700}.topo img{height:50px;border-radius:8px;background:#fff;padding:3px}.topo h1{font-size:1.8vw;margin:0;color:#000;text-shadow:2px 2px #FFD700;flex:1}.logos-lado{display:flex;gap:10px}
+.topo{background:linear-gradient(90deg,#FF8C00,#FF4500);padding:5px 20px;display:flex;align-items:center;justify-content:space-between;border-bottom:4px solid #FFD700;position:relative}.topo img{height:50px;border-radius:8px;background:#fff;padding:3px}.topo h1{font-size:1.8vw;margin:0;color:#000;text-shadow:2px 2px #FFD700;flex:1}.logos-lado{display:flex;gap:10px}
 .relogio{position:absolute;top:14px;right:85px;left:auto;bottom:auto;transform:none;background:rgba(0,0,0,0.85);color:#FFD700;font-size:12px;padding:4px 14px;border-radius:20px;border:1px solid #FF8C00;z-index:90;font-family:monospace}
-.topo{position:relative}
-#lista{padding:8px;height:calc(100vh - 175px);overflow:hidden!important;display:flex;flex-direction:column;justify-content:space-between;gap:6px}
-.placar{display:flex;justify-content:space-around;align-items:center;font-size:calc(15px * var(--escala-placar,0.9));margin:0 8px;padding:12px 10px;background:#1a1a1a;border-left:6px solid #555;border-radius:8px;flex:1}
+#lista{padding:8px;height:calc(100vh - 155px);overflow:hidden!important;display:flex;flex-direction:column;justify-content:space-between;gap:6px}
+.placar{display:flex;justify-content:space-around;align-items:center;font-size:calc(15px * var(--escala-placar,0.9));margin:0 8px;padding:12px 8px;background:#1a1a1a;border-left:6px solid #555;border-radius:8px;flex:1}
 .placar.p1{background:linear-gradient(90deg,#FFD700,#FFA500);color:#000;border-left:6px solid #FFD700;font-size:calc(17px * var(--escala-placar,0.9));font-weight:bold}
 .placar.p2{background:linear-gradient(90deg,#C0C0C0,#A9A9A9);color:#000}.placar.p3{background:linear-gradient(90deg,#CD7F32,#8B4513);color:#000}.pos{width:8%}.nome{width:32%;text-align:left;padding-left:8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.prova{width:10%;color:#00FFFF}.total{color:#FFD700;width:14%;font-weight:bold}.detalhe{font-size:calc(11px * var(--escala-placar,0.9));color:#ccc;width:36%}
 .reorg{background:#000;color:#00FF88;border:1px solid #00FF88;padding:2px 7px;border-radius:10px;font-weight:900;margin-left:8px;font-size:10px;animation:pisca 1s infinite;box-shadow:0 0 5px #00FF88}
@@ -33,6 +32,18 @@ html,body{height:100vh!important;overflow:hidden!important;background:#000;color
 .barra-emoji{background:#111;border:2px solid #FFD700;border-radius:10px;padding:10px;margin:10px auto;max-width:900px;display:flex;flex-wrap:wrap;gap:8px;justify-content:center;position:sticky;top:0;z-index:50}
 .barra-emoji button{font-size:20px;padding:6px 10px;background:#222;border:1px solid #444;border-radius:8px;cursor:pointer}
 .barra-emoji button:hover{background:#FFD700;transform:scale(1.2)}
+@media (max-width:600px){
+ .topo h1{font-size:3.5vw}
+ .relogio{font-size:10px;top:8px;right:60px;padding:3px 8px}
+  #lista{height:calc(100vh - 145px);gap:4px;padding:5px}
+ .placar{font-size:13px!important;padding:8px 6px;margin:0 4px;flex:none;min-height:52px}
+ .placar.p1{font-size:14px!important}
+ .pos{width:12%}.nome{width:35%;font-size:12px;white-space:normal;line-height:1.1}.prova{width:12%;font-size:11px}.total{width:18%;font-size:12px}.detalhe{width:23%;font-size:9px!important;white-space:normal}
+}
+body.modo-celular{height:auto!important;overflow-y:auto!important}
+body.modo-celular #tela-placar{position:relative!important;height:auto!important;min-height:100vh;overflow:visible!important}
+body.modo-celular #lista{height:auto!important;overflow:visible!important;justify-content:flex-start}
+body.modo-celular.rodape{position:relative!important;bottom:auto!important;display:block!important}
 </style></head><body>
 <div id="modal-erro"><div id="modal-erro-conteudo"><h2>❌ TIRO INVALIDO!</h2><p id="modal-erro-msg"></p><button onclick="fecharErro()">OK</button></div></div>
 <div id="tela-senha" class="tela-senha"><h2 id="tituloSenha">🔒 CARREGANDO...</h2><div id="areaSenha"></div><div id="erroSenha" style="color:#f55;margin-top:10px;font-family:Arial"></div></div>
@@ -47,14 +58,16 @@ html,body{height:100vh!important;overflow:hidden!important;background:#000;color
 <div class="card-adm"><h2>🟠 RODAPÉS <span id="contadorRodape" style="color:#aaa;font-size:12px"></span></h2><div id="containerRodapes"></div><button class="btn-lancar" onclick="adicionarRodape()" style="background:#444">+ ADICIONAR RODAPÉ</button><button class="btn-lancar" onclick="salvarRodapes()" style="background:#00C853">💾 SALVAR RODAPÉS</button></div>
 <div class="card-adm"><h2>🟡 FULL <span id="contadorFull" style="color:#aaa;font-size:12px"></span></h2><div id="containerFull"></div><button class="btn-lancar" onclick="adicionarFull()" style="background:#444">+ ADICIONAR FULL</button><button class="btn-lancar" onclick="salvarFulls()" style="background:#00C853">💾 SALVAR FULLS</button></div>
 <div class="card-adm"><a class="link-adm" href="?modo=tv" target="_blank">📺 VER TELÃO</a><a class="link-adm" href="?modo=adm">⚙️ VOLTAR ADM</a></div></div>
-<div id="tela-placar" style="display:none;"><div class="topo" id="topo-tv"></div><div id="lista"></div><div class="relogio" id="relogio-tv"></div><div id="insercao-full"><div id="prop-gigante"></div><div id="contato-gigante"></div></div><div class="rodape" id="rodape-tv"><div class="rodape-conteudo" id="rodape-conteudo"></div></div></div>
+<div id="tela-placar" style="display:none;"><div class="topo" id="topo-tv"><div class="relogio" id="relogio-tv"></div></div><div id="lista"></div><div id="insercao-full"><div id="prop-gigante"></div><div id="contato-gigante"></div></div><div class="rodape" id="rodape-tv"><div class="rodape-conteudo" id="rodape-conteudo"></div></div></div>
 <div id="tela-lancamento" style="display:none;"><div class="topo" id="topo-operador"></div><div class="container-operador"><div class="coluna-lancamento"><div style="font-size:10px;color:#888">CLUBE: <span id="labelBanco" style="color:#FFD700"></span> | <a href="?modo=adm" style="color:#FFD700">ADM</a> | <a href="?modo=anuncios" style="color:#00FFFF">ANUNCIOS</a></div><div id="status" style="font-size:10px;color:#81C784"></div><div id="infoLista" style="font-size:11px;color:#FFD700;margin:4px 0"></div><div id="sugestoes"></div><div class="cabecalho"><input type="text" id="nome" placeholder="NOME" autocomplete="off"><input type="text" id="prova" placeholder="C"></div><table class="tabela-tiros"><thead><tr><th>TIRO</th><th>VALOR</th></tr></thead><tbody id="corpo-tabela"></tbody></table><div id="parcial">TOTAL: 0.00</div><button class="btn-lancar" id="btnSalvar" onclick="lancar()">SALVAR [F2]</button><button class="btn-lancar" onclick="novaSerie()">NOVA [F3]</button><button class="btn-lancar" id="btnCancelar" onclick="cancelarEdicao()" style="background:#555;display:none">CANCELAR</button></div><div class="coluna-lista"><div id="lista-admin"></div></div></div></div>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script><script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script><script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script><script>
 const firebaseConfig={apiKey:"AIzaSyCTEXeRjxq0_3doBNyWm5AkQ0kmBXmjlSk",authDomain:"placar-minutera.firebaseapp.com",databaseURL:"https://placar-minutera-default-rtdb.firebaseio.com",projectId:"placar-minutera",storageBucket:"placar-minutera.firebasestorage.app",messagingSenderId:"689991648080",appId:"1:689991648080:web:9deeb958183eae23e255"};firebase.initializeApp(firebaseConfig);const db=firebase.database();const storage=firebase.storage();
 let ranking=[];let historico=[];let editandoId=null;let senhaOk=false;let offsetServidor=0;let anunciosLigados=true;
 async function sincronizarHoraBrasilia(){try{let r=await fetch('https://worldtimeapi.org/api/timezone/America/Sao_Paulo');let d=await r.json();offsetServidor=new Date(d.datetime).getTime()-Date.now();}catch(e){offsetServidor=0;}}function atualizarRelogio(){let agora=new Date(Date.now()+offsetServidor);let txt=agora.toLocaleDateString('pt-BR')+' | '+agora.toLocaleTimeString('pt-BR');let el=document.getElementById('relogio-tv');if(el) el.innerText=txt;}sincronizarHoraBrasilia();setInterval(atualizarRelogio,1000);
-function montarTopo(id){let e='<div class="logos-lado">',d='<div class="logos-lado">';if(QTD_LOGOS>=1) e+=`<img src="${LOGOS[0]}">`;if(QTD_LOGOS>=2) d+=`<img src="${LOGOS[1]}">`;e+='</div>';d+='</div>';let el=document.getElementById(id);if(el) el.innerHTML=`${e}<h1>${NOME_CAMPEONATO} - ${NOME_CLUBE} (${NOME_BANCO})</h1>${d}`;}montarTopo('topo-tv');montarTopo('topo-operador');
+function montarTopo(id){let e='<div class="logos-lado">',d='<div class="logos-lado">';if(QTD_LOGOS>=1) e+=`<img src="${LOGOS[0]}">`;if(QTD_LOGOS>=2) d+=`<img src="${LOGOS[1]}">`;e+='</div>';d+='</div>';let el=document.getElementById(id);if(el){let rel=document.getElementById('relogio-tv');let relHtml=rel?rel.outerHTML:'';el.innerHTML=`${e}<h1>${NOME_CAMPEONATO} - ${NOME_CLUBE} (${NOME_BANCO})</h1>${d}${id==='topo-tv'?relHtml:''}`;}}montarTopo('topo-tv');montarTopo('topo-operador');
 document.documentElement.style.setProperty('--escala-placar', ESCALA_PLACAR);
+const urlParams=new URLSearchParams(window.location.search);const modo=(urlParams.get('modo')||'').toLowerCase();
+if(modo==='celular'){document.body.classList.add('modo-celular');}
 let indiceRodape=0;function rotacionarRodape(){const r=document.getElementById('rodape-conteudo');if(!r||!PATROCINADORES_RODAPE.length) return;r.style.opacity=0;setTimeout(()=>{let p=PATROCINADORES_RODAPE[indiceRodape];if(p){r.innerHTML=`<div class="rodape-prop">${p.prop}</div><div class="rodape-contato">${p.contato}</div>`;}r.style.opacity=1;indiceRodape=(indiceRodape+1)%PATROCINADORES_RODAPE.length;},300);}
 let mostrando=false;let timerFullInterval=null;
 function getFullsAtivos(){return PATROCINADORES_FULL.filter(f=>f.ativo!==false);}
@@ -62,7 +75,6 @@ function iniciarTimerFull(){if(timerFullInterval) clearInterval(timerFullInterva
 function mostrarInsercaoFull(){if(!FULL_ATIVO||!anunciosLigados||mostrando) return;let ativos=getFullsAtivos();if(!ativos.length) return;mostrando=true;let lista=ativos;let total=lista.reduce((s,p)=>s+(parseInt(p.tempo)||FULL_TEMPO_EXIBICAO_SEG),0);let resto=total;let idx=0;document.getElementById('insercao-full').style.display='flex';document.documentElement.style.setProperty('--full-scale',FULL_ESCALA);
 if(MOSTRAR_VOLTAMOS_EM){document.getElementById('contato-gigante').style.display='block';document.getElementById('contato-gigante').innerHTML=`VOLTAMOS EM <b style="color:#FFD700;">${resto}s</b>`;}else{document.getElementById('contato-gigante').style.display='none';}
 let timer=setInterval(()=>{resto--;if(MOSTRAR_VOLTAMOS_EM){let el=document.getElementById('contato-gigante');if(el) el.innerHTML=`VOLTAMOS EM <b style="color:#FFD700;">${resto}s</b>`;}if(resto<=0) clearInterval(timer);},1000);function prox(){if(idx>=lista.length){clearInterval(timer);document.getElementById('insercao-full').style.display='none';mostrando=false;return;}let p=lista[idx];let el=document.getElementById('prop-gigante');if(p.arte) el.innerHTML=`<div class="full-escala-wrap"><img src="${p.arte}"></div>`;else el.innerHTML=`<div class="full-escala-wrap"><div style='font-size:4.5vw;color:#FFD700;font-weight:bold'>${p.prop||p.nome||''}</div></div>`;let tempoAtual=parseInt(p.tempo)||FULL_TEMPO_EXIBICAO_SEG;setTimeout(()=>{idx++;prox();},tempoAtual*1000);}prox();}
-const urlParams=new URLSearchParams(window.location.search);const modo=(urlParams.get('modo')||'').toLowerCase();
 let inputComErro=null;function mostrarErro(msg,i){document.getElementById('modal-erro-msg').innerHTML=msg;document.getElementById('modal-erro').style.display='flex';if(i){let el=document.getElementById('t'+i);if(el){el.classList.add('erro');inputComErro=el;}}}function fecharErro(){document.getElementById('modal-erro').style.display='none';if(inputComErro){inputComErro.focus();inputComErro.select();}}
 function validarTiros(){for(let i=1;i<=10;i++){let el=document.getElementById('t'+i);if(!el) continue;let v=el.value.toString().trim();if(v==='') continue;let up=v.toUpperCase();if(up==='X') continue;let num=parseFloat(v.replace(',','.'));if(isNaN(num)||num<0||num>10){mostrarErro(`No <b>${i}º TIRO</b> "${v}" inválido!`,i);return false;}}return true;}
 function renderTelaCriarSenha(){document.getElementById('tituloSenha').innerText='🔑 PRIMEIRO ACESSO';document.getElementById('areaSenha').innerHTML=`<p style="color:#aaa;font-size:13px">Defina a senha:</p><input type="password" id="novaSenha" placeholder="CRIAR SENHA" style="padding:12px;border-radius:8px;border:2px solid #FFD700;background:#222;color:#fff;text-align:center;width:250px"><br><input type="password" id="confirmaSenha" placeholder="CONFIRMAR" style="padding:12px;border-radius:8px;border:2px solid #444;background:#222;color:#fff;text-align:center;width:250px;margin-top:8px"><br><button onclick="salvarSenhaFirebase()" style="margin-top:12px;background:#FFD700;color:#000;padding:12px 30px">SALVAR</button>`;}
@@ -96,24 +108,12 @@ function valorTiro(v){if(!v) return 0;v=v.toString().toUpperCase().trim();if(v==
 function contarTiros(tiros){let c={x12_01:0,x10:0,x9:0,x8:0,x7:0,x6:0,x5:0,x4:0,x3:0,x2:0,x1:0,x0:0};tiros.forEach(t=>{let v=valorTiro(t);if(v===12.01) c.x12_01++;else c['x'+Math.floor(v)]++;});return c;}
 function gerarID(){return 'serie_'+Date.now()+'_'+Math.random().toString(36).substr(2,5);}
 function lancarBase(){let nome=document.getElementById('nome').value.toUpperCase().trim();let prova=document.getElementById('prova').value.toUpperCase().trim();if(!nome||!prova) return alert("Preencha Nome e Prova");if(!validarTiros()) return;let tiros=[];let pts=0;for(let i=1;i<=10;i++){let v=document.getElementById('t'+i).value;tiros.push(v);pts+=valorTiro(v);}let cont=contarTiros(tiros);let id=editandoId?editandoId:gerarID();db.ref(NOME_BANCO+'/'+id).set({id,nome,prova,pontos:pts,tiros,contagem:cont,timestamp:Date.now()}).then(()=>{editandoId=null;novaSerie();});}
-// === LISTA ADMIN COM MODO ===
 function atualizarListaAdmin(){
-  let h="";
-  if(historico.length==0){document.getElementById('lista-admin').innerHTML="<div style='color:#888;font-size:12px'>Nenhum</div>";return;}
-  let crono=[...historico].sort((a,b)=>a.timestamp-b.timestamp);
-  let mapaOrdem={};crono.forEach((a,i)=>{mapaOrdem[a.id]=i+1;});
+  let h="";if(historico.length==0){document.getElementById('lista-admin').innerHTML="<div style='color:#888;font-size:12px'>Nenhum</div>";return;}
+  let crono=[...historico].sort((a,b)=>a.timestamp-b.timestamp);let mapaOrdem={};crono.forEach((a,i)=>{mapaOrdem[a.id]=i+1;});
   let lista=[...historico].sort((a,b)=>b.timestamp-a.timestamp);
-  lista.forEach((a)=>{
-    let cor=a.prova==='C'?'#00FF00':'#FFD700';
-    let c=a.contagem;let num=mapaOrdem[a.id]||0;
-    let linha2 = "";
-    if(MODO_VISAO_LANCAMENTO==="TIROS"){
-      linha2 = `Tiros: ${(a.tiros||[]).join(' | ')}`;
-    } else {
-      linha2 = `X:${c.x12_01||0} | 10:${c.x10||0} | 9:${c.x9||0} | 8:${c.x8||0} | 7:${c.x7||0} | 6:${c.x6||0} | 5:${c.x5||0} | 4:${c.x4||0} | 3:${c.x3||0} | 2:${c.x2||0} | 1:${c.x1||0} | 0:${c.x0||0}`;
-    }
-    h+=`<div class="item-admin"><div class="linha-principal"><span><b style="color:#FF8C00">${num}º</b> <b style="color:${cor};">${a.prova}</b> - ${a.nome} <b style="color:#FFD700;">${a.pontos.toFixed(2)}</b> <span style="font-size:9px;color:#bbb">${linha2}</span></span><span><button class="btn-mini btn-editar" onclick="editarSerie('${a.id}')">EDITAR</button><button class="btn-mini btn-excluir" onclick="excluirSerie('${a.id}')">EXCLUIR</button></span></div></div>`;
-  });
+  lista.forEach((a)=>{let cor=a.prova==='C'?'#00FF00':'#FFD700';let c=a.contagem;let num=mapaOrdem[a.id]||0;let linha2="";if(MODO_VISAO_LANCAMENTO==="TIROS"){linha2=`Tiros: ${(a.tiros||[]).join(' | ')}`;}else{linha2=`X:${c.x12_01||0} | 10:${c.x10||0} | 9:${c.x9||0} | 8:${c.x8||0} | 7:${c.x7||0} | 6:${c.x6||0} | 5:${c.x5||0} | 4:${c.x4||0} | 3:${c.x3||0} | 2:${c.x2||0} | 1:${c.x1||0} | 0:${c.x0||0}`;}
+  h+=`<div class="item-admin"><div class="linha-principal"><span><b style="color:#FF8C00">${num}º</b> <b style="color:${cor};">${a.prova}</b> - ${a.nome} <b style="color:#FFD700;">${a.pontos.toFixed(2)}</b> <span style="font-size:9px;color:#bbb">${linha2}</span></span><span><button class="btn-mini btn-editar" onclick="editarSerie('${a.id}')">EDITAR</button><button class="btn-mini btn-excluir" onclick="excluirSerie('${a.id}')">EXCLUIR</button></span></div></div>`;});
   document.getElementById('lista-admin').innerHTML=h;
 }
 function editarSerie(id){let s=historico.find(x=>x.id===id);if(!s) return;editandoId=id;document.getElementById('nome').value=s.nome;document.getElementById('prova').value=s.prova;for(let i=0;i<10;i++){document.getElementById('t'+(i+1)).value=s.tiros[i]||'';}calcularParcial();document.getElementById('btnSalvar').innerText='ATUALIZAR';document.getElementById('btnSalvar').style.background='#FFD700';document.getElementById('btnSalvar').style.color='#000';document.getElementById('btnCancelar').style.display='inline-block';}
