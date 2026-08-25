@@ -5,17 +5,18 @@ let PATROCINADORES_RODAPE=[];let PATROCINADORES_FULL=[];
 const LISTA_TESTE=["THIAGO BORGES","RUAM CAMPOS","MARCOS SILVA"];
 let SENHA_MESTRA=null;const CHAVE_SENHA_FIREBASE='CONFIG_SENHA_OPERADOR_'+NOME_BANCO;
 const CHAVE_RODAPE='CONFIG_RODAPE_GLOBAL';const CHAVE_FULL='CONFIG_FULL_GLOBAL';const CHAVE_TEMPOS='CONFIG_TEMPOS_GLOBAL';
-// === CONTROLES TOPO ===
-const MOSTRAR_VOLTAMOS_EM = false; // false = SEM o contador
-const ESCALA_PLACAR = 1.35; // seu ajuste que ficou bom na foto
+// === CONTROLES ===
+const MOSTRAR_VOLTAMOS_EM = false;
+const ESCALA_PLACAR = 0.90; // só tamanho da letra, altura sempre até o relógio
+const MODO_VISAO_LANCAMENTO = "TIROS"; // TIROS ou PONTOS
 </script><style>
 html,body{height:100vh!important;overflow:hidden!important;background:#000;color:#fff;font-family:'Arial Black',Arial;margin:0;text-align:center}
 #tela-placar{position:fixed!important;top:0;left:0;width:100vw;height:100vh;overflow:hidden!important;background:#000;z-index:5}
 .topo{background:linear-gradient(90deg,#FF8C00,#FF4500);padding:5px 20px;display:flex;align-items:center;justify-content:space-between;border-bottom:4px solid #FFD700}.topo img{height:50px;border-radius:8px;background:#fff;padding:3px}.topo h1{font-size:1.8vw;margin:0;color:#000;text-shadow:2px 2px #FFD700;flex:1}.logos-lado{display:flex;gap:10px}
 .relogio{position:fixed;bottom:92px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.85);color:#FFD700;font-size:12px;padding:4px 14px;border-radius:20px;border:1px solid #FF8C00;z-index:90;font-family:monospace}
-#lista{padding:10px 8px;height:calc(100vh - 175px);overflow:hidden!important;display:flex;flex-direction:column;justify-content:space-evenly;gap:calc(5px * var(--escala-placar,0.9))}
-.placar{display:flex;justify-content:space-around;align-items:center;font-size:calc(14px * var(--escala-placar,0.9));margin:0 8px;padding:calc(11px * var(--escala-placar,0.9)) 10px;background:#1a1a1a;border-left:6px solid #555;border-radius:8px;flex:1;max-height:calc(9.5vh * var(--escala-placar,0.9))}
-.placar.p1{background:linear-gradient(90deg,#FFD700,#FFA500);color:#000;border-left:6px solid #FFD700;font-size:calc(16px * var(--escala-placar,0.9));font-weight:bold}
+#lista{padding:8px;height:calc(100vh - 175px);overflow:hidden!important;display:flex;flex-direction:column;justify-content:space-between;gap:6px}
+.placar{display:flex;justify-content:space-around;align-items:center;font-size:calc(15px * var(--escala-placar,0.9));margin:0 8px;padding:12px 10px;background:#1a1a1a;border-left:6px solid #555;border-radius:8px;flex:1}
+.placar.p1{background:linear-gradient(90deg,#FFD700,#FFA500);color:#000;border-left:6px solid #FFD700;font-size:calc(17px * var(--escala-placar,0.9));font-weight:bold}
 .placar.p2{background:linear-gradient(90deg,#C0C0C0,#A9A9A9);color:#000}.placar.p3{background:linear-gradient(90deg,#CD7F32,#8B4513);color:#000}.pos{width:8%}.nome{width:32%;text-align:left;padding-left:8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.prova{width:10%;color:#00FFFF}.total{color:#FFD700;width:14%;font-weight:bold}.detalhe{font-size:calc(11px * var(--escala-placar,0.9));color:#ccc;width:36%}
 .reorg{background:#000;color:#00FF88;border:1px solid #00FF88;padding:2px 7px;border-radius:10px;font-weight:900;margin-left:8px;font-size:10px;animation:pisca 1s infinite;box-shadow:0 0 5px #00FF88}
 @keyframes pisca{0%,100%{opacity:1}50%{opacity:0.6}}.rodape{background:linear-gradient(90deg,#FF8C00,#FF4500);border-top:4px solid #FFD700;padding:12px 15px;width:100%;position:fixed;bottom:0;left:0;display:none;box-sizing:border-box;height:85px;z-index:100}.rodape-conteudo{display:flex;justify-content:center;align-items:center;gap:20px;white-space:nowrap;height:100%;transition:opacity 0.3s;flex-wrap:wrap}.rodape-prop{color:#000;font-size:18px;font-weight:900;text-shadow:1px 1px #FFD700}.rodape-contato{color:#fff;font-size:15px;font-weight:bold;background:#000;padding:5px 12px;border-radius:20px}
@@ -26,7 +27,7 @@ html,body{height:100vh!important;overflow:hidden!important;background:#000;color
 #contato-gigante{position:absolute;bottom:18px;left:50%;transform:translateX(-50%);font-size:14px;color:#fff;background:rgba(0,0,0,0.7);padding:5px 15px;border-radius:20px;z-index:10}
 .tela-senha{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;background:#0f0f0f}.container-operador{display:flex;gap:8px;padding:8px;height:calc(100vh - 62px);background:#0f0f0f;box-sizing:border-box}.coluna-lancamento{width:38%;background:#1a1a1a;padding:8px;border-radius:8px;overflow-y:auto;border:1px solid #333;position:relative}.coluna-lista{width:62%;background:#1a1a1a;padding:8px;border-radius:8px;overflow-y:auto;border:1px solid #333}.cabecalho{display:flex;justify-content:center;gap:6px;margin-bottom:6px}.cabecalho input{font-size:14px;padding:6px;border-radius:6px;border:2px solid #444;font-weight:bold;background:#222;color:#e0e0e0}#nome{width:70%}#prova{width:25%;background:#3a3a3a;color:#FFD700}.tabela-tiros{width:100%;margin:5px auto;border-collapse:collapse}.tabela-tiros th{background:#2a2a2a;color:#FFA500;padding:3px;font-size:13px}.tabela-tiros td{padding:2px}.tabela-tiros input{width:90%;font-size:14px;padding:4px;text-align:center;border:2px solid #444;border-radius:4px;background:#222;color:#fff}.tela-adm{background:#111;min-height:100vh;padding:20px;box-sizing:border-box}.card-adm{background:#1e1e1e;border:1px solid #333;border-radius:12px;padding:20px;margin:15px auto;max-width:900px;text-align:left}.card-adm h2{color:#FFD700;margin:0 0 10px 0;font-size:18px;border-bottom:1px solid #333;padding-bottom:8px}.link-adm{display:block;background:#222;color:#00FFFF;padding:10px;margin:6px 0;border-radius:8px;text-decoration:none;font-family:monospace;font-size:13px;border:1px solid #444}button{font-size:13px;padding:6px 10px;margin:3px 2px;border-radius:6px;border:none;cursor:pointer;font-weight:bold}.btn-lancar{background:#D2691E;color:#fff}.btn-mini{padding:3px 7px;font-size:10px;margin-left:3px;border-radius:4px}.btn-editar{background:#FFD700;color:#000}.btn-excluir{background:#c00;color:#fff}#parcial{font-size:16px;color:#4FC3F7;margin:5px 0}#modal-erro{position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.85);z-index:99999;display:none;align-items:center;justify-content:center}#modal-erro-conteudo{background:#1a1a1a;border:3px solid #f00;border-radius:12px;padding:25px;max-width:400px;text-align:center}.switch{position:relative;display:inline-block;width:44px;height:24px}.switch input{opacity:0;width:0;height:0}.slider{position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background:#444;transition:.4s;border-radius:24px}.slider:before{position:absolute;content:"";height:18px;width:18px;left:3px;bottom:3px;background:#fff;transition:.4s;border-radius:50%}input:checked+.slider{background:#00C853}input:checked+.slider:before{transform:translateX(20px)}
 .tela-anuncios{background:#111;min-height:100vh;padding:20px;box-sizing:border-box;text-align:left}.linha-config{display:flex;gap:15px;align-items:center;background:#222;padding:10px;border-radius:8px;margin:10px 0;flex-wrap:wrap}.linha-config input{width:70px;padding:8px;border-radius:6px;background:#000;color:#FFD700;border:1px solid #444;text-align:center;font-weight:bold}.box-anuncio{background:#1e1e1e;border:1px solid #444;border-radius:8px;padding:12px;margin:8px 0;display:flex;gap:10px;align-items:center;flex-wrap:wrap}.box-anuncio input[type=text]{padding:8px;border-radius:6px;background:#000;color:#fff;border:1px solid #444;flex:1;min-width:180px}.box-anuncio input.tempo{width:60px;flex:none}.preview-arte{width:120px;height:70px;background:#000;border:1px solid #555;border-radius:6px;object-fit:contain}
-.item-admin{background:#222;margin:4px 0;padding:8px 10px;border-radius:8px;border-left:4px solid #FF8C00;text-align:left}.linha-principal{display:flex;justify-content:space-between;align-items:center;font-size:12px;gap:5px}
+.item-admin{background:#222;margin:5px 0;padding:8px 10px;border-radius:8px;border-left:4px solid #FF8C00;text-align:left}.linha-principal{display:flex;justify-content:space-between;align-items:center;font-size:12px;gap:5px}
 .tela-anuncios,.tela-adm{position:relative!important;width:100%!important;height:auto!important;min-height:100vh!important;overflow:visible!important;display:block;padding-bottom:120px!important}
 .barra-emoji{background:#111;border:2px solid #FFD700;border-radius:10px;padding:10px;margin:10px auto;max-width:900px;display:flex;flex-wrap:wrap;gap:8px;justify-content:center;position:sticky;top:0;z-index:50}
 .barra-emoji button{font-size:20px;padding:6px 10px;background:#222;border:1px solid #444;border-radius:8px;cursor:pointer}
@@ -58,12 +59,7 @@ let mostrando=false;let timerFullInterval=null;
 function getFullsAtivos(){return PATROCINADORES_FULL.filter(f=>f.ativo!==false);}
 function iniciarTimerFull(){if(timerFullInterval) clearInterval(timerFullInterval);timerFullInterval=setInterval(mostrarInsercaoFull,FULL_TEMPO_ESPERA_SEG*1000);}
 function mostrarInsercaoFull(){if(!FULL_ATIVO||!anunciosLigados||mostrando) return;let ativos=getFullsAtivos();if(!ativos.length) return;mostrando=true;let lista=ativos;let total=lista.reduce((s,p)=>s+(parseInt(p.tempo)||FULL_TEMPO_EXIBICAO_SEG),0);let resto=total;let idx=0;document.getElementById('insercao-full').style.display='flex';document.documentElement.style.setProperty('--full-scale',FULL_ESCALA);
-if(MOSTRAR_VOLTAMOS_EM){
-  document.getElementById('contato-gigante').style.display='block';
-  document.getElementById('contato-gigante').innerHTML=`VOLTAMOS EM <b style="color:#FFD700;">${resto}s</b>`;
-} else {
-  document.getElementById('contato-gigante').style.display='none';
-}
+if(MOSTRAR_VOLTAMOS_EM){document.getElementById('contato-gigante').style.display='block';document.getElementById('contato-gigante').innerHTML=`VOLTAMOS EM <b style="color:#FFD700;">${resto}s</b>`;}else{document.getElementById('contato-gigante').style.display='none';}
 let timer=setInterval(()=>{resto--;if(MOSTRAR_VOLTAMOS_EM){let el=document.getElementById('contato-gigante');if(el) el.innerHTML=`VOLTAMOS EM <b style="color:#FFD700;">${resto}s</b>`;}if(resto<=0) clearInterval(timer);},1000);function prox(){if(idx>=lista.length){clearInterval(timer);document.getElementById('insercao-full').style.display='none';mostrando=false;return;}let p=lista[idx];let el=document.getElementById('prop-gigante');if(p.arte) el.innerHTML=`<div class="full-escala-wrap"><img src="${p.arte}"></div>`;else el.innerHTML=`<div class="full-escala-wrap"><div style='font-size:4.5vw;color:#FFD700;font-weight:bold'>${p.prop||p.nome||''}</div></div>`;let tempoAtual=parseInt(p.tempo)||FULL_TEMPO_EXIBICAO_SEG;setTimeout(()=>{idx++;prox();},tempoAtual*1000);}prox();}
 const urlParams=new URLSearchParams(window.location.search);const modo=(urlParams.get('modo')||'').toLowerCase();
 let inputComErro=null;function mostrarErro(msg,i){document.getElementById('modal-erro-msg').innerHTML=msg;document.getElementById('modal-erro').style.display='flex';if(i){let el=document.getElementById('t'+i);if(el){el.classList.add('erro');inputComErro=el;}}}function fecharErro(){document.getElementById('modal-erro').style.display='none';if(inputComErro){inputComErro.focus();inputComErro.select();}}
@@ -99,7 +95,7 @@ function valorTiro(v){if(!v) return 0;v=v.toString().toUpperCase().trim();if(v==
 function contarTiros(tiros){let c={x12_01:0,x10:0,x9:0,x8:0,x7:0,x6:0,x5:0,x4:0,x3:0,x2:0,x1:0,x0:0};tiros.forEach(t=>{let v=valorTiro(t);if(v===12.01) c.x12_01++;else c['x'+Math.floor(v)]++;});return c;}
 function gerarID(){return 'serie_'+Date.now()+'_'+Math.random().toString(36).substr(2,5);}
 function lancarBase(){let nome=document.getElementById('nome').value.toUpperCase().trim();let prova=document.getElementById('prova').value.toUpperCase().trim();if(!nome||!prova) return alert("Preencha Nome e Prova");if(!validarTiros()) return;let tiros=[];let pts=0;for(let i=1;i<=10;i++){let v=document.getElementById('t'+i).value;tiros.push(v);pts+=valorTiro(v);}let cont=contarTiros(tiros);let id=editandoId?editandoId:gerarID();db.ref(NOME_BANCO+'/'+id).set({id,nome,prova,pontos:pts,tiros,contagem:cont,timestamp:Date.now()}).then(()=>{editandoId=null;novaSerie();});}
-// === NOVA LISTA ADMIN COMPLETA ===
+// === LISTA ADMIN COM MODO ===
 function atualizarListaAdmin(){
   let h="";
   if(historico.length==0){document.getElementById('lista-admin').innerHTML="<div style='color:#888;font-size:12px'>Nenhum</div>";return;}
@@ -109,9 +105,13 @@ function atualizarListaAdmin(){
   lista.forEach((a)=>{
     let cor=a.prova==='C'?'#00FF00':'#FFD700';
     let c=a.contagem;let num=mapaOrdem[a.id]||0;
-    let tirosTxt = (a.tiros||[]).join(' | ');
-    let detalhes = `X:${c.x12_01||0} | 10:${c.x10||0} | 9:${c.x9||0} | 8:${c.x8||0} | 7:${c.x7||0} | 6:${c.x6||0} | 5:${c.x5||0} | 4:${c.x4||0} | 3:${c.x3||0} | 2:${c.x2||0} | 1:${c.x1||0} | 0:${c.x0||0}`;
-    h+=`<div class="item-admin"><div class="linha-principal" style="flex-direction:column;align-items:flex-start"><div><b style="color:#FF8C00">${num}º</b> <b style="color:${cor};">${a.prova}</b> - ${a.nome} <b style="color:#FFD700;">${a.pontos.toFixed(2)}</b></div><div style="font-size:10px;color:#00FFFF;margin:4px 0">Tiros: ${tirosTxt}</div><div style="font-size:9px;color:#bbb">${detalhes}</div></div><div style="margin-top:6px"><button class="btn-mini btn-editar" onclick="editarSerie('${a.id}')">EDITAR</button><button class="btn-mini btn-excluir" onclick="excluirSerie('${a.id}')">EXCLUIR</button></div></div>`;
+    let linha2 = "";
+    if(MODO_VISAO_LANCAMENTO==="TIROS"){
+      linha2 = `Tiros: ${(a.tiros||[]).join(' | ')}`;
+    } else {
+      linha2 = `X:${c.x12_01||0} | 10:${c.x10||0} | 9:${c.x9||0} | 8:${c.x8||0} | 7:${c.x7||0} | 6:${c.x6||0} | 5:${c.x5||0} | 4:${c.x4||0} | 3:${c.x3||0} | 2:${c.x2||0} | 1:${c.x1||0} | 0:${c.x0||0}`;
+    }
+    h+=`<div class="item-admin"><div class="linha-principal"><span><b style="color:#FF8C00">${num}º</b> <b style="color:${cor};">${a.prova}</b> - ${a.nome} <b style="color:#FFD700;">${a.pontos.toFixed(2)}</b> <span style="font-size:9px;color:#bbb">${linha2}</span></span><span><button class="btn-mini btn-editar" onclick="editarSerie('${a.id}')">EDITAR</button><button class="btn-mini btn-excluir" onclick="excluirSerie('${a.id}')">EXCLUIR</button></span></div></div>`;
   });
   document.getElementById('lista-admin').innerHTML=h;
 }
