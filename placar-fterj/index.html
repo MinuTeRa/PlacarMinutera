@@ -23,6 +23,10 @@ body.modo-tv.placar{flex:1}
 .placar.p1{background:linear-gradient(90deg,#FFD700,#FFA500);color:#000;border-left:6px solid #FFD700;font-size:calc(17px * var(--escala-placar,0.9))}
 .placar.p2{background:linear-gradient(90deg,#C0C0C0,#A9A9A9);color:#000}.placar.p3{background:linear-gradient(90deg,#CD7F32,#8B4513);color:#000}
 .pos{width:8%}.nome{width:32%;text-align:left;padding-left:8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.prova{width:10%;color:#00FFFF}.total{color:#FFD700;width:14%;font-weight:bold}.detalhe{font-size:calc(11px * var(--escala-placar,0.9));color:#ccc;width:36%}
+/* === MESMA CONFIGURAÇÃO DE COR PARA 1º, 2º E 3º === */
+.placar.prova{color:#00FFFF!important}
+.placar.p1.total,.placar.p2.total,.placar.p3.total{color:#000!important}
+.placar.p1.detalhe,.placar.p2.detalhe,.placar.p3.detalhe{color:#000!important;font-weight:bold}
 .reorg{background:#000;color:#00FF88;border:1px solid #00FF88;padding:2px 7px;border-radius:10px;font-weight:900;margin-left:8px;font-size:10px;animation:pisca 1s infinite}
 @keyframes pisca{0%,100%{opacity:1}50%{opacity:0.6}}
 .rodape{background:linear-gradient(90deg,#FF8C00,#FF4500);border-top:4px solid #FFD700;padding:12px 15px;width:100%;box-sizing:border-box;height:85px;z-index:100}
