@@ -10,7 +10,7 @@ body{background:#000;color:#fff;font-family:'Arial Black',Arial;margin:0;overflo
 </style></head><body>
 <div id="modal-erro"><div id="modal-erro-conteudo"><h2>❌ TIRO INVALIDO!</h2><p id="modal-erro-msg"></p><button onclick="fecharErro()">OK - CORRIGIR</button></div></div>
 <div id="tela-senha" class="tela-senha"><h2 id="tituloSenha">🔒 CARREGANDO...</h2><div id="areaSenha"></div><div id="erroSenha" style="color:#f55;margin-top:10px;font-family:Arial"></div></div>
-<div id="tela-adm" class="tela-adm" style="display:none;"><h1 style="color:#FFD700;">⚙️ PAINEL ADM - <span id="nomeBancoADM"></span></h1><div class="card-adm" style="border:2px solid #FFD700"><h2>📢 CONTROLE DE ANUNCIOS FULL</h2><div style="display:flex;align-items:center;gap:15px"><label class="switch"><input type="checkbox" id="toggleAnuncio" checked onchange="alternarAnuncios()"><span class="slider"></span></label><span id="statusAnuncio" style="color:#00FF00;font-weight:bold;font-family:Arial">ANUNCIOS LIGADOS</span></div></div><div class="card-adm"><h2>🔑 SENHA DESTE CLUBE (<span class="nomeBancoLabel"></span>)</h2><p style="color:#aaa;font-family:Arial;font-size:11px">Esta senha fica no Firebase em: <b id="chaveSenhaLabel" style="color:#FFD700"></b></p><input type="password" id="novaSenhaADM" placeholder="Nova senha deste clube" style="padding:8px;border-radius:6px;background:#222;color:#fff;border:1px solid #444"><button class="btn-lancar" onclick="trocarSenhaADM()">SALVAR SENHA DESTE CLUBE</button><div id="msgSenhaADM" style="color:#81C784;font-family:Arial;font-size:12px;margin-top:8px"></div></div><div class="card-adm"><h2>🔗 LINKS</h2><div id="links-adm"></div></div><div class="card-adm"><h2>📂 LISTA DE ATLETAS</h2><div id="infoListaADM" style="color:#aaa;font-family:Arial;margin-bottom:10px;font-size:12px"></div><input type="file" id="carregarListaADM" accept=".txt,.csv" style="color:#fff"><br><button class="btn-lancar" onclick="apagarListaAtletas()" style="background:#800;margin-top:10px">🗑️ APAGAR LISTA</button><div id="previewLista" style="max-height:150px;overflow-y:auto;background:#000;padding:10px;margin-top:10px;font-family:Arial;font-size:11px;color:#ccc"></div></div><div class="card-adm"><h2>🔥 CONTROLE</h2><button class="btn-lancar" onclick="limparContadores()" style="background:#FF9800">ZERAR C/R</button><button class="btn-lancar" onclick="apagarPlacar()" style="background:#b00;border:2px solid #f00">APAGAR PLACAR DESTE CLUBE</button><div id="statusADM" style="margin-top:10px;font-family:monospace;font-size:12px;color:#81C784"></div></div></div>
+<div id="tela-adm" class="tela-adm" style="display:none;"><h1 style="color:#FFD700;">⚙️ PAINEL ADM - <span id="nomeBancoADM"></span></h1><div class="card-adm" style="border:2px solid #FFD700"><h2>📢 CONTROLE DE ANUNCIOS FULL</h2><div style="display:flex;align-items:center;gap:15px"><label class="switch"><input type="checkbox" id="toggleAnuncio" checked onchange="alternarAnuncios()"><span class="slider"></span></label><span id="statusAnuncio" style="color:#00FF00;font-weight:bold;font-family:Arial">ANUNCIOS LIGADOS</span></div></div><div class="card-adm"><h2>🔑 SENHA DESTE CLUBE</h2><input type="password" id="novaSenhaADM" placeholder="Nova senha" style="padding:8px;border-radius:6px;background:#222;color:#fff;border:1px solid #444"><button class="btn-lancar" onclick="trocarSenhaADM()">SALVAR SENHA</button><div id="msgSenhaADM" style="color:#81C784;font-family:Arial;font-size:12px;margin-top:8px"></div></div><div class="card-adm"><h2>🔗 LINKS</h2><div id="links-adm"></div></div><div class="card-adm"><h2>📂 LISTA DE ATLETAS</h2><div id="infoListaADM" style="color:#aaa;font-family:Arial;margin-bottom:10px;font-size:12px"></div><input type="file" id="carregarListaADM" accept=".txt,.csv" style="color:#fff"><br><button class="btn-lancar" onclick="apagarListaAtletas()" style="background:#800;margin-top:10px">🗑️ APAGAR LISTA</button><div id="previewLista" style="max-height:150px;overflow-y:auto;background:#000;padding:10px;margin-top:10px;font-family:Arial;font-size:11px;color:#ccc"></div></div><div class="card-adm"><h2>🔥 CONTROLE</h2><button class="btn-lancar" onclick="limparContadores()" style="background:#FF9800">ZERAR C/R</button><button class="btn-lancar" onclick="apagarPlacar()" style="background:#b00;border:2px solid #f00">APAGAR PLACAR DESTE CLUBE</button><div id="statusADM" style="margin-top:10px;font-family:monospace;font-size:12px;color:#81C784"></div></div></div>
 <div id="tela-placar" style="display:none;"><div class="topo" id="topo-tv"></div><div id="lista"></div><div class="relogio" id="relogio-tv"></div><div id="insercao-full"><div id="prop-gigante"></div><div id="contato-gigante"></div></div><div class="rodape" id="rodape-tv"><div class="rodape-conteudo" id="rodape-conteudo"></div></div></div>
 <div id="tela-lancamento" style="display:none;"><div class="topo" id="topo-operador"></div><div class="container-operador"><div class="coluna-lancamento"><div style="font-size:10px;color:#888">CLUBE: <span id="labelBanco" style="color:#FFD700"></span> | X=12.01 | F2 Salvar | F3 Nova | <a href="?modo=adm" style="color:#FFD700">ADM</a></div><div id="status" style="font-size:10px;color:#81C784"></div><div id="infoLista" style="font-size:11px;color:#FFD700;margin:4px 0;font-family:Arial"></div><div id="sugestoes"></div><div class="cabecalho"><input type="text" id="nome" placeholder="NOME" autocomplete="off" autofocus><input type="text" id="prova" placeholder="C"></div><table class="tabela-tiros"><thead><tr><th>TIRO</th><th>VALOR</th></tr></thead><tbody id="corpo-tabela"></tbody></table><div id="parcial">TOTAL: 0.00</div><button class="btn-lancar" id="btnSalvar" onclick="lancar()">SALVAR [F2]</button><button class="btn-lancar" onclick="novaSerie()">NOVA [F3]</button><button class="btn-lancar" id="btnCancelar" onclick="cancelarEdicao()" style="background:#555;display:none">CANCELAR</button></div><div class="coluna-lista"><div id="lista-admin"></div></div></div></div>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script><script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script><script>
@@ -23,22 +23,20 @@ let mostrando=false;function mostrarInsercaoFull(){if(!FULL_ATIVO||!anunciosLiga
 const urlParams=new URLSearchParams(window.location.search);const modo=(urlParams.get('modo')||'').toLowerCase();
 let inputComErro=null;function mostrarErro(msg,i){document.getElementById('modal-erro-msg').innerHTML=msg;document.getElementById('modal-erro').style.display='flex';if(i){let el=document.getElementById('t'+i);if(el){el.classList.add('erro');inputComErro=el;}}}function fecharErro(){document.getElementById('modal-erro').style.display='none';if(inputComErro){inputComErro.focus();inputComErro.select();}}
 function validarTiros(){for(let i=1;i<=10;i++){let el=document.getElementById('t'+i);if(!el) continue;let v=el.value.toString().trim();if(v==='') continue;let up=v.toUpperCase();if(up==='X') continue;let num=parseFloat(v.replace(',','.'));if(isNaN(num)||num<0||num>10){mostrarErro(`No <b>${i}º TIRO</b> você digitou <b style="color:#ff0000;font-size:18px">"${v}"</b><br><br>Valor inválido! Só permitido <b>X</b> ou <b>0 até 10</b>!`,i);return false;}}return true;}
-
 function renderTelaCriarSenha(){
-  document.getElementById('tituloSenha').innerText='🔑 PRIMEIRO ACESSO DESTE CLUBE';
+  document.getElementById('tituloSenha').innerText='🔑 PRIMEIRO ACESSO';
   document.getElementById('areaSenha').innerHTML=`
-    <p style="color:#aaa;font-family:Arial;font-size:13px">Clube: <b style="color:#FFD700">${NOME_BANCO}</b><br>Nenhuma senha no Firebase para este clube.<br>Crie a senha:</p>
-    <input type="password" id="novaSenha" placeholder="CRIAR SENHA DESTE CLUBE" style="padding:12px;border-radius:8px;border:2px solid #FFD700;background:#222;color:#fff;font-weight:bold;text-align:center;width:250px"><br>
+    <p style="color:#aaa;font-family:Arial;font-size:13px">Defina a senha de operador deste clube:</p>
+    <input type="password" id="novaSenha" placeholder="CRIAR SENHA" style="padding:12px;border-radius:8px;border:2px solid #FFD700;background:#222;color:#fff;font-weight:bold;text-align:center;width:250px"><br>
     <input type="password" id="confirmaSenha" placeholder="CONFIRMAR SENHA" style="padding:12px;border-radius:8px;border:2px solid #444;background:#222;color:#fff;font-weight:bold;text-align:center;width:250px;margin-top:8px"><br>
-    <button onclick="salvarSenhaFirebase()" style="margin-top:12px;background:#FFD700;color:#000;padding:12px 30px;font-size:15px">SALVAR NO FIREBASE</button>
-    <p style="color:#666;font-family:Arial;font-size:10px;margin-top:10px">Vai salvar em: ${CHAVE_SENHA_FIREBASE}</p>
+    <button onclick="salvarSenhaFirebase()" style="margin-top:12px;background:#FFD700;color:#000;padding:12px 30px;font-size:15px">SALVAR</button>
   `;
 }
 function renderTelaLogin(){
-  document.getElementById('tituloSenha').innerText='🔒 CLUBE: '+NOME_BANCO;
+  document.getElementById('tituloSenha').innerText='🔒 ACESSO RESTRITO';
   document.getElementById('areaSenha').innerHTML=`
-    <p style="color:#aaa;font-family:Arial;font-size:12px">Digite a senha do clube <b style="color:#FFD700">${NOME_BANCO}</b></p>
-    <input type="password" id="inputSenha" placeholder="SENHA DO CLUBE" style="padding:12px;border-radius:8px;border:2px solid #444;background:#222;color:#fff;font-weight:bold;text-align:center;width:250px" onkeyup="if(event.key==='Enter') verificarSenha()">
+    <p style="color:#aaa;font-family:Arial;font-size:12px">Digite a senha de operador</p>
+    <input type="password" id="inputSenha" placeholder="SENHA" style="padding:12px;border-radius:8px;border:2px solid #444;background:#222;color:#fff;font-weight:bold;text-align:center;width:250px" onkeyup="if(event.key==='Enter') verificarSenha()">
     <br><button onclick="verificarSenha()" style="margin-top:12px;background:#FF8C00;color:#000;padding:10px 25px">ENTRAR</button>
   `;
 }
@@ -50,7 +48,7 @@ function salvarSenhaFirebase(){
   db.ref(CHAVE_SENHA_FIREBASE).set(s1).then(()=>{
     SENHA_MESTRA=s1;
     document.getElementById('erroSenha').innerText='';
-    alert('✅ Senha do clube '+NOME_BANCO+' salva: '+s1);
+    alert('✅ Senha salva com sucesso!');
     renderTelaLogin();
   });
 }
@@ -59,7 +57,7 @@ function trocarSenhaADM(){
   if(ns.length<4){document.getElementById('msgSenhaADM').innerText='Minimo 4 caracteres';return;}
   db.ref(CHAVE_SENHA_FIREBASE).set(ns).then(()=>{
     SENHA_MESTRA=ns;
-    document.getElementById('msgSenhaADM').innerText='✅ Nova senha do clube '+NOME_BANCO+' salva: '+ns;
+    document.getElementById('msgSenhaADM').innerText='✅ Senha atualizada!';
   });
 }
 function verificarSenha(){
@@ -70,16 +68,12 @@ function verificarSenha(){
     if(window.modoADMpendente||modo==='adm'){document.getElementById('tela-adm').style.display='block';montarLinksADM();iniciarFirebase();iniciarListaAtletasADM();}
     else{document.getElementById('tela-lancamento').style.display='block';montarTabela();iniciarFirebase();iniciarListaAtletas();}
   } else {
-    document.getElementById('erroSenha').innerText='SENHA INCORRETA DESTE CLUBE!';
+    document.getElementById('erroSenha').innerText='SENHA INCORRETA!';
   }
 }
 function checarSenhaFirebase(){
   let elBanco=document.getElementById('labelBanco'); if(elBanco) elBanco.innerText=NOME_BANCO;
   let elBancoADM=document.getElementById('nomeBancoADM'); if(elBancoADM) elBancoADM.innerText=NOME_BANCO;
-  document.querySelectorAll('.nomeBancoLabel').forEach(e=>e.innerText=NOME_BANCO);
-  let elChave=document.getElementById('chaveSenhaLabel'); if(elChave) elChave.innerText=CHAVE_SENHA_FIREBASE;
-
-  // >>> CORRECAO AQUI: TV e CELULAR NUNCA PEDEM SENHA <<<
   if(modo==='tv'||modo==='celular'){
     document.getElementById('tela-senha').style.display='none';
     document.getElementById('tela-placar').style.display='block';
@@ -89,19 +83,12 @@ function checarSenhaFirebase(){
     iniciarFirebase();
     return;
   }
-
-  // So lancamento e ADM checam senha
   db.ref(CHAVE_SENHA_FIREBASE).once('value', snap=>{
-    if(snap.val()){
-      SENHA_MESTRA=snap.val();
-      renderTelaLogin();
-    } else {
-      renderTelaCriarSenha();
-    }
+    if(snap.val()){ SENHA_MESTRA=snap.val(); renderTelaLogin(); }
+    else { renderTelaCriarSenha(); }
   });
 }
 checarSenhaFirebase();
-
 function iniciarFirebase(){db.ref('.info/connected').on('value',snap=>{let el=document.getElementById('status');let el2=document.getElementById('statusADM');let txt=snap.val()?'Online: '+new Date().toLocaleTimeString():'Conectando...';if(el) el.innerText=txt;if(el2) el2.innerText=txt;});db.ref(NOME_BANCO).on('value',snap=>{ranking=[];historico=[];snap.forEach(c=>{let v=c.val();if(v&&v.contagem){ranking.push(v);historico.push(v);}});ranking.sort((a,b)=>b.pontos-a.pontos);if(modo==='tv'||modo==='celular') atualizarTela();else if(modo!=='adm') atualizarListaAdmin();});db.ref('CONFIG_ANUNCIOS').on('value',snap=>{let val=snap.val();if(val===null) val=true;anunciosLigados=val;let toggle=document.getElementById('toggleAnuncio');let status=document.getElementById('statusAnuncio');if(toggle) toggle.checked=val;if(status){status.innerText=val?'ANUNCIOS LIGADOS':'ANUNCIOS DESLIGADOS';status.style.color=val?'#00FF00':'#ff4444';}});}
 function alternarAnuncios(){let toggle=document.getElementById('toggleAnuncio');db.ref('CONFIG_ANUNCIOS').set(toggle.checked);}
 if(modo==='tv'||modo==='celular'){} else if(modo==='adm'){window.modoADMpendente=true;}
