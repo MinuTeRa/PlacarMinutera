@@ -13,7 +13,8 @@ const MODO_VISAO_LANCAMENTO = "TIROS"; // TIROS ou PONTOS
 html,body{height:100vh!important;overflow:hidden!important;background:#000;color:#fff;font-family:'Arial Black',Arial;margin:0;text-align:center}
 #tela-placar{position:fixed!important;top:0;left:0;width:100vw;height:100vh;overflow:hidden!important;background:#000;z-index:5}
 .topo{background:linear-gradient(90deg,#FF8C00,#FF4500);padding:5px 20px;display:flex;align-items:center;justify-content:space-between;border-bottom:4px solid #FFD700}.topo img{height:50px;border-radius:8px;background:#fff;padding:3px}.topo h1{font-size:1.8vw;margin:0;color:#000;text-shadow:2px 2px #FFD700;flex:1}.logos-lado{display:flex;gap:10px}
-.relogio{position:fixed;bottom:92px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.85);color:#FFD700;font-size:12px;padding:4px 14px;border-radius:20px;border:1px solid #FF8C00;z-index:90;font-family:monospace}
+.relogio{position:absolute;top:14px;right:85px;left:auto;bottom:auto;transform:none;background:rgba(0,0,0,0.85);color:#FFD700;font-size:12px;padding:4px 14px;border-radius:20px;border:1px solid #FF8C00;z-index:90;font-family:monospace}
+.topo{position:relative}
 #lista{padding:8px;height:calc(100vh - 175px);overflow:hidden!important;display:flex;flex-direction:column;justify-content:space-between;gap:6px}
 .placar{display:flex;justify-content:space-around;align-items:center;font-size:calc(15px * var(--escala-placar,0.9));margin:0 8px;padding:12px 10px;background:#1a1a1a;border-left:6px solid #555;border-radius:8px;flex:1}
 .placar.p1{background:linear-gradient(90deg,#FFD700,#FFA500);color:#000;border-left:6px solid #FFD700;font-size:calc(17px * var(--escala-placar,0.9));font-weight:bold}
