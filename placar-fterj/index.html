@@ -19,16 +19,15 @@ body.modo-tv #tela-placar{position:fixed!important;top:0;left:0;width:100vw;heig
 body.modo-tv #lista{height:calc(100vh - 155px);overflow:hidden!important;justify-content:space-between}
 body.modo-celular #lista{height:auto!important;overflow:visible!important;justify-content:flex-start!important;padding-bottom:100px}
 .placar{display:flex;justify-content:space-around;align-items:center;font-size:calc(15px * var(--escala-placar,1.3));margin:0 8px;padding:12px 8px;background:#1a1a1a;border-left:6px solid #555;border-radius:8px}
-body.modo-tv.placar{flex:1}
 .placar.p1{background:linear-gradient(90deg,#FFD700,#FFA500);color:#000;border-left:6px solid #FFD700;font-size:calc(17px * var(--escala-placar,1.3))}
 .placar.p2{background:linear-gradient(90deg,#C0C0C0,#A9A9A9);color:#000}.placar.p3{background:linear-gradient(90deg,#CD7F32,#8B4513);color:#000}
 .pos{width:8%}.nome{width:32%;text-align:left;padding-left:8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .prova{width:10%;color:#00FFFF!important}
-.total{width:14%;font-weight:900;color:#000!important}
-.detalhe{width:36%;font-size:calc(11px * var(--escala-placar,1.3));color:#000!important;font-weight:900}
-/* Mesma cor para 1º,2º,3º - tudo preto legível */
+.total{width:14%;font-weight:900;color:#FFD700!important}
+.detalhe{width:36%;font-size:calc(11px * var(--escala-placar,1.3));color:#ccc!important;font-weight:bold}
+/* 1º,2º,3º - MESMA COR PRETA LEGÍVEL */
 .placar.p1.total,.placar.p2.total,.placar.p3.total{color:#000!important}
-.placar.p1.detalhe,.placar.p2.detalhe,.placar.p3.detalhe{color:#000!important}
+.placar.p1.detalhe,.placar.p2.detalhe,.placar.p3.detalhe{color:#000!important;font-weight:900}
 .placar.p1.prova,.placar.p2.prova,.placar.p3.prova{color:#00FFFF!important}
 .reorg{background:#000;color:#00FF88;border:1px solid #00FF88;padding:2px 7px;border-radius:10px;font-weight:900;margin-left:8px;font-size:10px;animation:pisca 1s infinite}
 @keyframes pisca{0%,100%{opacity:1}50%{opacity:0.6}}
@@ -47,10 +46,7 @@ body.modo-celular.rodape{position:fixed;bottom:0;left:0;display:block!important}
 .tela-anuncios,.tela-adm{position:relative!important;width:100%!important;height:auto!important;min-height:100vh!important;overflow:visible!important;display:block;padding-bottom:120px!important}
 .barra-emoji{background:#111;border:2px solid #FFD700;border-radius:10px;padding:10px;margin:10px auto;max-width:900px;display:flex;flex-wrap:wrap;gap:8px;justify-content:center;position:sticky;top:0;z-index:50}
 .barra-emoji button{font-size:20px;padding:6px 10px;background:#222;border:1px solid #444;border-radius:8px;cursor:pointer}
-@media (max-width:600px){
-.topo h1{font-size:3.5vw}
-.relogio{font-size:10px;top:8px;right:60px;padding:3px 8px}
-}
+@media (max-width:600px){.topo h1{font-size:3.5vw}.relogio{font-size:10px;top:8px;right:60px;padding:3px 8px}}
 </style></head><body>
 <div id="modal-erro"><div id="modal-erro-conteudo"><h2>❌ TIRO INVALIDO!</h2><p id="modal-erro-msg"></p><button onclick="fecharErro()">OK</button></div></div>
 <div id="tela-senha" class="tela-senha"><h2 id="tituloSenha">🔒 CARREGANDO...</h2><div id="areaSenha"></div><div id="erroSenha" style="color:#f55;margin-top:10px;font-family:Arial"></div></div>
