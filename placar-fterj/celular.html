@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>3x7 MinuT&Ra - FTERJ - Celular - V21</title>
+<title>3x7 MinuT&Ra - FTERJ - Celular V22</title>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 <style>
@@ -22,20 +22,20 @@ body{background:#0e0e0e;color:#fff;font-family:Arial;overflow-y:auto}
 .nome{flex:1;font-size:12px;font-weight:800;text-transform:uppercase;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .prova{width:48px;text-align:center;font-size:12px;font-weight:900}
 .total{width:70px;text-align:right;font-size:13px;font-weight:900}
-.detalhe{width:100%;font-size:10px;margin-top:4px;text-align:right;opacity:0.8}
+.detalhe{width:100%;font-size:10px;margin-top:4px;text-align:right}
 
-/* CORES PADRÃO - 4º em diante */
-.linha.prova{color:#00E5FF!important}
-.linha.total{color:#FFD700!important}
+/* PADRÃO 4º em diante */
+.prova{color:#00E5FF!important}
+.total{color:#FFD700!important}
 
-/* PÓDIO - CORRIGIDO COM ESPAÇO - TUDO PRETO */
+/* PÓDIO - AGORA COM ESPAÇO */
 .linha.ouro{background:#FFD700!important}
 .linha.prata{background:#C0C0C0!important}
 .linha.bronze{background:#CD7F32!important}
 
-.linha.ouro.pos,.linha.ouro.nome,.linha.ouro.prova,.linha.ouro.total,.linha.ouro.detalhe{color:#000!important}
-.linha.prata.pos,.linha.prata.nome,.linha.prata.prova,.linha.prata.total,.linha.prata.detalhe{color:#000!important}
-.linha.bronze.pos,.linha.bronze.nome,.linha.bronze.prova,.linha.bronze.total,.linha.bronze.detalhe{color:#000!important}
+.linha.ouro.pos,.linha.ouro.nome,.linha.ouro.prova,.linha.ouro.total,.linha.ouro.detalhe{color:#000000!important}
+.linha.prata.pos,.linha.prata.nome,.linha.prata.prova,.linha.prata.total,.linha.prata.detalhe{color:#000000!important}
+.linha.bronze.pos,.linha.bronze.nome,.linha.bronze.prova,.linha.bronze.total,.linha.bronze.detalhe{color:#000000!important}
 
 #contador{position:sticky;bottom:0;background:#000;border-top:1px solid #FF8C00;padding:8px;text-align:center;font-size:11px;color:#FFD700}
 #full{position:fixed;inset:0;background:rgba(0,0,0,0.96);display:none;align-items:center;justify-content:center;z-index:9999;flex-direction:column;padding:15px}
@@ -65,7 +65,7 @@ db.ref("FTERJ").on('value',snap=>{
  lista.sort((a,b)=>b.pontos-a.pontos);
  let html=""; lista.forEach((at,i)=>{ let cls=i==0?'ouro':i==1?'prata':i==2?'bronze':''; html+=`<div class="linha ${cls}"><div class="top"><div class="pos">${i+1}º</div><div class="nome">${at.nome}</div><div class="prova">P:${at.prova}</div><div class="total">${at.pontos.toFixed(2)}</div></div><div class="detalhe">${at.detalhe}</div></div>`; });
  document.getElementById('ranking').innerHTML=html;
- document.getElementById('contador').innerText=`${lista.length} atiradores - role para ver todos`;
+ document.getElementById('contador').innerText=`${lista.length} atiradores`;
 });
 </script>
 </body>
