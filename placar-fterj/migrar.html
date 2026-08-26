@@ -1,0 +1,39 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>MIGRAR</title>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script><script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+<script src="./firebase-config.js?v=17"></script>
+</head><body style="background:#111;color:#fff;font-family:Arial;padding:15px">
+<h2>🔄 MIGRADOR DE ANÚNCIOS ANTIGOS</h2>
+<div id="log" style="background:#222;padding:10px;border-radius:8px;white-space:pre-wrap"></div>
+<script>
+firebase.initializeApp(firebaseConfig); const db=firebase.database();
+const NOME_BANCO="FTERJ";
+let logEl=document.getElementById('log');
+function log(t){ logEl.innerHTML+=t+"\n"; }
+
+db.ref().once('value').then(s=>{
+  let todas=[];
+  s.forEach(c=>{ todas.push(c.key); });
+  log("Chaves encontradas: "+todas.join(", ")+"\n");
+
+  // Tenta achar chaves antigas possíveis
+  let possiveis=["ANUNCIOS_"+NOME_BANCO,"ANUNCIOS","PATROCINADORES","CONFIG","RODAPE","FULL","PATROCINADORES_RODAPE_FTERJ","PATROCINADORES_FULL_FTERJ","CONFIG_ANUNCIOS_FTERJ"];
+  
+  possiveis.forEach(chave=>{
+    db.ref(chave).once('value').then(snap=>{
+      if(snap.val()){
+        log("✅ ACHOU DADOS EM: "+chave);
+        log(JSON.stringify(snap.val()).substring(0,500)+"\n");
+      }
+    });
+  });
+
+  // Se achou no localStorage do V16.5 antigo
+  log("\n--- LocalStorage desse navegador ---");
+  for(let i=0;i<localStorage.length;i++){
+    let k=localStorage.key(i);
+    if(k.includes("RODAPE")||k.includes("ANUNCIO")||k.includes("FTERJ")){
+      log(k+" => "+localStorage.getItem(k).substring(0,300));
+    }
+  }
+});
+</script></body></html>
