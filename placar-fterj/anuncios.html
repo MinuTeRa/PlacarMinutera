@@ -1,32 +1,140 @@
-<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>ANUNCIOS V17.1 FIX - FTERJ</title>
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>ANUNCIOS FTERJ - Controle Total V19.1</title>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-<style>body{background:#111;color:#fff;font-family:Arial;padding:12px}.card{background:#222;padding:12px;border-radius:10px;margin-bottom:12px;border:1px solid #333} input{background:#111;border:1px solid #444;color:#ffcc00;padding:8px;border-radius:6px;width:120px;margin-right:6px} input.lg{width:260px} button{padding:8px 14px;border:none;border-radius:6px;font-weight:bold;cursor:pointer}.btnO{background:#FF8C00;color:#000}.btnG{background:#4CAF50;color:#000}.btnB{background:#2196F3;color:#fff}.item{background:#111;padding:8px;border-radius:6px;margin:5px 0;display:flex;justify-content:space-between;border:1px solid #333}#log{background:#000;color:#0f0;padding:8px;border-radius:6px;font-size:11px;white-space:pre-wrap;max-height:150px;overflow:auto}</style>
-</head><body>
-<h2 style="color:#FFD700">📢 ANUNCIOS V17.1 FIX <a href="./index.html" style="color:#fff;font-size:13px">VOLTAR</a> <span id="status" style="color:#0f0;font-size:12px"></span></h2>
-<div id="log">Iniciando...</div>
-<div class="card">Rodapé s: <input id="tRodape" type="number" value="5"> Full s: <input id="tFull" type="number" value="60"> Escala: <input id="escala" type="range" min="50" max="150" value="100" oninput="valEsc.innerText=this.value+'%'"><span id="valEsc">100%</span><br><br>PROP px: <input id="propPx" type="number" value="52"> CONT px: <input id="contPx" type="number" value="36"><button class="btnB" onclick="salvarConfig()">💾 SALVAR</button></div>
-<div class="card"><h3>🟠 RODAPÉS</h3><input id="propRodape" class="lg" placeholder="TAF Consultoria"><input id="contRodape" class="lg" placeholder="Contato"><button class="btnO" onclick="addRodape()">+ RODAPÉ</button><button class="btnG" onclick="salvarRodapes()">SALVAR</button><div id="listaRodape"></div></div>
-<div class="card"><h3>🟡 FULL</h3><input id="nomeFull" placeholder="Nome"><input id="propFull" class="lg" placeholder="Texto"><input id="tempoFull" type="number" value="7" style="width:60px"><input id="fileFull" type="file" accept="image/*" style="width:180px"><button class="btnO" onclick="addFull()">+ FULL</button><button class="btnG" onclick="salvarFull()">SALVAR</button><div id="listaFull"></div></div>
+<style>
+body{font-family:Arial;background:#0f0f0f;color:#fff;padding:15px}
+h2{color:#FFD700;border-bottom:2px solid #FF8C00;padding-bottom:5px;margin-top:25px}
+.card{background:#1a1a1a;border:1px solid #333;border-radius:12px;padding:12px;margin:8px 0;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+input,select{background:#000;color:#fff;border:1px solid #444;border-radius:6px;padding:8px}
+label{font-size:12px;opacity:0.8}
+.btn{background:#FFD700;color:#000;font-weight:900;border:none;padding:10px 18px;border-radius:8px;cursor:pointer}
+.btn-del{background:#c00;color:#fff}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;background:#111;padding:15px;border-radius:12px;border:1px solid #333}
+.preview{position:sticky;top:10px;background:#000;border:2px solid #FFD700;border-radius:12px;padding:10px;z-index:10}
+</style>
+</head>
+<body>
+<h1>🎯 ANUNCIOS FTERJ - V19.1 CONTROLE TOTAL</h1>
+
+<div class="preview">
+<h3>⚙️ CONTROLES DA TV - Mudam na hora na TV</h3>
+<div class="grid">
+<div><label>PROP px (tamanho propaganda rodapé)</label><br><input id="propPx" type="number" value="32"></div>
+<div><label>CONT px (tamanho contato)</label><br><input id="contPx" type="number" value="22"></div>
+<div><label>Escala %</label><br><input id="escala" type="number" value="100"></div>
+<div><label>Velocidade Rodapé (segundos) - MAIOR = mais lento</label><br><input id="velocidade" type="number" value="35"></div>
+<div><label>Altura Header (vh)</label><br><input id="headerH" type="number" step="0.1" value="9"></div>
+<div><label>Altura Linha Ranking (vh)</label><br><input id="linhaH" type="number" step="0.1" value="7.2"></div>
+<div><label>Altura Rodapé (vh)</label><br><input id="rodapeH" type="number" step="0.1" value="7"></div>
+<div><label>Fonte Nome (vh)</label><br><input id="fontNome" type="number" step="0.1" value="2.6"></div>
+<div><label>Fonte Total (vh)</label><br><input id="fontTotal" type="number" step="0.1" value="3"></div>
+</div>
+<button class="btn" onclick="salvarConfig()" style="margin-top:12px;width:100%;font-size:18px">💾 SALVAR CONFIG TV - Aplica na hora</button>
+<div id="statusConfig" style="margin-top:8px;color:#0f0"></div>
+</div>
+
+<h2>📢 Rodapé (4 patrocinadores)</h2>
+<div id="listaRodape"></div>
+<div class="card">
+<input id="newRodProp" placeholder="Ex: TAF Consultoria Ocupacional" style="flex:2">
+<input id="newRodCont" placeholder="Ex: (28) 99944-9010" style="flex:1">
+<button class="btn" onclick="addRodape()">+ Adicionar Rodapé</button>
+</div>
+
+<h2>🖼️ Full Screen (4 anúncios full)</h2>
+<div id="listaFull"></div>
+<div class="card">
+<input id="newFullNome" placeholder="Nome">
+<input id="newFullProp" placeholder="Propaganda">
+<input id="newFullCont" placeholder="Contato">
+<input id="newFullArte" placeholder="URL da imagem" style="flex:2">
+<input id="newFullTempo" type="number" value="7" style="width:60px" title="segundos">
+<button class="btn" onclick="addFull()">+ Adicionar Full</button>
+</div>
+
 <script>
-const NOME_BANCO="FTERJ";
-const firebaseConfig={apiKey:"AIzaSyCTEXeRjxq0_3doBNyWm5AkQ0kmBXmjlSk",authDomain:"placar-minutera.firebaseapp.com",databaseURL:"https://placar-minutera-default-rtdb.firebaseio.com",projectId:"placar-minutera",storageBucket:"placar-minutera.firebasestorage.app",messagingSenderId:"689991648080",appId:"1:689991648080:web:9deeb958183eae23e255"};
+const firebaseConfig={apiKey:"AIzaSyCTEXeRjxq0_3doBNyWm5AkQ0kmBXmjlSk",authDomain:"placar-minutera.firebaseapp.com",databaseURL:"https://placar-minutera-default-rtdb.firebaseio.com",projectId:"placar-minutera"};
 firebase.initializeApp(firebaseConfig); const db=firebase.database();
-function log(t){ document.getElementById('log').innerHTML+=t+"\n"; console.log(t); }
-function toArr(d){ if(!d) return []; if(Array.isArray(d)) return d.filter(x=>x); if(typeof d==='object'){ let vals=Object.values(d); if(vals.length>0 && typeof vals[0]==='object') return vals.filter(x=>x); } return []; }
-let RODAPES=[], FULL=[], CONFIG={rodapes:5,full:60,escala:100,propPx:52,contPx:36};
-function aplicar(){ tRodape.value=CONFIG.rodapes; tFull.value=CONFIG.full; escala.value=CONFIG.escala; valEsc.innerText=CONFIG.escala+'%'; propPx.value=CONFIG.propPx; contPx.value=CONFIG.contPx; }
-function renderRodape(){ listaRodape.innerHTML=""; RODAPES.forEach((r,i)=>{ let d=document.createElement('div'); d.className="item"; d.innerHTML=`<span><b>${r.prop||r.propaganda||r.nome||''}</b> - ${r.contato||r.cont||''}</span><button onclick="delRodape(${i})" style="background:#f44;color:#fff">X</button>`; listaRodape.appendChild(d); }); }
-function renderFull(){ listaFull.innerHTML=""; FULL.forEach((f,i)=>{ let d=document.createElement('div'); d.className="item"; d.innerHTML=`<span><b>${f.nome||''}</b> - ${f.prop||f.texto||''} (${f.tempo||7}s) ${f.arte?'🖼️':''}</span><button onclick="delFull(${i})" style="background:#f44;color:#fff">X</button>`; listaFull.appendChild(d); }); }
-log("Conectando FTERJ...");
-db.ref("PATROCINADORES_RODAPE_FTERJ").once('value').then(s=>{ let a=toArr(s.val()); log("FTERJ RODAPE: "+a.length+" itens"); if(a.length>0){RODAPES=a; renderRodape(); status.innerText="✅ FTERJ "+a.length;} else { return db.ref("CONFIG_RODAPE_GLOBAL").once('value').then(sg=>{ let b=toArr(sg.val()); log("GLOBAL RODAPE: "+b.length+" itens -> "+JSON.stringify(b).substring(0,300)); if(b.length>0){RODAPES=b; renderRodape(); status.innerText="↪️ Veio do GLOBAL "+b.length+" clique SALVAR";}}); } });
-db.ref("PATROCINADORES_FULL_FTERJ").once('value').then(s=>{ let a=toArr(s.val()); log("FTERJ FULL: "+a.length); if(a.length>0){FULL=a; renderFull();} else { db.ref("CONFIG_FULL_GLOBAL").once('value').then(sg=>{ let b=toArr(sg.val()); log("GLOBAL FULL: "+b.length); if(b.length>0){FULL=b; renderFull();}}); } });
-db.ref("CONFIG_ANUNCIOS_FTERJ").once('value').then(s=>{ if(s.val()){CONFIG={...CONFIG,...s.val()}; aplicar(); log("Config FTERJ OK"); }});
-function salvarConfig(){ CONFIG={rodapes:parseInt(tRodape.value),full:parseInt(tFull.value),escala:parseInt(escala.value),propPx:parseInt(propPx.value),contPx:parseInt(contPx.value)}; db.ref("CONFIG_ANUNCIOS_FTERJ").set(CONFIG).then(()=>{ status.innerText="✅ Config salva"; }); }
-function addRodape(){ let p=propRodape.value.trim(); let c=contRodape.value.trim(); if(!p) return alert("Prop"); RODAPES.push({prop:p,contato:c}); propRodape.value=""; contRodape.value=""; renderRodape(); }
-function delRodape(i){ RODAPES.splice(i,1); renderRodape(); }
-function salvarRodapes(){ db.ref("PATROCINADORES_RODAPE_FTERJ").set(RODAPES).then(()=>db.ref("CONFIG_RODAPE_GLOBAL").set(RODAPES)).then(()=>{ alert("Salvo FTERJ+GLOBAL!"); }); }
-function addFull(){ let n=nomeFull.value.trim(); let p=propFull.value.trim(); let t=parseInt(tempoFull.value)||7; let f=fileFull.files[0]; if(!n) return alert("Nome"); if(f){ let r=new FileReader(); r.onload=e=>{ FULL.push({nome:n,prop:p,tempo:t,arte:e.target.result,ativo:true}); renderFull(); }; r.readAsDataURL(f); } else { FULL.push({nome:n,prop:p,tempo:t,arte:"",ativo:true}); renderFull(); } }
-function delFull(i){ FULL.splice(i,1); renderFull(); }
-function salvarFull(){ db.ref("PATROCINADORES_FULL_FTERJ").set(FULL).then(()=>db.ref("CONFIG_FULL_GLOBAL").set(FULL)).then(()=>alert("Full salvo!")); }
-</script></body></html>
+
+function toArr(d){ if(!d) return []; if(Array.isArray(d)) return d; return Object.values(d); }
+
+// CARREGA CONFIG
+db.ref("CONFIG_ANUNCIOS_FTERJ").on('value',s=>{
+ let c=s.val(); if(!c) return;
+ propPx.value=c.propPx||32; contPx.value=c.contPx||22; escala.value=c.escala||100;
+ velocidade.value=c.velocidade||35; headerH.value=c.headerH||9; linhaH.value=c.linhaH||7.2;
+ rodapeH.value=c.rodapeH||7; fontNome.value=c.fontNome||2.6; fontTotal.value=c.fontTotal||3;
+});
+
+function salvarConfig(){
+ let cfg={
+  propPx: parseInt(propPx.value)||32,
+  contPx: parseInt(contPx.value)||22,
+  escala: parseInt(escala.value)||100,
+  velocidade: parseInt(velocidade.value)||35,
+  headerH: parseFloat(headerH.value)||9,
+  linhaH: parseFloat(linhaH.value)||7.2,
+  rodapeH: parseFloat(rodapeH.value)||7,
+  fontNome: parseFloat(fontNome.value)||2.6,
+  fontTotal: parseFloat(fontTotal.value)||3,
+  atualizado: Date.now()
+ };
+ db.ref("CONFIG_ANUNCIOS_FTERJ").set(cfg).then(()=>{
+  statusConfig.innerText="✅ Salvo! TV vai atualizar em 2s - Velocidade: "+cfg.velocidade+"s";
+  setTimeout(()=>statusConfig.innerText="",4000);
+ });
+}
+
+// RODAPE
+db.ref("PATROCINADORES_RODAPE_FTERJ").on('value',s=>{
+ let data=s.val(); let lista=toArr(data||[]);
+ let html="";
+ lista.forEach((item,key)=>{
+  let k = Array.isArray(data)? key : Object.keys(data)[key];
+  html+=`<div class="card"><input value="${item.prop||item.propaganda||''}" onchange="updRod('${k}','prop',this.value)" style="flex:2"><input value="${item.contato||item.cont||''}" onchange="updRod('${k}','contato',this.value)" style="flex:1"><button class="btn-del" onclick="delRod('${k}')">X</button></div>`;
+ });
+ listaRodape.innerHTML=html;
+});
+function addRodape(){
+ let p=newRodProp.value.trim(); let c=newRodCont.value.trim();
+ if(!p) return alert("Digite a propaganda");
+ db.ref("PATROCINADORES_RODAPE_FTERJ").push({prop:p,contato:c,ativo:true});
+ newRodProp.value=""; newRodCont.value="";
+}
+function updRod(k,campo,val){ db.ref("PATROCINADORES_RODAPE_FTERJ/"+k+"/"+campo).set(val); }
+function delRod(k){ if(confirm("Apagar?")) db.ref("PATROCINADORES_RODAPE_FTERJ/"+k).remove(); }
+
+// FULL - CORRIGIDO PARA LER 4
+db.ref("PATROCINADORES_FULL_FTERJ").on('value',s=>{
+ let data=s.val(); let lista=toArr(data||[]);
+ let html="";
+ lista.forEach((item,key)=>{
+  let k = Array.isArray(data)? key : Object.keys(data)[key];
+  html+=`<div class="card">
+  <img src="${item.arte||item.url||''}" style="width:60px;height:40px;object-fit:cover;border-radius:6px;background:#000" onerror="this.style.display='none'">
+  <input value="${item.nome||''}" placeholder="Nome" onchange="updFull('${k}','nome',this.value)">
+  <input value="${item.prop||item.propaganda||''}" placeholder="Prop" onchange="updFull('${k}','prop',this.value)">
+  <input value="${item.contato||''}" placeholder="Contato" onchange="updFull('${k}','contato',this.value)">
+  <input value="${item.arte||item.url||''}" placeholder="URL Imagem" style="flex:1" onchange="updFull('${k}','arte',this.value)">
+  <input value="${item.tempo||7}" type="number" style="width:60px" onchange="updFull('${k}','tempo',parseInt(this.value))">
+  <button class="btn-del" onclick="delFull('${k}')">X</button>
+  </div>`;
+ });
+ listaFull.innerHTML=html;
+});
+function addFull(){
+ let nome=newFullNome.value.trim(); let prop=newFullProp.value.trim();
+ let cont=newFullCont.value.trim(); let arte=newFullArte.value.trim(); let tempo=parseInt(newFullTempo.value)||7;
+ if(!arte) return alert("URL da arte obrigatória");
+ db.ref("PATROCINADORES_FULL_FTERJ").push({nome,prop,contato:cont,arte,tempo,ativo:true});
+ newFullNome.value=""; newFullProp.value=""; newFullCont.value=""; newFullArte.value="";
+}
+function updFull(k,campo,val){ db.ref("PATROCINADORES_FULL_FTERJ/"+k+"/"+campo).set(val); }
+function delFull(k){ if(confirm("Apagar full?")) db.ref("PATROCINADORES_FULL_FTERJ/"+k).remove(); }
+</script>
+</body>
+</html>
