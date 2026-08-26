@@ -58,7 +58,18 @@ function renderRodape(){
  document.getElementById('textoRodape').innerHTML=`<span style="font-size:${pSize}px">${txt}   ★   ${txt}</span>`;
 }
 db.ref("PATROCINADORES_RODAPE_FTERJ").on('value',s=>{ let a=toArr(s.val()); if(a.length>0){RODAPES=a; renderRodape();}});
-db.ref("PATROCINADORES_FULL_FTERJ").on('value',s=>{ FULL=toArr(s.val()).map(i=>typeof i==='string'?{arte:i}:i).filter(f=>f.arte||f.url||f.imagem);});
+db.ref("PATROCINADORES_FULL_FTERJ").on('value',s=>{ 
+  let lista = toArr(s.val());
+  console.log("TOTAL FULL NO BANCO:", lista.length, lista);
+  // SÓ PEGA QUEM ESTA ATIVO
+  FULL = lista.filter(r=>{
+    // se não tem campo ativo, considera ativo pra não sumir tudo antigo
+    // se tem, só deixa passar se for true
+    if(r.hasOwnProperty('ativo')) return r.ativo==true || r.ativo=="true" || r.ativo==1;
+    return true;
+  }).map(i=>typeof i==='string'?{arte:i}:i).filter(f=>f.arte||f.url||f.imagem);
+  console.log("FULL ATIVOS FILTRADOS:", FULL.length);
+});
 db.ref("CONFIG_ANUNCIOS_FTERJ").on('value',s=>{ let v=s.val(); if(v && typeof v==='object' && !Array.isArray(v)){ CFG={...CFG,...v}; applyConfig(); }});
 db.ref("FTERJ").on('value',snap=>{
  let data=snap.val(); if(!data) return; let lista=[];
