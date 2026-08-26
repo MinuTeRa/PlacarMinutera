@@ -1,56 +1,80 @@
-<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Módulo Lançamento V33.8</title>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Módulo Lançamento MinuT&Ra V34.1 - C>R1>R2>R3>R4>R5>C/R</title>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}body{background:#121212;color:#fff;font-family:Arial}
 #header{background:linear-gradient(90deg,#FF8C00,#FF6A00);padding:12px 16px;display:flex;justify-content:space-between;color:#000;font-weight:900;font-size:18px}
-#main{display:flex;height:calc(100vh - 48px)}#left{width:340px;background:#1e1e1e;margin:8px;padding:10px;border-radius:8px;overflow:auto}#right{flex:1;background:#1e1e1e;margin:8px 8px 8px 0;padding:8px;border-radius:8px;overflow:auto}
+#main{display:flex;height:calc(100vh - 48px)}#left{width:350px;background:#1e1e1e;margin:8px;padding:10px;border-radius:8px;overflow:auto}#right{flex:1;background:#1e1e1e;margin:8px 8px 8px 0;padding:8px;border-radius:8px;overflow:auto}
 input,select{width:100%;padding:8px;background:#000;color:#fff;border:1px solid #444;border-radius:5px}.row{display:flex;gap:6px;margin-top:6px;position:relative}.linha-tiro{display:flex;gap:6px;align-items:center;margin-top:4px}.linha-tiro b{width:24px;color:#aaa;font-size:11px}
 .item{display:grid;grid-template-columns:55px 55px 1fr 75px 260px 140px;gap:12px;align-items:center;background:#2a2a2a;padding:8px 12px;margin-bottom:5px;border-radius:6px;border-left:5px solid #FF8C00;font-size:15px;height:48px;white-space:nowrap}
 .item div:nth-child(1){color:#FF8C00;font-weight:900;font-size:16px;text-align:center}.item div:nth-child(4){color:#FFD700;font-weight:900;font-size:16px}
 .btn{flex:1;padding:9px;border:none;border-radius:5px;font-weight:900;cursor:pointer;margin-top:6px}.btn-salvar{background:#FF8C00;color:#000}.btn-nova{background:#444;color:#fff}.btn-editar{background:#FFD700;color:#000;padding:4px 9px;border:none;border-radius:3px;font-size:10px;font-weight:900}.btn-excluir{background:#ff2e2e;color:#fff;padding:4px 9px;border:none;border-radius:3px;font-size:10px;margin-left:4px}
 .total{color:#00BFFF;text-align:center;font-weight:900;margin:8px 0}#telaSenha{position:fixed;inset:0;background:rgba(0,0,0,0.97);z-index:9999;display:flex;align-items:center;justify-content:center}
-#sugestoes{position:absolute;top:36px;left:0;background:#000;border:1px solid #FF8C00;max-height:180px;overflow:auto;width:100%;z-index:100;display:none;border-radius:5px;box-shadow:0 4px 10px rgba(0,0,0,0.5)}
+#sugestoes{position:absolute;top:36px;left:0;background:#000;border:1px solid #FF8C00;max-height:200px;overflow:auto;width:100%;z-index:100;display:none;border-radius:5px}
 #sugestoes div{padding:10px 8px;font-size:13px;cursor:pointer;border-bottom:1px solid #222;font-weight:700}
 #sugestoes div:hover{background:#FF8C00;color:#000}
-</style></head><body>
-<div id="telaSenha"><div style="background:#1e1e1e;padding:24px;border-radius:12px;text-align:center;border:2px solid #FF8C00;min-width:300px"><h2 style="color:#FF8C00">3x7 FTERJ</h2><input id="inputSenha" type="password" placeholder="Digite a senha" value="" style="text-align:center;margin-top:10px"><button onclick="checarSenha()" style="width:100%;margin-top:10px;padding:10px;background:#FF8C00;color:#000;border:none;border-radius:6px;font-weight:900">ENTRAR</button><p id="erroSenha" style="color:#f44;font-size:11px;display:none;margin-top:6px"></p></div></div>
-<div id="header"><span>Módulo de Lançamento MinuT&Ra - <span id="nomeClubeTxt">FTERJ</span> | V33.8 FINAL</span><span style="font-size:12px">X=12.01</span></div>
-<div id="main"><div id="left">
+</style>
+</head>
+<body>
+<div id="telaSenha"><div style="background:#1e1e1e;padding:24px;border-radius:12px;text-align:center;border:2px solid #FF8C00;min-width:300px"><h2 style="color:#FF8C00">3x7 FTERJ</h2><input id="inputSenha" type="password" placeholder="Digite a senha" style="text-align:center;margin-top:10px"><button onclick="checarSenha()" style="width:100%;margin-top:10px;padding:10px;background:#FF8C00;color:#000;border:none;border-radius:6px;font-weight:900">ENTRAR</button><p id="erroSenha" style="color:#f44;font-size:11px;display:none;margin-top:6px"></p></div></div>
+<div id="header"><span>Módulo de Lançamento MinuT&Ra - FTERJ | V34.1</span><span style="font-size:12px">X=12.01 | C>R1>R2>R3>R4>R5>C/R</span></div>
+<div id="main">
+<div id="left">
 <div class="row">
 <div style="flex:1;position:relative">
-<input id="nomeAtleta" placeholder="NOME - digite THI" style="text-transform:uppercase" autocomplete="off" oninput="buscarNome(this.value)" onfocus="buscarNome(this.value)">
+<input id="nomeAtleta" placeholder="Digite THI..." style="text-transform:uppercase" autocomplete="off" oninput="buscarNome(this.value)" onfocus="buscarNome(this.value)">
 <div id="sugestoes"></div>
 </div>
-<select id="provaSelect" style="width:90px"><option>R1</option><option>R2</option><option>R3</option><option>R4</option><option>R5</option><option>C</option><option>C/R</option></select>
+<select id="provaSelect" style="width:90px"><option>C</option><option>R1</option><option>R2</option><option>R3</option><option>R4</option><option>R5</option><option>C/R</option></select>
 </div>
-<div id="tirosContainer"></div><div class="total">TOTAL: <span id="totalPontos">0.00</span></div><div style="display:flex;gap:6px"><button class="btn btn-salvar" onclick="salvarLancamento()">SALVAR [F2]</button><button class="btn btn-nova" onclick="novoLancamento()">NOVA [F3]</button></div><button onclick="escolherArquivo()" style="width:100%;margin-top:8px;padding:10px;background:#FF8C00;color:#000;border:none;border-radius:6px;font-weight:900;font-size:12px">📁 ESCOLHER ARQUIVO CSV</button><div id="nomeArquivoFixo" style="font-size:10px;color:#888;text-align:center;margin-top:3px">Nenhum arquivo</div><div style="background:#111;padding:6px;border-radius:5px;margin-top:6px;display:flex;gap:6px;align-items:center"><span style="font-size:10px;color:#888">AUTO:</span><select id="autoTempo" style="width:70px;padding:4px;font-size:11px"><option value="0">OFF</option><option value="1">1 min</option><option value="2" selected>2 min</option><option value="5">5 min</option></select><span id="statusAuto" style="font-size:10px;color:#00ff88">● aguardando</span></div></div><div id="right"><div id="listaLancamentos"></div></div></div>
+<div id="tirosContainer"></div>
+<div class="total">TOTAL: <span id="totalPontos">0.00</span></div>
+<div style="display:flex;gap:6px"><button class="btn btn-salvar" onclick="salvarLancamento()">SALVAR [F2]</button><button class="btn btn-nova" onclick="novoLancamento()">NOVA [F3]</button></div>
+</div>
+<div id="right"><div id="listaLancamentos"></div></div>
+</div>
 <script>
 const firebaseConfig={apiKey:"AIzaSyCTEXeRjxq0_3doBNyWm5AkQ0kmBXmjlSk",authDomain:"placar-minutera.firebaseapp.com",databaseURL:"https://placar-minutera-default-rtdb.firebaseio.com",projectId:"placar-minutera"};firebase.initializeApp(firebaseConfig);const db=firebase.database();
-let SENHA_BANCO="minutera2025",editKey=null,cache={},fileHandle=null;let chavesJaSalvas=new Set(JSON.parse(localStorage.getItem('chavesFTERJ')||'[]'));const PERMITIDOS=['X','10','9','8','7','6','5','4','3','2','1','0'];
-const ORDEM_R=['R1','R2','R3','R4','R5','C/R'];
+let SENHA_BANCO="minutera2025",editKey=null,cache={};const PERMITIDOS=['X','10','9','8','7','6','5','4','3','2','1','0'];
+const ORDEM_COMPLETA=['C','R1','R2','R3','R4','R5','C/R'];
 
 db.ref("CONFIG_SENHA_OPERADOR_FTERJ").on('value',s=>{if(s.val()) SENHA_BANCO=String(s.val());});
-db.ref("CONFIG_CLUBE_NOME").on('value',s=>{if(s.val()) document.getElementById('nomeClubeTxt').innerText=s.val();});
 function checarSenha(){let s=document.getElementById('inputSenha').value.trim();if(s===SENHA_BANCO){document.getElementById('telaSenha').style.display='none';}else{let e=document.getElementById('erroSenha');e.style.display='block';e.innerText="Senha incorreta!";}}
-document.getElementById('inputSenha').addEventListener('keydown',e=>{if(e.key==='Enter') checarSenha();});document.getElementById('telaSenha').style.display='flex';
+document.getElementById('inputSenha').addEventListener('keydown',e=>{if(e.key==='Enter') checarSenha();});
+document.getElementById('telaSenha').style.display='flex';
+
 function valorTiro(v){v=String(v).trim().toUpperCase();if(v=='X') return 12;let n=parseFloat(v);return isNaN(n)?0:n;}
 function calcTotal(){let s=0,x=0;for(let i=1;i<=10;i++){let v=document.getElementById('t'+i).value.toUpperCase();if(v=='X') x++;s+=valorTiro(v);}document.getElementById('totalPontos').innerText=(s+x*0.01).toFixed(2);}
 function criar(){let c=document.getElementById('tirosContainer');c.innerHTML='';for(let i=1;i<=10;i++) c.innerHTML+=`<div class="linha-tiro"><b>${i}°</b><input id="t${i}" list="vals" oninput="calcTotal()" onblur="valida(this)"></div>`;c.innerHTML+=`<datalist id="vals"><option value="X"><option value="10"><option value="9"><option value="8"><option value="7"><option value="6"><option value="5"><option value="4"><option value="3"><option value="2"><option value="1"><option value="0"></datalist>`;}criar();
 function valida(el){let v=el.value.trim().toUpperCase();if(!v) return true;if(!PERMITIDOS.includes(v)){alert("Inválido");el.value='';return false;}el.value=v;return true;}
 
 function proximoRdisponivel(nome){
- nome=nome.toUpperCase().trim(); if(!nome) return 'R1';
- let provas=Object.values(cache).filter(s=>s.nome && s.nome.toUpperCase().trim()==nome).map(s=>s.prova.toUpperCase());
- if(provas.includes('C') &&!provas.some(p=>p.startsWith('R'))) return 'C';
- for(let p of ORDEM_R){ if(!provas.includes(p)) return p; }
+ nome=nome.toUpperCase().trim(); if(!nome) return 'C';
+ let listaAtleta=Object.values(cache).filter(s=>s.nome && s.nome.toUpperCase().trim()==nome);
+ let qtd = listaAtleta.length;
+ if(qtd < ORDEM_COMPLETA.length) return ORDEM_COMPLETA[qtd];
  return 'C/R';
 }
+
 function buscarNome(texto){
  texto=texto.toUpperCase().trim();
  let div=document.getElementById('sugestoes');
- if(texto.length<1 || editKey){div.style.display='none';return;}
  let nomes=[...new Set(Object.values(cache).filter(k=>k.nome).map(x=>x.nome.toUpperCase().trim()))].sort();
+ if(texto.length>=1 &&!editKey){
+   if(nomes.includes(texto)){
+     document.getElementById('provaSelect').value=proximoRdisponivel(texto);
+   } else {
+     let filtrados=nomes.filter(n=>n.includes(texto));
+     if(filtrados.length==1){
+       document.getElementById('provaSelect').value=proximoRdisponivel(filtrados[0]);
+     }
+   }
+ }
+ if(texto.length<1 || editKey){div.style.display='none';return;}
  let filtrados=nomes.filter(n=>n.includes(texto)).slice(0,8);
  if(filtrados.length==0){div.style.display='none';return;}
  div.innerHTML=filtrados.map(n=>`<div onclick="selecionarNome('${n.replace(/'/g,"\\'")}')">${n}</div>`).join('');
@@ -62,11 +86,9 @@ function selecionarNome(nome){
  document.getElementById('provaSelect').value=proximoRdisponivel(nome);
  document.getElementById('t1').focus();
 }
-document.addEventListener('click',(e)=>{
- if(!e.target.closest('#nomeAtleta') &&!e.target.closest('#sugestoes')){
-  document.getElementById('sugestoes').style.display='none';
- }
-});
+document.addEventListener('click',(e)=>{ if(!e.target.closest('#nomeAtleta') &&!e.target.closest('#sugestoes')) document.getElementById('sugestoes').style.display='none'; });
+document.getElementById('nomeAtleta').addEventListener('blur',()=>{ setTimeout(()=>{ let nome=document.getElementById('nomeAtleta').value.toUpperCase().trim(); if(nome.length>=2 &&!editKey) document.getElementById('provaSelect').value=proximoRdisponivel(nome); },150); });
+
 db.ref("FTERJ").on('value',s=>{
  cache=s.val()||{};
  let lista=Object.keys(cache).filter(k=>k.startsWith('serie_')).map(k=>({key:k,...cache[k]}));
@@ -79,13 +101,12 @@ db.ref("FTERJ").on('value',s=>{
  });
  document.getElementById('listaLancamentos').innerHTML=html;
 });
+
 function salvarLancamento(){let nome=document.getElementById('nomeAtleta').value.toUpperCase().trim();if(!nome) return alert("NOME");let prova=document.getElementById('provaSelect').value;let tiros=[];for(let i=1;i<=10;i++){let el=document.getElementById('t'+i);let v=el.value.trim();if(!v){alert("Tiro "+i+" branco");return;}v=v.toUpperCase();if(!PERMITIDOS.includes(v)) return alert("Inválido");tiros.push(v);}if(!editKey){if(Object.values(cache).some(s=>s.nome && s.nome.toUpperCase().trim()==nome && s.prova==prova)) return alert("Já existe "+prova+" pra "+nome);}let x=tiros.filter(t=>t=='X').length;let total=parseFloat((tiros.reduce((a,b)=>a+valorTiro(b),0)+x*0.01).toFixed(2));let obj={nome,prova,tiros,pontos:total,data:Date.now()};if(editKey) db.ref("FTERJ/"+editKey).set(obj).then(()=>{editKey=null;novoLancamento();});else db.ref("FTERJ/serie_"+Date.now()).set(obj).then(()=>novoLancamento());}
-function novoLancamento(){editKey=null;document.getElementById('nomeAtleta').value='';for(let i=1;i<=10;i++) document.getElementById('t'+i).value='';document.getElementById('totalPontos').innerText='0.00';document.getElementById('provaSelect').value='R1';document.getElementById('sugestoes').style.display='none';document.getElementById('nomeAtleta').focus();}
-function editar(k){db.ref("FTERJ/"+k).once('value',s=>{let v=s.val();document.getElementById('nomeAtleta').value=v.nome;document.getElementById('provaSelect').value=v.prova;(v.tiros||[]).forEach((t,i)=>{document.getElementById('t'+(i+1)).value=t;});calcTotal();editKey=k;document.getElementById('sugestoes').style.display='none';});}
+function novoLancamento(){editKey=null;document.getElementById('nomeAtleta').value='';for(let i=1;i<=10;i++) document.getElementById('t'+i).value='';document.getElementById('totalPontos').innerText='0.00';document.getElementById('provaSelect').value='C';document.getElementById('sugestoes').style.display='none';document.getElementById('nomeAtleta').focus();}
+function editar(k){db.ref("FTERJ/"+k).once('value',s=>{let v=s.val();document.getElementById('nomeAtleta').value=v.nome;document.getElementById('provaSelect').value=v.prova;(v.tiros||[]).forEach((t,i)=>{document.getElementById('t'+(i+1)).value=t;});calcTotal();editKey=k;});}
 function excluir(k){if(confirm("Excluir?")) db.ref("FTERJ/"+k).remove();}
-async function escolherArquivo(){if(!window.showSaveFilePicker){alert("Use Chrome ou Edge no PC");return;}try{fileHandle=await window.showSaveFilePicker({suggestedName:`FTERJ_LIVE_${new Date().toISOString().slice(0,10)}.csv`,types:[{description:'CSV',accept:{'text/csv':['.csv']}}]});let w=await fileHandle.createWritable();await w.write("ORDEM;PROVA;NOME;PONTOS;T1;T2;T3;T4;T5;T6;T7;T8;T9;T10;DATA;KEY\n");await w.close();document.getElementById('nomeArquivoFixo').innerText="✓ Incrementando: "+(await fileHandle.getFile()).name;chavesJaSalvas.clear();localStorage.removeItem('chavesFTERJ');}catch(e){}}
-async function salvarIncremental(){let lista=Object.keys(cache).filter(k=>k.startsWith('serie_')).map(k=>({key:k,...cache[k]}));let novos=lista.filter(it=>!chavesJaSalvas.has(it.key));if(novos.length==0){document.getElementById('statusAuto').innerText="● sem novos "+new Date().toLocaleTimeString();return;}let crescente=[...lista].sort((a,b)=>(a.data||0)-(b.data||0));let mapaOrdem={};crescente.forEach((it,i)=>{mapaOrdem[it.key]=i+1;});let linhas="";novos.forEach(it=>{let ord=mapaOrdem[it.key];linhas+=`${ord};${it.prova};${it.nome};${it.pontos};${(it.tiros||[]).join(';')};${new Date(it.data).toLocaleString()};${it.key}\n`;chavesJaSalvas.add(it.key);});localStorage.setItem('chavesFTERJ',JSON.stringify([...chavesJaSalvas]));if(fileHandle){try{let writable=await fileHandle.createWritable({keepExistingData:true});let file=await fileHandle.getFile();await writable.seek(file.size);await writable.write(linhas);await writable.close();document.getElementById('statusAuto').innerText=`● +${novos.length} ${new Date().toLocaleTimeString()}`;}catch(e){document.getElementById('statusAuto').innerText="Erro: escolha arquivo novamente";}}}
-let intervaloAuto=null;function iniciarAutoSave(){if(intervaloAuto) clearInterval(intervaloAuto);let minutos=parseInt(document.getElementById('autoTempo').value);if(minutos===0){document.getElementById('statusAuto').innerText="○ OFF";return;}intervaloAuto=setInterval(salvarIncremental,minutos*60*1000);document.getElementById('statusAuto').innerText="● a cada "+minutos+"min";}
-document.getElementById('autoTempo').addEventListener('change',iniciarAutoSave);iniciarAutoSave();
 document.addEventListener('keydown',e=>{if(e.key=='F2'){e.preventDefault();salvarLancamento();}if(e.key=='F3'){e.preventDefault();novoLancamento();}});
-</script></body></html>
+</script>
+</body>
+</html>
