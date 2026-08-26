@@ -3,150 +3,140 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ADM FTERJ - V22 - FINAL</title>
+<title>ADM FTERJ - FINAL SABADO</title>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-body{background:#0a0a0a;color:#fff;font-family:Arial;padding:10px}
-h1{background:linear-gradient(90deg,#FF8C00,#FF6A00);color:#000;padding:12px;text-align:center;font-weight:900;border-radius:8px;font-size:16px}
-.card{background:#1a1a1a;border:1px solid #333;border-radius:10px;padding:12px;margin-top:12px}
-.card h2{color:#FF8C00;font-size:13px;margin-bottom:8px;border-bottom:1px solid #333;padding-bottom:5px}
-label{font-size:11px;color:#aaa;display:block;margin-top:8px}
-input{width:100%;padding:7px;border-radius:5px;border:1px solid #444;background:#000;color:#fff;margin-top:3px;font-size:12px}
-button{padding:7px 12px;border:none;border-radius:5px;font-weight:900;cursor:pointer;font-size:11px;margin-top:6px;margin-right:4px}
-.btn-save{background:#FF8C00;color:#000}
-.btn-on{background:#00c851;color:#fff}
-.btn-off{background:#ff4444;color:#fff}
-.btn-del{background:#222;color:#ff4444;border:1px solid #ff4444}
+body{background:#0f0f0f;color:#ddd;font-family:Arial;padding:10px}
+h1{text-align:center;color:#FFD700;padding:12px;font-size:20px;letter-spacing:2px}
+.card{background:#1e1e1e;border:1px solid #333;border-radius:10px;padding:15px;margin:12px auto;max-width:750px}
+.card h2{color:#FFD700;font-size:13px;border-bottom:1px solid #333;padding-bottom:6px;margin-bottom:10px}
+.link{background:#000;border:1px solid #333;padding:8px;border-radius:6px;margin-top:6px;font-size:11px;color:#00E5FF;word-break:break-all}
+.box{background:#000;border:1px solid #333;border-radius:6px;padding:10px;max-height:250px;overflow:auto;font-size:11px;white-space:pre-wrap;margin-top:8px;color:#ccc}
+button{padding:7px 12px;border:none;border-radius:6px;font-weight:900;font-size:11px;cursor:pointer;margin:6px 4px 0 0}
+.del{background:#5a0000;color:#ffaaaa;border:1px solid #a00}
+.warn{background:#ff8c00;color:#000}
+.save{background:#FF8C00;color:#000}
+.c{background:#FFD700;color:#000}
+.r{background:#00BFFF;color:#000}
+.on{background:#00c851;color:#fff}
+.off{background:#a00;color:#fff}
 .item{display:flex;align-items:center;gap:8px;background:#000;padding:8px;border-radius:6px;margin-top:6px;border:1px solid #222}
-.item img{width:70px;height:45px;object-fit:cover;border-radius:4px;background:#222}
-.item-info{flex:1;font-size:10px;line-height:1.3}
-.status{font-size:9px;padding:2px 5px;border-radius:3px;font-weight:900;display:inline-block;margin-top:2px}
-.ativo{background:green;color:#fff}
-.inativo{background:red;color:#fff}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-@media(max-width:600px){.grid{grid-template-columns:1fr}}
+.item img{width:60px;height:38px;object-fit:cover;border-radius:4px;background:#222}
+.info{flex:1;font-size:10px;overflow:hidden}
+input{padding:7px;border-radius:5px;border:1px solid #444;background:#000;color:#fff;font-size:12px}
 </style>
 </head>
 <body>
-<h1>ADM FTERJ - V22 - CONTROLE FULL</h1>
+<h1>⚙️ PAINEL ADM - FTERJ</h1>
 
-<div class="grid">
 <div class="card">
-<h2>1 - LOGOS</h2>
-<label>Logo Clube (FTERJ)</label>
-<input id="logoClube" placeholder="https://...">
-<label>Logo MinuT&Ra</label>
-<input id="logoMinutera" placeholder="https://...">
-<button class="btn-save" onclick="salvarLogos()">SALVAR LOGOS</button>
-<div style="display:flex;gap:10px;margin-top:8px">
-<img id="prevClube" style="height:35px;background:#fff;padding:2px;border-radius:4px">
-<img id="prevMinutera" style="height:35px;background:#fff;padding:2px;border-radius:4px">
-</div>
+<h2>🔗 LINKS</h2>
+<div class="link">📺 TELÃO: https://minutera.com.br/placar-fterj/tv.html</div>
+<div class="link">📱 CELULAR: https://minutera.com.br/placar-fterj/celular.html</div>
+<div class="link">🎯 LANÇAMENTO: https://minutera.com.br/placar-fterj/lanca.html</div>
+<div class="link">⚙️ ADM: https://minutera.com.br/placar-fterj/adm.html</div>
 </div>
 
 <div class="card">
-<h2>2 - TEMPOS</h2>
-<label>Intervalo entre blocos FULL (segundos)</label>
-<input id="intervaloFull" type="number" value="120">
-<label>Tempo de cada arte FULL (segundos)</label>
-<input id="tempoFull" type="number" value="7">
-<button class="btn-save" onclick="salvarTempos()">SALVAR TEMPOS</button>
-</div>
-</div>
-
-<div class="card">
-<h2>3 - ADICIONAR NOVO FULL</h2>
-<div class="grid">
-<div><label>Nome</label><input id="fullNome" placeholder="Ex: Loja Tática"></div>
-<div><label>Tempo (s)</label><input id="fullTempo" type="number" placeholder="7"></div>
-</div>
-<label>URL da Arte (imagem)</label>
-<input id="fullArte" placeholder="https://.../arte.jpg">
-<button class="btn-save" onclick="addFull()">ADICIONAR FULL</button>
+<h2>📁 LISTA DE ATLETAS</h2>
+<div style="font-size:12px"><input type="checkbox" checked> <span id="lblCount">Carregando...</span></div>
+<input type="file" id="fileAtletas" accept=".txt,.csv" style="margin-top:8px;font-size:11px;width:100%">
+<button class="del" onclick="apagarLista()">🗑️ APAGAR LISTA</button>
+<button class="save" onclick="carregar()">🔄 RECARREGAR</button>
+<div class="box" id="boxAtletas">CARREGANDO...</div>
 </div>
 
 <div class="card">
-<h2>4 - LISTA FULL - DESATIVAR CORRIGIDO</h2>
-<div id="listaFull">CARREGANDO...</div>
+<h2>🔥 CONTROLE</h2>
+<button class="warn" onclick="zerarCR()">ZERAR C/R</button>
+<button class="del" onclick="apagarPlacar()">APAGAR PLACAR</button>
+<div style="margin-top:10px;font-size:11px;color:#888">Online: <span id="clock" style="color:#00E5FF"></span></div>
+</div>
+
+<div class="card">
+<h2>🎨 FULL - PATROCINADORES</h2>
+<div style="display:flex;gap:6px;flex-wrap:wrap">
+<input id="fullNome" placeholder="Nome" style="flex:1;min-width:120px">
+<input id="fullArte" placeholder="URL https://..." style="flex:2;min-width:200px">
+<input id="fullTempo" type="number" value="7" style="width:60px">
+<button class="save" onclick="addFull()">ADD FULL</button>
+</div>
+<div id="listaFull" style="margin-top:10px">Carregando FULL...</div>
 </div>
 
 <script>
 const firebaseConfig={apiKey:"AIzaSyCTEXeRjxq0_3doBNyWm5AkQ0kmBXmjlSk",authDomain:"placar-minutera.firebaseapp.com",databaseURL:"https://placar-minutera-default-rtdb.firebaseio.com",projectId:"placar-minutera"};
 firebase.initializeApp(firebaseConfig);
 const db=firebase.database();
+setInterval(()=>document.getElementById('clock').innerText=new Date().toLocaleTimeString(),1000);
 
-function toArrKeys(d){
- if(!d) return [];
- return Object.keys(d).map(k=>({key:k,...(typeof d[k]==='string'?{arte:d[k]}:d[k])}));
+function carregar(){
+ db.ref("FTERJ").once('value').then(s=>{
+  let d=s.val()||{};
+  let keys=Object.keys(d).filter(k=>k.startsWith("serie_"));
+  let nomes=keys.map(k=>d[k].nome||k);
+  document.getElementById('lblCount').innerText=nomes.length+" atletas (Navegador + Firebase)";
+  document.getElementById('boxAtletas').innerText=nomes.join("\n")||"VAZIO";
+ });
 }
+carregar();
 
-db.ref("CONFIG_ANUNCIOS_FTERJ").on('value',s=>{
- let v=s.val(); if(!v) return;
- document.getElementById('logoClube').value=v.logoClube||'';
- document.getElementById('logoMinutera').value=v.logoMinutera||'';
- document.getElementById('intervaloFull').value=v.intervaloFull||120;
- document.getElementById('tempoFull').value=v.tempoFull||7;
- if(v.logoClube) document.getElementById('prevClube').src=v.logoClube;
- if(v.logoMinutera) document.getElementById('prevMinutera').src=v.logoMinutera;
+function apagarLista(){ if(confirm("Apagar TODA lista de atletas?")) db.ref("FTERJ").remove().then(carregar); }
+function zerarCR(){ if(!confirm("ZERAR C/R - zerar pontos e tiros de todos?")) return; db.ref("FTERJ").once('value').then(s=>{ let d=s.val()||{}; Object.keys(d).forEach(k=>{ if(k.startsWith("serie_")) db.ref("FTERJ/"+k).update({pontos:0,tiros:[]}); }); alert("C/R zerado"); }); }
+function apagarPlacar(){ if(confirm("APAGAR PLACAR COMPLETO?")) db.ref("FTERJ").remove().then(carregar); }
+
+document.getElementById('fileAtletas').addEventListener('change',function(e){
+ let file=e.target.files[0]; if(!file) return;
+ let r=new FileReader();
+ r.onload=function(ev){
+  let linhas=ev.target.result.split('\n').map(l=>l.trim()).filter(l=>l);
+  let batch={};
+  linhas.forEach((nome,i)=>{
+   let key="serie_"+String(Date.now()+i).slice(-6);
+   batch[key]={nome:nome.toUpperCase(), prova:"R2", pontos:0, tiros:[]};
+  });
+  db.ref("FTERJ").update(batch).then(()=>{ carregar(); alert(linhas.length+" atletas importados"); });
+ };
+ r.readAsText(file);
 });
 
-function salvarLogos(){
- db.ref("CONFIG_ANUNCIOS_FTERJ").update({
-  logoClube: document.getElementById('logoClube').value.trim(),
-  logoMinutera: document.getElementById('logoMinutera').value.trim()
- }).then(()=>alert("Logos salvos!"));
-}
-function salvarTempos(){
- db.ref("CONFIG_ANUNCIOS_FTERJ").update({
-  intervaloFull: parseInt(document.getElementById('intervaloFull').value)||120,
-  tempoFull: parseInt(document.getElementById('tempoFull').value)||7
- }).then(()=>alert("Tempos salvos!"));
-}
+// FULL
 function addFull(){
- let nome=document.getElementById('fullNome').value.trim();
- let arte=document.getElementById('fullArte').value.trim();
- let tempo=parseInt(document.getElementById('fullTempo').value)||7;
- if(!arte){ alert("Coloca a URL da arte"); return; }
- db.ref("PATROCINADORES_FULL_FTERJ").push({nome:nome||'Patrocinador', arte:arte, tempo:tempo, ativo:true, criado:Date.now()})
-.then(()=>{ document.getElementById('fullNome').value=''; document.getElementById('fullArte').value=''; document.getElementById('fullTempo').value=''; alert("FULL adicionado e ATIVO"); });
+ let n=document.getElementById('fullNome').value.trim();
+ let a=document.getElementById('fullArte').value.trim();
+ let t=parseInt(document.getElementById('fullTempo').value)||7;
+ if(!a){alert("URL da arte");return;}
+ db.ref("PATROCINADORES_FULL_FTERJ").push({nome:n||'Patrocinador', arte:a, tempo:t, ativo:true, criado:Date.now()}).then(()=>{ document.getElementById('fullNome').value=''; document.getElementById('fullArte').value=''; });
 }
 
 db.ref("PATROCINADORES_FULL_FTERJ").on('value',snap=>{
- let data=snap.val();
- let div=document.getElementById('listaFull');
+ let data=snap.val(); let div=document.getElementById('listaFull');
  if(!data){ div.innerHTML='NENHUM FULL CADASTRADO'; return; }
- let lista=toArrKeys(data);
  let html='';
- lista.forEach(it=>{
-  let ativo = it.ativo!==false && it.ativo!=="false";
-  html+=`<div class="item">
-   <img src="${it.arte||''}" onerror="this.style.background='red'">
-   <div class="item-info">
-    <b style="color:#FFD700">${it.nome||'Sem nome'}</b><br>
-    <span style="color:#aaa">${(it.arte||'').substring(0,38)}...</span><br>
-    <span class="status ${ativo?'ativo':'inativo'}">${ativo?'ATIVO - APARECE':'DESATIVADO - NÃO APARECE'}</span> | ${it.tempo||7}s
-   </div>
-   <button class="${ativo?'btn-off':'btn-on'}" onclick="toggleFull('${it.key}',${ativo})">${ativo?'DESATIVAR':'ATIVAR'}</button>
-   <button class="btn-del" onclick="delFull('${it.key}')">X</button>
-  </div>`;
+ Object.keys(data).forEach(key=>{
+  let it=typeof data[key]==='string'?{arte:data[key], nome:'Patrocinador', tempo:7, ativo:true}:data[key];
+  let ativo=it.ativo!==false && it.ativo!=="false";
+  html+=`<div class="item"><img src="${it.arte||''}" onerror="this.style.background='red'"><div class="info"><b style="color:#FFD700">${it.nome||''}</b><br><span style="color:${ativo?'#0f0':'#f00'};font-weight:900;font-size:9px">${ativo?'ATIVO':'DESATIVADO'}</span> - ${it.tempo||7}s</div><button class="c" onclick="corrigirFull('${key}')">C</button><button class="r" onclick="replicarFull('${key}')">R</button><button class="${ativo?'off':'on'}" onclick="toggleFull('${key}',${ativo})">${ativo?'DESATIVAR':'ATIVAR'}</button><button class="del" onclick="apagarFull('${key}')">APAGAR</button></div>`;
  });
  div.innerHTML=html;
 });
 
-// FUNÇÃO CORRIGIDA QUE QUEBRA O LOOP
 function toggleFull(key, estaAtivo){
- let novo =!estaAtivo;
- console.log("Toggling "+key+" de "+estaAtivo+" para "+novo);
- db.ref("PATROCINADORES_FULL_FTERJ/"+key).update({ativo: novo})
-.then(()=>console.log("OK - FULL "+key+" ativo="+novo))
-.catch(e=>alert("Erro: "+e.message));
+ // FIX DEFINITIVO SABADO - quebra loop ATIVOS:4
+ db.ref("PATROCINADORES_FULL_FTERJ/"+key+"/ativo").set(!estaAtivo);
 }
-
-function delFull(key){
- if(!confirm("Apagar definitivo esse FULL?")) return;
- db.ref("PATROCINADORES_FULL_FTERJ/"+key).remove();
+function apagarFull(key){ if(confirm("Apagar FULL?")) db.ref("PATROCINADORES_FULL_FTERJ/"+key).remove(); }
+function corrigirFull(key){
+ let n=prompt("C - Corrigir nome:");
+ let u=prompt("Nova URL da arte:");
+ if(u) db.ref("PATROCINADORES_FULL_FTERJ/"+key).update({nome:n||'Patrocinador', arte:u});
+}
+function replicarFull(key){
+ db.ref("PATROCINADORES_FULL_FTERJ/"+key).once('value').then(s=>{
+  let v=s.val(); if(v) db.ref("PATROCINADORES_FULL_FTERJ").push({...v, criado:Date.now()});
+ });
 }
 </script>
 </body>
