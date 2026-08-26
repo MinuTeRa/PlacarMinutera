@@ -9,7 +9,7 @@ const MOSTRAR_VOLTAMOS_EM = false;
 const ESCALA_PLACAR = 1.30;
 const MODO_VISAO_LANCAMENTO = "TIROS";
 </script><style>
-/* ==================== 0. BASE GLOBAL ==================== */
+/* ===== 0. BASE ===== */
 html,body{background:#000;color:#fff;font-family:'Arial Black',Arial;margin:0;text-align:center}
 button{font-size:13px;padding:6px 10px;margin:3px 2px;border-radius:6px;border:none;cursor:pointer;font-weight:bold}
 .btn-lancar{background:#D2691E;color:#fff}.btn-mini{padding:3px 7px;font-size:10px;margin-left:3px;border-radius:4px}.btn-editar{background:#FFD700;color:#000}.btn-excluir{background:#c00;color:#fff}
@@ -19,88 +19,70 @@ button{font-size:13px;padding:6px 10px;margin:3px 2px;border-radius:6px;border:n
 #modal-erro-conteudo{background:#1a1a1a;border:3px solid #f00;border-radius:12px;padding:25px;max-width:400px;text-align:center}
 .tela-senha{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;background:#0f0f0f}
 .switch{position:relative;display:inline-block;width:44px;height:24px}.switch input{opacity:0;width:0;height:0}.slider{position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background:#444;transition:.4s;border-radius:24px}.slider:before{position:absolute;content:"";height:18px;width:18px;left:3px;bottom:3px;background:#fff;transition:.4s;border-radius:50%}input:checked+.slider{background:#00C853}input:checked+.slider:before{transform:translateX(20px)}
+.topo{background:linear-gradient(90deg,#FF8C00,#FF4500);padding:5px 20px;display:flex;align-items:center;justify-content:space-between;border-bottom:4px solid #FFD700;position:relative}
+.topo img{height:50px;border-radius:8px;background:#fff;padding:3px}
+.topo h1{font-size:1.8vw;margin:0;color:#000;text-shadow:2px 2px #FFD700;flex:1}
+.logos-lado{display:flex;gap:10px}
+.relogio{position:absolute;top:14px;right:85px;background:rgba(0,0,0,0.85);color:#FFD700;font-size:12px;padding:4px 14px;border-radius:20px;border:1px solid #FF8C00;z-index:90;font-family:monospace}
+#lista{padding:8px;display:flex;flex-direction:column;gap:6px}
+.placar{display:flex;justify-content:space-around;align-items:center;font-size:calc(15px * var(--escala-placar,1.3));margin:0 8px;padding:12px 8px;background:#1a1a1a;border-left:6px solid #555;border-radius:8px}
+.placar.p1{background:linear-gradient(90deg,#FFD700,#FFA500);color:#000;border-left:6px solid #FFD700;font-size:calc(17px * var(--escala-placar,1.3))}
+.placar.p2{background:linear-gradient(90deg,#C0C0C0,#A9A9A9);color:#000}.placar.p3{background:linear-gradient(90deg,#CD7F32,#8B4513);color:#000}
+.pos{width:8%}.nome{width:32%;text-align:left;padding-left:8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.prova{width:10%;color:#00FFFF!important}.total{width:14%;font-weight:900;color:#FFD700!important}
+.detalhe{width:36%;font-size:calc(11px * var(--escala-placar,1.3));color:#ccc!important;font-weight:bold}
+.rodape{background:linear-gradient(90deg,#FF8C00,#FF4500);border-top:4px solid #FFD700;padding:12px 15px;width:100%;box-sizing:border-box;height:85px;z-index:100}
+.rodape-conteudo{display:flex;justify-content:center;align-items:center;gap:20px;white-space:nowrap;height:100%;transition:opacity 0.3s;flex-wrap:wrap}
+.rodape-prop{color:#000;font-size:18px;font-weight:900;text-shadow:1px 1px #FFD700}.rodape-contato{color:#fff;font-size:15px;font-weight:bold;background:#000;padding:5px 12px;border-radius:20px}
+#insercao-full{position:fixed;top:0;left:0;width:100vw;height:100vh;background:#000;z-index:9999;display:none;flex-direction:column;align-items:center;justify-content:center}
+#prop-gigante{width:100vw;height:100vh;display:flex;align-items:center;justify-content:center;background:#000;overflow:hidden}
+#prop-gigante img{width:100vw!important;height:100vh!important;object-fit:cover!important;border-radius:0!important}
+.full-escala-wrap{width:100vw;height:100vh;display:flex;align-items:center;justify-content:center;transform:scale(var(--full-scale,1))}
+#contato-gigante{position:absolute;bottom:18px;left:50%;transform:translateX(-50%);font-size:14px;color:#fff;background:rgba(0,0,0,0.7);padding:5px 15px;border-radius:20px}
 
-/* ==================== 1. MODO TV ==================== */
-body.modo-tv, html.modo-tv{height:100vh!important;overflow:hidden!important}
-body.modo-tv #tela-placar{position:fixed!important;top:0;left:0;width:100vw;height:100vh;overflow:hidden!important;background:#000;z-index:5}
-body.modo-tv.topo{background:linear-gradient(90deg,#FF8C00,#FF4500);padding:5px 20px;display:flex;align-items:center;justify-content:space-between;border-bottom:4px solid #FFD700;position:relative}
-body.modo-tv.topo img{height:50px;border-radius:8px;background:#fff;padding:3px}
-body.modo-tv.topo h1{font-size:1.8vw;margin:0;color:#000;text-shadow:2px 2px #FFD700;flex:1}
-body.modo-tv.logos-lado{display:flex;gap:10px}
-body.modo-tv.relogio{position:absolute;top:14px;right:85px;background:rgba(0,0,0,0.85);color:#FFD700;font-size:12px;padding:4px 14px;border-radius:20px;border:1px solid #FF8C00;z-index:90;font-family:monospace}
-body.modo-tv #lista{padding:8px;display:flex;flex-direction:column;gap:6px;height:calc(100vh - 155px);overflow:hidden!important;justify-content:space-between}
-body.modo-tv.placar{display:flex;justify-content:space-around;align-items:center;font-size:calc(15px * var(--escala-placar,1.3));margin:0 8px;padding:12px 8px;background:#1a1a1a;border-left:6px solid #555;border-radius:8px}
-body.modo-tv.placar.p1{background:linear-gradient(90deg,#FFD700,#FFA500);color:#000;border-left:6px solid #FFD700;font-size:calc(17px * var(--escala-placar,1.3))}
-body.modo-tv.placar.p2{background:linear-gradient(90deg,#C0C0C0,#A9A9A9);color:#000}
-body.modo-tv.placar.p3{background:linear-gradient(90deg,#CD7F32,#8B4513);color:#000}
-body.modo-tv.pos{width:8%}.nome{width:32%;text-align:left;padding-left:8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-body.modo-tv.prova{width:10%;color:#00FFFF!important}
-body.modo-tv.total{width:14%;font-weight:900;color:#FFD700!important}
-body.modo-tv.detalhe{width:36%;font-size:calc(11px * var(--escala-placar,1.3));color:#ccc!important;font-weight:bold}
-body.modo-tv.rodape{background:linear-gradient(90deg,#FF8C00,#FF4500);border-top:4px solid #FFD700;padding:12px 15px;width:100%;box-sizing:border-box;height:85px;z-index:100;position:fixed;bottom:0;left:0;display:flex}
-body.modo-tv.rodape-conteudo{display:flex;justify-content:center;align-items:center;gap:20px;white-space:nowrap;height:100%;transition:opacity 0.3s;flex-wrap:wrap}
-body.modo-tv.rodape-prop{color:#000;font-size:18px;font-weight:900;text-shadow:1px 1px #FFD700}
-body.modo-tv.rodape-contato{color:#fff;font-size:15px;font-weight:bold;background:#000;padding:5px 12px;border-radius:20px}
-body.modo-tv #insercao-full{position:fixed;top:0;left:0;width:100vw;height:100vh;background:#000;z-index:9999;display:none;flex-direction:column;align-items:center;justify-content:center}
-body.modo-tv #prop-gigante{width:100vw;height:100vh;display:flex;align-items:center;justify-content:center;background:#000;overflow:hidden}
-body.modo-tv #prop-gigante img{width:100vw!important;height:100vh!important;object-fit:cover!important;border-radius:0!important}
-body.modo-tv.full-escala-wrap{width:100vw;height:100vh;display:flex;align-items:center;justify-content:center;transform:scale(var(--full-scale,1))}
-body.modo-tv #contato-gigante{position:absolute;bottom:18px;left:50%;transform:translateX(-50%);font-size:14px;color:#fff;background:rgba(0,0,0,0.7);padding:5px 15px;border-radius:20px}
+/* ===== 1. MODO TV ===== */
+html.modo-tv, body.modo-tv{height:100vh!important;overflow:hidden!important}
+body.modo-tv #tela-placar{position:fixed!important;top:0;left:0;width:100vw;height:100vh;overflow:hidden!important}
+body.modo-tv #lista{height:calc(100vh - 155px);overflow:hidden!important;justify-content:space-between}
+body.modo-tv.rodape{position:fixed;bottom:0;left:0;display:flex}
 
-/* ==================== 2. MODO CELULAR ==================== */
-body.modo-celular #tela-placar{background:#000;z-index:5;width:100vw}
-body.modo-celular.topo{background:linear-gradient(90deg,#FF8C00,#FF4500);padding:5px 20px;display:flex;align-items:center;justify-content:space-between;border-bottom:4px solid #FFD700;position:relative}
-body.modo-celular.topo img{height:50px;border-radius:8px;background:#fff;padding:3px}
-body.modo-celular.topo h1{font-size:3.5vw;margin:0;color:#000;text-shadow:2px 2px #FFD700;flex:1}
-body.modo-celular.logos-lado{display:flex;gap:10px}
-body.modo-celular.relogio{position:absolute;top:8px;right:60px;background:rgba(0,0,0,0.85);color:#FFD700;font-size:10px;padding:3px 8px;border-radius:20px;border:1px solid #FF8C00;z-index:90;font-family:monospace}
-body.modo-celular #lista{padding:8px;display:flex;flex-direction:column;gap:6px;height:auto!important;overflow:visible!important;justify-content:flex-start!important;padding-bottom:100px}
-body.modo-celular.placar{display:flex;justify-content:space-around;align-items:center;font-size:calc(15px * var(--escala-placar,1.3));margin:0 8px;padding:12px 8px;background:#1a1a1a;border-left:6px solid #555;border-radius:8px}
-body.modo-celular.placar.p1{background:linear-gradient(90deg,#FFD700,#FFA500);color:#000;border-left:6px solid #FFD700;font-size:calc(17px * var(--escala-placar,1.3))}
-body.modo-celular.placar.p2{background:linear-gradient(90deg,#C0C0C0,#A9A9A9);color:#000}
-body.modo-celular.placar.p3{background:linear-gradient(90deg,#CD7F32,#8B4513);color:#000}
-body.modo-celular.rodape{background:linear-gradient(90deg,#FF8C00,#FF4500);border-top:4px solid #FFD700;padding:12px 15px;width:100%;box-sizing:border-box;height:85px;z-index:100;position:fixed;bottom:0;left:0;display:flex!important}
-body.modo-celular.rodape-conteudo{display:flex;justify-content:center;align-items:center;gap:20px;white-space:nowrap;height:100%;transition:opacity 0.3s;flex-wrap:wrap}
-body.modo-celular.rodape-prop{color:#000;font-size:18px;font-weight:900;text-shadow:1px 1px #FFD700}
-body.modo-celular.rodape-contato{color:#fff;font-size:15px;font-weight:bold;background:#000;padding:5px 12px;border-radius:20px}
+/* ===== 2. MODO CELULAR ===== */
+body.modo-celular #lista{height:auto!important;overflow:visible!important;justify-content:flex-start!important;padding-bottom:100px}
+body.modo-celular.rodape{position:fixed;bottom:0;left:0;display:flex!important}
 
-/* ==================== 3. MODO LANCAMENTO ==================== */
-#tela-lancamento.topo{background:linear-gradient(90deg,#FF8C00,#FF4500);padding:5px 20px;display:flex;align-items:center;justify-content:space-between;border-bottom:4px solid #FFD700;position:relative}
-#tela-lancamento.topo img{height:50px;border-radius:8px;background:#fff;padding:3px}
-#tela-lancamento.topo h1{font-size:1.8vw;margin:0;color:#000;text-shadow:2px 2px #FFD700;flex:1}
-#tela-lancamento.logos-lado{display:flex;gap:10px}
-#tela-lancamento.container-operador{display:flex;gap:8px;padding:8px;height:calc(100vh - 62px);background:#0f0f0f;box-sizing:border-box}
-#tela-lancamento.coluna-lancamento{width:38%;background:#1a1a1a;padding:8px;border-radius:8px;overflow-y:auto;border:1px solid #333}
-#tela-lancamento.coluna-lista{width:62%;background:#1a1a1a;padding:8px;border-radius:8px;overflow-y:auto;border:1px solid #333}
-#tela-lancamento.cabecalho{display:flex;justify-content:center;gap:6px;margin-bottom:6px}
-#tela-lancamento.cabecalho input{font-size:14px;padding:6px;border-radius:6px;border:2px solid #444;font-weight:bold;background:#222;color:#e0e0e0}
-#tela-lancamento #nome{width:70%}#tela-lancamento #prova{width:25%;background:#3a3a3a;color:#FFD700}
-#tela-lancamento.tabela-tiros{width:100%;margin:5px auto;border-collapse:collapse}
-#tela-lancamento.tabela-tiros th{background:#2a2a2a;color:#FFA500;padding:3px;font-size:13px}
-#tela-lancamento.tabela-tiros td{padding:2px}
-#tela-lancamento.tabela-tiros input{width:90%;font-size:14px;padding:4px;text-align:center;border:2px solid #444;border-radius:4px;background:#222;color:#fff}
-#tela-lancamento #parcial{font-size:16px;color:#4FC3F7;margin:5px 0}
-#tela-lancamento.item-admin{background:#222;margin:5px 0;padding:8px 10px;border-radius:8px;border-left:4px solid #FF8C00;text-align:left}
-#tela-lancamento.linha-principal{display:flex;justify-content:space-between;align-items:center;font-size:12px;gap:5px}
+/* ===== 3. MODO LANCAMENTO ===== */
+.container-operador{display:flex;gap:8px;padding:8px;height:calc(100vh - 62px);background:#0f0f0f;box-sizing:border-box}
+.coluna-lancamento{width:38%;background:#1a1a1a;padding:8px;border-radius:8px;overflow-y:auto;border:1px solid #333}
+.coluna-lista{width:62%;background:#1a1a1a;padding:8px;border-radius:8px;overflow-y:auto;border:1px solid #333}
+.cabecalho{display:flex;justify-content:center;gap:6px;margin-bottom:6px}
+.cabecalho input{font-size:14px;padding:6px;border-radius:6px;border:2px solid #444;font-weight:bold;background:#222;color:#e0e0e0}
+#nome{width:70%}#prova{width:25%;background:#3a3a3a;color:#FFD700}
+.tabela-tiros{width:100%;margin:5px auto;border-collapse:collapse}
+.tabela-tiros th{background:#2a2a2a;color:#FFA500;padding:3px;font-size:13px}
+.tabela-tiros td{padding:2px}
+.tabela-tiros input{width:90%;font-size:14px;padding:4px;text-align:center;border:2px solid #444;border-radius:4px;background:#222;color:#fff}
+#parcial{font-size:16px;color:#4FC3F7;margin:5px 0}
+.item-admin{background:#222;margin:5px 0;padding:8px 10px;border-radius:8px;border-left:4px solid #FF8C00;text-align:left}
+.linha-principal{display:flex;justify-content:space-between;align-items:center;font-size:12px;gap:5px}
 
-/* ==================== 4. MODO ADM ==================== */
+/* ===== 4. MODO ADM ===== */
 html.modo-adm-scroll, body.modo-adm-scroll{height:auto!important;min-height:100vh!important;overflow-y:auto!important;overflow-x:hidden!important}
-#tela-adm{background:#111;min-height:100vh;padding:20px;box-sizing:border-box;position:relative!important;width:100%!important;height:auto!important;overflow:visible!important;display:block;padding-bottom:120px!important}
-#tela-adm.card-adm{background:#1e1e1e;border:1px solid #333;border-radius:12px;padding:20px;margin:15px auto;max-width:900px;text-align:left}
-#tela-adm.link-adm{display:block;background:#222;color:#00FFFF;padding:10px;margin:6px 0;border-radius:8px;text-decoration:none;font-family:monospace;font-size:13px;border:1px solid #444}
+.tela-adm{background:#111;min-height:100vh;padding:20px;box-sizing:border-box}
+.card-adm{background:#1e1e1e;border:1px solid #333;border-radius:12px;padding:20px;margin:15px auto;max-width:900px;text-align:left}
+.link-adm{display:block;background:#222;color:#00FFFF;padding:10px;margin:6px 0;border-radius:8px;text-decoration:none;font-family:monospace;font-size:13px;border:1px solid #444}
+.tela-anuncios,.tela-adm{position:relative!important;width:100%!important;height:auto!important;min-height:100vh!important;overflow:visible!important;display:block;padding-bottom:120px!important}
 
-/* ==================== 5. MODO ANUNCIOS ==================== */
-#tela-anuncios{background:#111;min-height:100vh;padding:20px;box-sizing:border-box;text-align:left;position:relative!important;width:100%!important;height:auto!important;overflow:visible!important;display:block;padding-bottom:120px!important}
-#tela-anuncios.card-adm{background:#1e1e1e;border:1px solid #333;border-radius:12px;padding:20px;margin:15px auto;max-width:900px;text-align:left}
-#tela-anuncios.link-adm{display:block;background:#222;color:#00FFFF;padding:10px;margin:6px 0;border-radius:8px;text-decoration:none;font-family:monospace;font-size:13px;border:1px solid #444}
-#tela-anuncios.linha-config{display:flex;gap:15px;align-items:center;background:#222;padding:10px;border-radius:8px;margin:10px 0;flex-wrap:wrap}
-#tela-anuncios.linha-config input{width:70px;padding:8px;border-radius:6px;background:#000;color:#FFD700;border:1px solid #444;text-align:center;font-weight:bold}
-#tela-anuncios.box-anuncio{background:#1e1e1e;border:1px solid #444;border-radius:8px;padding:12px;margin:8px 0;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-#tela-anuncios.box-anuncio input[type=text]{padding:8px;border-radius:6px;background:#000;color:#fff;border:1px solid #444;flex:1;min-width:180px}
-#tela-anuncios.box-anuncio input.tempo{width:60px;flex:none}
-#tela-anuncios.preview-arte{width:120px;height:70px;background:#000;border:1px solid #555;border-radius:6px;object-fit:contain}
-#tela-anuncios.barra-emoji{background:#111;border:2px solid #FFD700;border-radius:10px;padding:10px;margin:10px auto;max-width:900px;display:flex;flex-wrap:wrap;gap:8px;justify-content:center;position:sticky;top:0;z-index:50}
-#tela-anuncios.barra-emoji button{font-size:20px;padding:6px 10px;background:#222;border:1px solid #444;border-radius:8px;cursor:pointer}
+/* ===== 5. MODO ANUNCIOS ===== */
+.tela-anuncios{background:#111;min-height:100vh;padding:20px;box-sizing:border-box;text-align:left}
+.linha-config{display:flex;gap:15px;align-items:center;background:#222;padding:10px;border-radius:8px;margin:10px 0;flex-wrap:wrap}
+.linha-config input{width:70px;padding:8px;border-radius:6px;background:#000;color:#FFD700;border:1px solid #444;text-align:center;font-weight:bold}
+.box-anuncio{background:#1e1e1e;border:1px solid #444;border-radius:8px;padding:12px;margin:8px 0;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.box-anuncio input[type=text]{padding:8px;border-radius:6px;background:#000;color:#fff;border:1px solid #444;flex:1;min-width:180px}
+.box-anuncio input.tempo{width:60px;flex:none}
+.preview-arte{width:120px;height:70px;background:#000;border:1px solid #555;border-radius:6px;object-fit:contain}
+.barra-emoji{background:#111;border:2px solid #FFD700;border-radius:10px;padding:10px;margin:10px auto;max-width:900px;display:flex;flex-wrap:wrap;gap:8px;justify-content:center;position:sticky;top:0;z-index:50}
+.barra-emoji button{font-size:20px;padding:6px 10px;background:#222;border:1px solid #444;border-radius:8px;cursor:pointer}
+@media (max-width:600px){.topo h1{font-size:3.5vw}.relogio{font-size:10px;top:8px;right:60px;padding:3px 8px}}
 </style></head><body>
 <div id="modal-erro"><div id="modal-erro-conteudo"><h2>❌ TIRO INVALIDO!</h2><p id="modal-erro-msg"></p><button onclick="fecharErro()">OK</button></div></div>
 <div id="tela-senha" class="tela-senha"><h2 id="tituloSenha">🔒 CARREGANDO...</h2><div id="areaSenha"></div><div id="erroSenha" style="color:#f55;margin-top:10px;font-family:Arial"></div></div>
