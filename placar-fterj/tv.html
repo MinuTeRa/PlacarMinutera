@@ -1,4 +1,4 @@
-<!DOCTYPE html><html><head><meta charset="UTF-8"><title>TV FTERJ V19.3 FINAL</title>
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>TV FTERJ V19.4 FINAL - COM LOGOS</title>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 <style>
@@ -8,7 +8,8 @@ html,body{height:100vh;overflow:hidden}
 body{background:#000;color:#fff;font-family:Arial;display:flex;flex-direction:column}
 #header{height:var(--header-h);min-height:var(--header-h);background:linear-gradient(90deg,#FF8C00,#FF6A00);display:flex;align-items:center;justify-content:center;position:relative}
 #header h1{font-size:3.2vh;color:#000;font-weight:900}
-.logo{position:absolute;top:50%;transform:translateY(-50%);height:5.5vh;background:#fff;border-radius:6px;padding:3px 10px;display:flex;align-items:center;font-weight:900;color:#000;font-size:1.4vh}
+.logo{position:absolute;top:50%;transform:translateY(-50%);height:5.5vh;background:#fff;border-radius:6px;padding:0;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.logo img{height:100%;width:auto;max-width:12vw;object-fit:contain;padding:3px 8px}
 #logoEsq{left:0.8vw} #logoDir{right:0.8vw}
 #ranking{flex:1;display:flex;flex-direction:column;gap:0.4vh;padding:0.4vh 0.6vw;overflow:hidden;justify-content:space-between}
 .linha{display:flex;align-items:center;background:#1a1a1a;border-radius:8px;padding:0 0.8vw;height:var(--linha-h);min-height:var(--linha-h)}
@@ -24,7 +25,11 @@ body{background:#000;color:#fff;font-family:Arial;display:flex;flex-direction:co
 #full{position:fixed;inset:0;background:rgba(0,0,0,0.97);display:none;align-items:center;justify-content:center;z-index:9999;flex-direction:column}
 #full img{max-width:80%;max-height:65%;border:5px solid gold;border-radius:16px}
 </style></head><body>
-<div id="header"><div id="logoEsq" class="logo">MinuT&Ra</div><h1>3x7 MinuT&Ra - FTERJ</h1><div id="logoDir" class="logo">FTERJ</div></div>
+<div id="header">
+<div id="logoEsq" class="logo"><img src="logo-minha.png" alt="MinuT&Ra" onerror="this.parentElement.innerHTML='MinuT&Ra'; this.parentElement.style.padding='3px 10px'; this.parentElement.style.fontWeight='900'; this.parentElement.style.color='#000'; this.parentElement.style.fontSize='1.4vh'"></div>
+<h1>3x7 MinuT&Ra - FTERJ</h1>
+<div id="logoDir" class="logo"><img src="logo-clube.png" alt="FTERJ" onerror="this.parentElement.innerHTML='FTERJ'; this.parentElement.style.padding='3px 10px'; this.parentElement.style.fontWeight='900'; this.parentElement.style.color='#000'; this.parentElement.style.fontSize='1.4vh'"></div>
+</div>
 <div id="ranking">CARREGANDO...</div>
 <div id="datahora"><span id="dh">--/--/---- | --:--:--</span></div>
 <div id="rodape"><div id="textoRodape">Carregando...</div></div>
@@ -59,7 +64,6 @@ db.ref("FTERJ").on('value',snap=>{
  let data=snap.val(); if(!data) return; let lista=[];
  Object.keys(data).forEach(k=>{ if(k.startsWith("serie_")){ let s=data[k]; let c=s.contagem||{}; let tiros=s.tiros||[]; let x=c["x10"]||0; let dez=c["10"]||0; let nove=c["9"]||0; if(Object.keys(c).length<3){ x=tiros.filter(t=>String(t).toLowerCase()=='x').length; dez=tiros.filter(t=>String(t)=='10').length; nove=tiros.filter(t=>String(t)=='9').length; } lista.push({nome:s.nome||'TESTE',prova:s.prova||'R2',pontos:parseFloat(s.pontos||0),x,dez,nove}); }});
  lista.sort((a,b)=>b.pontos-a.pontos);
- // AUTO CALCULA ALTURA PARA CABER 12 NO PC
  let qtd=Math.min(lista.length,12);
  if(qtd>=10){ let disp=100 - (CFG.headerH||8) - (CFG.rodapeH||5.5) - 3; let novaL=(disp/qtd)-0.5; document.documentElement.style.setProperty('--linha-h',novaL+'vh'); }
  let html=""; lista.slice(0,12).forEach((at,i)=>{ let cls=i==0?'ouro':i==1?'prata':i==2?'bronze':''; html+=`<div class="linha ${cls}"><div class="pos">${i+1}º</div><div class="nome">${at.nome}</div><div class="prova">P:${at.prova}</div><div class="total">${at.pontos.toFixed(2)}</div><div class="detalhe">X:${at.x} | 10:${at.dez} | 9:${at.nove}</div></div>`; }); document.getElementById('ranking').innerHTML=html;
