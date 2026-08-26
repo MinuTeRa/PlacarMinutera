@@ -2,107 +2,151 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<title>ANUNCIOS FTERJ - V19.2 BLOCO</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ANÚNCIOS - FTERJ - MinuT&Ra</title>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 <style>
-body{font-family:Arial;background:#0f0f0f;color:#fff;padding:15px}
-h2{color:#FFD700;border-bottom:2px solid #FF8C00;padding-bottom:5px;margin-top:25px}
-.card{background:#1a1a1a;border:1px solid #333;border-radius:12px;padding:12px;margin:8px 0;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-input,select{background:#000;color:#fff;border:1px solid #444;border-radius:6px;padding:8px}
-label{font-size:11px;opacity:0.8;display:block;margin-bottom:3px;color:#FFD700}
-.btn{background:#FFD700;color:#000;font-weight:900;border:none;padding:10px 18px;border-radius:8px;cursor:pointer}
-.btn-del{background:#c00;color:#fff}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;background:#111;padding:15px;border-radius:12px;border:1px solid #333}
-.preview{position:sticky;top:10px;background:#000;border:2px solid #FFD700;border-radius:12px;padding:15px;z-index:10}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#111;color:#fff;font-family:Arial;padding:15px}
+h1{background:linear-gradient(90deg,#FF8C00,#FF6A00);color:#000;padding:12px;text-align:center;font-size:18px;font-weight:900;border-radius:8px;margin-bottom:15px}
+.card{background:#1e1e1e;border:1px solid #333;border-radius:10px;padding:15px;margin-bottom:15px}
+.card h2{color:#FF8C00;font-size:14px;margin-bottom:10px;border-bottom:1px solid #333;padding-bottom:6px}
+label{font-size:12px;color:#aaa;display:block;margin-top:10px}
+input{width:100%;padding:8px;border-radius:6px;border:1px solid #444;background:#000;color:#fff;margin-top:4px;font-size:13px}
+button{padding:8px 14px;border:none;border-radius:6px;font-weight:900;cursor:pointer;margin-top:8px;font-size:12px}
+.btn-save{background:#FF8C00;color:#000}
+.btn-on{background:green;color:#fff}
+.btn-off{background:red;color:#fff}
+.btn-del{background:#333;color:#ff4444}
+.item{display:flex;align-items:center;gap:10px;background:#000;padding:8px;border-radius:8px;margin-top:8px;border:1px solid #222}
+.item img{width:60px;height:40px;object-fit:cover;border-radius:4px;background:#222}
+.item-info{flex:1;font-size:11px}
+.item-info b{color:#FFD700}
+.status{font-size:10px;padding:3px 6px;border-radius:4px;font-weight:900}
+.ativo{background:green;color:#fff}
+.inativo{background:red;color:#fff}
 </style>
 </head>
 <body>
-<h1>🎯 ANUNCIOS FTERJ - V19.2 BLOCO</h1>
+<h1>CONFIG ANÚNCIOS - FTERJ / MinuT&Ra - V21</h1>
 
-<div class="preview">
-<h3 style="margin:0 0 10px 0">⚙️ CONTROLES DA TV - Aplica na hora</h3>
-<div class="grid">
-<div><label>PROP px rodapé</label><input id="propPx" type="number" value="32"></div>
-<div><label>CONT px rodapé</label><input id="contPx" type="number" value="22"></div>
-<div><label>Escala %</label><input id="escala" type="number" value="100"></div>
-<div><label>Velocidade Rodapé (s) MAIOR=lento</label><input id="velocidade" type="number" value="35"></div>
-<div><label>Altura Header (vh)</label><input id="headerH" type="number" step="0.1" value="9"></div>
-<div><label>Altura Linha Ranking (vh)</label><input id="linhaH" type="number" step="0.1" value="7.2"></div>
-<div><label>Altura Rodapé (vh)</label><input id="rodapeH" type="number" step="0.1" value="7"></div>
-<div><label>Fonte Nome (vh)</label><input id="fontNome" type="number" step="0.1" value="2.6"></div>
-<div><label>Fonte Total (vh)</label><input id="fontTotal" type="number" step="0.1" value="3"></div>
-<div><label style="color:#00E5FF">Intervalo entre BLOCOS (s) - a cada X seg mostra todos</label><input id="intervaloFull" type="number" value="120" style="border-color:#00E5FF"></div>
-<div><label style="color:#00E5FF">Tempo de CADA Full no bloco (s)</label><input id="tempoFull" type="number" value="7" style="border-color:#00E5FF"></div>
-</div>
-<button class="btn" onclick="salvarConfig()" style="margin-top:12px;width:100%;font-size:18px">💾 SALVAR CONFIG TV - Aplica na hora</button>
-<div id="statusConfig" style="margin-top:8px;color:#0f0;font-weight:bold"></div>
-<div style="margin-top:8px;font-size:12px;opacity:0.6">Ex: Intervalo 120s + Tempo 7s + 4 anúncios = A cada 2 min trava 28s (7+7+7+7) e libera placar</div>
-</div>
-
-<h2>📢 Rodapé</h2>
-<div id="listaRodape"></div>
 <div class="card">
-<input id="newRodProp" placeholder="Propaganda Ex: TAF Consultoria" style="flex:2">
-<input id="newRodCont" placeholder="Contato" style="flex:1">
-<button class="btn" onclick="addRodape()">+ Adicionar</button>
+<h2>1 - LOGOS (TV e CELULAR)</h2>
+<label>Logo Clube (FTERJ) - URL da imagem</label>
+<input id="logoClube" placeholder="https://...">
+<label>Logo MinuT&Ra - URL da imagem</label>
+<input id="logoMinutera" placeholder="https://...">
+<button class="btn-save" onclick="salvarLogos()">SALVAR LOGOS</button>
+<div style="display:flex;gap:10px;margin-top:10px">
+<img id="prevClube" style="height:40px;background:#fff;padding:3px;border-radius:4px">
+<img id="prevMinutera" style="height:40px;background:#fff;padding:3px;border-radius:4px">
+</div>
 </div>
 
-<h2>🖼️ Full Screen - Agora em BLOCO</h2>
-<div id="listaFull"></div>
 <div class="card">
-<input id="newFullNome" placeholder="Nome">
-<input id="newFullProp" placeholder="Propaganda">
-<input id="newFullCont" placeholder="Contato">
-<input id="newFullArte" placeholder="URL da imagem" style="flex:2">
-<input id="newFullTempo" type="number" value="7" style="width:70px" title="segundos desse anuncio">
-<button class="btn" onclick="addFull()">+ Adicionar Full</button>
+<h2>2 - CONFIG FULL</h2>
+<label>Intervalo entre blocos (segundos) - padrão 120</label>
+<input id="intervaloFull" type="number" value="120">
+<label>Tempo de cada arte (segundos) - padrão 7</label>
+<input id="tempoFull" type="number" value="7">
+<button class="btn-save" onclick="salvarConfig()">SALVAR TEMPOS</button>
+</div>
+
+<div class="card">
+<h2>3 - ADICIONAR FULL (Patrocinador Tela Cheia)</h2>
+<label>Nome do Patrocinador</label>
+<input id="fullNome" placeholder="Ex: Loja X">
+<label>URL da Arte (imagem)</label>
+<input id="fullArte" placeholder="https://...">
+<label>Tempo (opcional) - deixa vazio usa padrão</label>
+<input id="fullTempo" type="number" placeholder="7">
+<button class="btn-save" onclick="addFull()">ADICIONAR FULL</button>
+</div>
+
+<div class="card">
+<h2>4 - LISTA FULL - Clique para DESATIVAR/ATIVAR</h2>
+<div id="listaFull">CARREGANDO...</div>
 </div>
 
 <script>
 const firebaseConfig={apiKey:"AIzaSyCTEXeRjxq0_3doBNyWm5AkQ0kmBXmjlSk",authDomain:"placar-minutera.firebaseapp.com",databaseURL:"https://placar-minutera-default-rtdb.firebaseio.com",projectId:"placar-minutera"};
-firebase.initializeApp(firebaseConfig); const db=firebase.database();
-function toArr(d){ if(!d) return []; if(Array.isArray(d)) return d; return Object.values(d); }
+firebase.initializeApp(firebaseConfig);
+const db=firebase.database();
+
+function toArr(d){ if(!d) return []; if(Array.isArray(d)) return d.filter(x=>x); return Object.keys(d).map(k=>({key:k,... (typeof d[k]==='string'?{arte:d[k]}:d[k]) })); }
 
 db.ref("CONFIG_ANUNCIOS_FTERJ").on('value',s=>{
- let c=s.val(); if(!c) return;
- propPx.value=c.propPx||32; contPx.value=c.contPx||22; escala.value=c.escala||100;
- velocidade.value=c.velocidade||35; headerH.value=c.headerH||9; linhaH.value=c.linhaH||7.2;
- rodapeH.value=c.rodapeH||7; fontNome.value=c.fontNome||2.6; fontTotal.value=c.fontTotal||3;
- intervaloFull.value=c.intervaloFull||120; tempoFull.value=c.tempoFull||7;
+ let v=s.val(); if(!v) return;
+ document.getElementById('logoClube').value=v.logoClube||'';
+ document.getElementById('logoMinutera').value=v.logoMinutera||'';
+ document.getElementById('intervaloFull').value=v.intervaloFull||120;
+ document.getElementById('tempoFull').value=v.tempoFull||7;
+ if(v.logoClube) document.getElementById('prevClube').src=v.logoClube;
+ if(v.logoMinutera) document.getElementById('prevMinutera').src=v.logoMinutera;
 });
 
+function salvarLogos(){
+ db.ref("CONFIG_ANUNCIOS_FTERJ").update({
+  logoClube: document.getElementById('logoClube').value.trim(),
+  logoMinutera: document.getElementById('logoMinutera').value.trim()
+ }).then(()=>alert("Logos salvos!"));
+}
 function salvarConfig(){
- let cfg={
-  propPx:parseInt(propPx.value)||32, contPx:parseInt(contPx.value)||22, escala:parseInt(escala.value)||100,
-  velocidade:parseInt(velocidade.value)||35, headerH:parseFloat(headerH.value)||9, linhaH:parseFloat(linhaH.value)||7.2,
-  rodapeH:parseFloat(rodapeH.value)||7, fontNome:parseFloat(fontNome.value)||2.6, fontTotal:parseFloat(fontTotal.value)||3,
-  intervaloFull:parseInt(intervaloFull.value)||120, tempoFull:parseInt(tempoFull.value)||7,
-  atualizado:Date.now()
- };
- db.ref("CONFIG_ANUNCIOS_FTERJ").set(cfg).then(()=>{
-  statusConfig.innerText=`✅ Salvo! Bloco: a cada ${cfg.intervaloFull}s mostra ${cfg.tempoFull}s cada`;
-  setTimeout(()=>statusConfig.innerText="",5000);
+ db.ref("CONFIG_ANUNCIOS_FTERJ").update({
+  intervaloFull: parseInt(document.getElementById('intervaloFull').value)||120,
+  tempoFull: parseInt(document.getElementById('tempoFull').value)||7
+ }).then(()=>alert("Tempos salvos!"));
+}
+
+function addFull(){
+ let nome=document.getElementById('fullNome').value.trim();
+ let arte=document.getElementById('fullArte').value.trim();
+ let tempo=parseInt(document.getElementById('fullTempo').value)||0;
+ if(!arte){ alert("Coloca a URL da arte"); return; }
+ db.ref("PATROCINADORES_FULL_FTERJ").push({
+  nome: nome||'Patrocinador',
+  arte: arte,
+  tempo: tempo||7,
+  ativo: true,
+  criado: Date.now()
+ }).then(()=>{
+  document.getElementById('fullNome').value=''; document.getElementById('fullArte').value=''; document.getElementById('fullTempo').value='';
+  alert("FULL adicionado!");
  });
 }
 
-db.ref("PATROCINADORES_RODAPE_FTERJ").on('value',s=>{
- let data=s.val(); let lista=toArr(data||[]); let html="";
- lista.forEach((item,key)=>{ let k=Array.isArray(data)?key:Object.keys(data)[key]; html+=`<div class="card"><input value="${item.prop||item.propaganda||''}" onchange="updRod('${k}','prop',this.value)" style="flex:2"><input value="${item.contato||''}" onchange="updRod('${k}','contato',this.value)" style="flex:1"><button class="btn-del" onclick="delRod('${k}')">X</button></div>`; });
- listaRodape.innerHTML=html;
+db.ref("PATROCINADORES_FULL_FTERJ").on('value',snap=>{
+ let data=snap.val();
+ let div=document.getElementById('listaFull');
+ if(!data){ div.innerHTML='NENHUM FULL'; return; }
+ let lista=toArr(data);
+ let html='';
+ lista.forEach(item=>{
+  let ativo = item.ativo!==false;
+  let key=item.key;
+  html+=`<div class="item">
+   <img src="${item.arte||''}" onerror="this.style.background='red'">
+   <div class="item-info"><b>${item.nome||'Sem nome'}</b><br>${(item.arte||'').substring(0,40)}...<br><span class="status ${ativo?'ativo':'inativo'}">${ativo?'ATIVO':'DESATIVADO'}</span> - Tempo: ${item.tempo||7}s</div>
+   <button class="${ativo?'btn-off':'btn-on'}" onclick="toggleAtivo('${key}',${ativo})">${ativo?'DESATIVAR':'ATIVAR'}</button>
+   <button class="btn-del" onclick="deletarFull('${key}')">X</button>
+  </div>`;
+ });
+ div.innerHTML=html;
 });
-function addRodape(){ let p=newRodProp.value.trim(); let c=newRodCont.value.trim(); if(!p) return alert("Prop obrigatória"); db.ref("PATROCINADORES_RODAPE_FTERJ").push({prop:p,contato:c,ativo:true}); newRodProp.value=""; newRodCont.value=""; }
-function updRod(k,campo,val){ db.ref("PATROCINADORES_RODAPE_FTERJ/"+k+"/"+campo).set(val); }
-function delRod(k){ if(confirm("Apagar?")) db.ref("PATROCINADORES_RODAPE_FTERJ/"+k).remove(); }
 
-db.ref("PATROCINADORES_FULL_FTERJ").on('value',s=>{
- let data=s.val(); let lista=toArr(data||[]); let html="";
- lista.forEach((item,key)=>{ let k=Array.isArray(data)?key:Object.keys(data)[key]; html+=`<div class="card"><img src="${item.arte||item.url||''}" style="width:60px;height:40px;object-fit:cover;border-radius:6px;background:#000" onerror="this.style.display='none'"><input value="${item.nome||''}" placeholder="Nome" onchange="updFull('${k}','nome',this.value)"><input value="${item.prop||item.propaganda||''}" placeholder="Prop" onchange="updFull('${k}','prop',this.value)"><input value="${item.contato||''}" placeholder="Contato" onchange="updFull('${k}','contato',this.value)"><input value="${item.arte||item.url||''}" placeholder="URL" style="flex:1" onchange="updFull('${k}','arte',this.value)"><input value="${item.tempo||7}" type="number" style="width:60px" onchange="updFull('${k}','tempo',parseInt(this.value))"><button class="btn-del" onclick="delFull('${k}')">X</button></div>`; });
- listaFull.innerHTML=html;
-});
-function addFull(){ let arte=newFullArte.value.trim(); if(!arte) return alert("URL obrigatória"); db.ref("PATROCINADORES_FULL_FTERJ").push({nome:newFullNome.value.trim(),prop:newFullProp.value.trim(),contato:newFullCont.value.trim(),arte,tempo:parseInt(newFullTempo.value)||7,ativo:true}); newFullNome.value=""; newFullProp.value=""; newFullCont.value=""; newFullArte.value=""; }
-function updFull(k,campo,val){ db.ref("PATROCINADORES_FULL_FTERJ/"+k+"/"+campo).set(val); }
-function delFull(k){ if(confirm("Apagar full?")) db.ref("PATROCINADORES_FULL_FTERJ/"+k).remove(); }
+function toggleAtivo(key,estaAtivo){
+ // CORREÇÃO DEFINITIVA DO LOOP
+ let novo =!estaAtivo;
+ db.ref("PATROCINADORES_FULL_FTERJ/"+key+"/ativo").set(novo).then(()=>{
+  console.log("FULL "+key+" novo ativo: "+novo);
+ });
+}
+
+function deletarFull(key){
+ if(!confirm("Deletar esse FULL?")) return;
+ db.ref("PATROCINADORES_FULL_FTERJ/"+key).remove();
+}
 </script>
 </body>
 </html>
