@@ -1,84 +1,106 @@
-<!DOCTYPE html><html><head><meta charset="UTF-8"><title>3x7 FTERJ V29 SENHA DO BANCO</title>
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>3x7 FTERJ V30</title>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}body{background:#121212;color:#fff;font-family:Arial}
-#header{background:linear-gradient(90deg,#FF8C00,#FF6A00);padding:8px;display:flex;justify-content:space-between;color:#000;font-weight:900}
-#main{display:flex;height:calc(100vh - 40px)}
-#left{width:34%;background:#1e1e1e;margin:8px;padding:10px;border-radius:8px}
+#header{background:linear-gradient(90deg,#FF8C00,#FF6A00);padding:8px 12px;display:flex;justify-content:space-between;color:#000;font-weight:900;font-size:18px}
+#main{display:flex;height:calc(100vh - 44px)}
+#left{width:360px;background:#1e1e1e;margin:8px;padding:10px;border-radius:8px}
 #right{flex:1;background:#1e1e1e;margin:8px 8px 8px 0;padding:8px;border-radius:8px;overflow:auto}
-input,select{width:100%;padding:8px;background:#000;color:#fff;border:1px solid #444;border-radius:5px}
+input,select{width:100%;padding:9px;background:#000;color:#fff;border:1px solid #444;border-radius:6px}
 .row{display:flex;gap:6px;margin-top:6px}
 .linha-tiro{display:flex;gap:6px;align-items:center;margin-top:4px}
-.linha-tiro b{width:28px;color:#aaa}
-.linha-tiro input.errou{border:2px solid red;background:#330000}
-.item{display:flex;justify-content:space-between;background:#2a2a2a;padding:6px;margin-bottom:4px;border-radius:5px;border-left:4px solid #FF8C00;font-size:11px}
-.btn{flex:1;padding:9px;border:none;border-radius:5px;font-weight:900;cursor:pointer;margin-top:8px}
+.linha-tiro b{width:26px;color:#aaa;font-size:12px}
+.linha-tiro input.errou{border:2px solid #ff0000;background:#330000}
+.item{display:flex;justify-content:space-between;background:#2a2a2a;padding:6px;margin-bottom:4px;border-radius:5px;border-left:4px solid #FF8C00;font-size:11px;align-items:center}
+.btn{flex:1;padding:10px;border:none;border-radius:6px;font-weight:900;cursor:pointer;margin-top:8px}
 .btn-salvar{background:#FF8C00;color:#000}.btn-nova{background:#444;color:#fff}
-.btn-editar{background:#FFD700;color:#000;padding:3px 7px;border:none;border-radius:3px;font-size:10px;font-weight:900}
-.btn-excluir{background:#ff2e2e;color:#fff;padding:3px 7px;border:none;border-radius:3px;font-size:10px;font-weight:900;margin-left:4px}
-.total{color:#00BFFF;text-align:center;font-weight:900;margin:10px 0}
+.btn-editar{background:#FFD700;color:#000;padding:4px 8px;border:none;border-radius:4px;font-size:10px;font-weight:900}
+.btn-excluir{background:#ff2e2e;color:#fff;padding:4px 8px;border:none;border-radius:4px;font-size:10px;font-weight:900;margin-left:4px}
+.total{color:#00BFFF;text-align:center;font-weight:900;margin:10px 0;font-size:16px}
 #telaSenha{position:fixed;inset:0;background:rgba(0,0,0,0.97);z-index:9999;display:flex;align-items:center;justify-content:center}
 </style></head><body>
 
 <div id="telaSenha">
-<div style="background:#1e1e1e;padding:30px;border-radius:12px;text-align:center;border:2px solid #FF8C00;min-width:320px">
-<h2 style="color:#FF8C00;margin-bottom:6px">3x7 FTERJ</h2>
-<p style="font-size:11px;color:#aaa;margin-bottom:4px">Senha do operador</p>
-<p style="font-size:9px;color:#666;margin-bottom:12px" id="infoSenhaDB">Buscando senha no banco...</p>
-<input id="inputSenha" type="password" placeholder="Digite a senha" style="text-align:center;font-size:18px;letter-spacing:2px">
+<div style="background:#1e1e1e;padding:28px;border-radius:12px;text-align:center;border:2px solid #FF8C00;min-width:320px">
+<h2 style="color:#FF8C00;margin-bottom:4px">3x7 FTERJ</h2>
+<p style="font-size:10px;color:#777" id="infoSenha">Senha: CONFIG_SENHA_OPERADOR_FTERJ</p>
+<input id="inputSenha" type="password" placeholder="minutera2025" style="text-align:center;font-size:18px;letter-spacing:2px;margin-top:10px">
 <button onclick="checarSenha()" style="width:100%;margin-top:10px;padding:10px;background:#FF8C00;color:#000;border:none;border-radius:6px;font-weight:900;cursor:pointer">ENTRAR</button>
-<p id="erroSenha" style="color:#ff4444;font-size:11px;margin-top:8px;display:none">Senha incorreta</p>
+<p id="erroSenha" style="color:#ff4444;font-size:11px;margin-top:8px;display:none"></p>
 </div>
 </div>
 
-<div id="header"><span>3x7 MinuT&Ra - FTERJ | X=12.01</span><span style="font-size:11px">ADM TV ANÚNCIOS</span></div>
+<div id="header"><span>3x7 MinuT&Ra - FTERJ | X=12.01</span><span style="font-size:12px">ADM TV ANÚNCIOS</span></div>
 <div id="main">
 <div id="left">
-<div class="row"><input id="nomeAtleta" list="listaNomes" placeholder="NOME" style="text-transform:uppercase"><datalist id="listaNomes"></datalist><select id="provaSelect" style="width:90px"><option value="R1">R1</option><option value="R2">R2</option><option value="R3">R3</option><option value="R4">R4</option><option value="R5">R5</option><option value="C">C</option><option value="C/R">C/R</option></select></div>
+<div class="row"><input id="nomeAtleta" list="listaNomes" placeholder="NOME - digite" style="text-transform:uppercase"><datalist id="listaNomes"></datalist><select id="provaSelect" style="width:90px"><option value="R1">R1</option><option value="R2">R2</option><option value="R3">R3</option><option value="R4">R4</option><option value="R5">R5</option><option value="C">C</option><option value="C/R">C/R</option></select></div>
 <div id="tirosContainer" style="margin-top:10px"></div>
 <div class="total">TOTAL: <span id="totalPontos">0.00</span></div>
 <div style="display:flex;gap:6px"><button class="btn btn-salvar" onclick="salvarLancamento()">SALVAR [F2]</button><button class="btn btn-nova" onclick="novoLancamento()">NOVA [F3]</button></div>
 </div>
-<div id="right"><div id="listaLancamentos"></div></div>
+<div id="right"><div id="listaLancamentos">Carregando...</div></div>
 </div>
 
 <script>
 const firebaseConfig={apiKey:"AIzaSyCTEXeRjxq0_3doBNyWm5AkQ0kmBXmjlSk",authDomain:"placar-minutera.firebaseapp.com",databaseURL:"https://placar-minutera-default-rtdb.firebaseio.com",projectId:"placar-minutera"};
 firebase.initializeApp(firebaseConfig); const db=firebase.database();
-let SENHA_BANCO="minutera2025"; // fallback
-let editKey=null, cache={};
+let SENHA_BANCO="minutera2025", editKey=null, cache={};
+const PERMITIDOS=['X','10','9','8','7','6','5','4','3','2','1','0'];
+const ORDEM_R=['R1','R2','R3','R4','R5'];
 
-// PUXA SENHA DO BANCO - CAMINHO QUE VOCÊ MOSTROU NO PRINT
-db.ref("CONFIG_SENHA_OPERADOR_FTERJ").on('value',s=>{
-  let v=s.val();
-  if(v){ SENHA_BANCO=String(v); document.getElementById('infoSenhaDB').innerText="Senha carregada do banco"; }
-});
-
+db.ref("CONFIG_SENHA_OPERADOR_FTERJ").on('value',s=>{let v=s.val(); if(v){SENHA_BANCO=String(v); document.getElementById('infoSenha').innerText="Senha do banco carregada";}});
 function checarSenha(){
  let s=document.getElementById('inputSenha').value.trim();
- if(s===SENHA_BANCO){document.getElementById('telaSenha').style.display='none';localStorage.setItem('senhaFTERJ','ok');}
- else{document.getElementById('erroSenha').style.display='block';document.getElementById('erroSenha').innerText="Senha incorreta - a correta é do banco CONFIG_SENHA_OPERADOR_FTERJ";document.getElementById('inputSenha').value='';}
+ if(s===SENHA_BANCO){document.getElementById('telaSenha').style.display='none'; localStorage.setItem('senhaFTERJ','ok');}
+ else{let e=document.getElementById('erroSenha'); e.style.display='block'; e.innerText="Incorreta! Senha atual do banco é: "+SENHA_BANCO; }
 }
-if(localStorage.getItem('senhaFTERJ')==='ok'){document.getElementById('telaSenha').style.display='none';}
+if(localStorage.getItem('senhaFTERJ')==='ok') document.getElementById('telaSenha').style.display='none';
 document.getElementById('inputSenha').addEventListener('keydown',e=>{if(e.key==='Enter') checarSenha();});
 
-const PERMITIDOS=['X','10','9','8','7','6','5','4','3','2','1','0'];
 function valorTiro(v){v=String(v).trim().toUpperCase(); if(v=='X') return 12; let n=parseFloat(v); return isNaN(n)?0:n;}
 function calcTotal(){let soma=0,x=0; for(let i=1;i<=10;i++){let v=document.getElementById('t'+i).value.trim().toUpperCase(); if(v=='X') x++; soma+=valorTiro(v);} document.getElementById('totalPontos').innerText=(soma + x*0.01).toFixed(2);}
 function criar(){let c=document.getElementById('tirosContainer'); c.innerHTML=''; for(let i=1;i<=10;i++) c.innerHTML+=`<div class="linha-tiro"><b>${i}°</b><input id="t${i}" list="vals" autocomplete="off" oninput="calcTotal()" onblur="valida(this)"></div>`; c.innerHTML+=`<datalist id="vals"><option value="X"><option value="10"><option value="9"><option value="8"><option value="7"><option value="6"><option value="5"><option value="4"><option value="3"><option value="2"><option value="1"><option value="0"></datalist>`;}
 criar();
-function valida(el){let v=el.value.trim().toUpperCase(); if(v=='') return true; if(!PERMITIDOS.includes(v)){alert("VALOR INVÁLIDO: '"+el.value+"'\nSó pode: X,10,9,8,7,6,5,4,3,2,1,0"); el.value=''; el.classList.add('errou'); return false;} el.value=v; el.classList.remove('errou'); return true;}
+function valida(el){let v=el.value.trim().toUpperCase(); if(v=='') return true; if(!PERMITIDOS.includes(v)){alert("INVÁLIDO: '"+el.value+"'. Só: X,10,9,8,7,6,5,4,3,2,1,0"); el.value=''; el.classList.add('errou'); return false;} el.value=v; el.classList.remove('errou'); return true;}
 
 db.ref("FTERJ").on('value',s=>{
  cache=s.val()||{}; let lista=Object.keys(cache).filter(k=>k.startsWith('serie_')).map(k=>({key:k,...cache[k]}));
  document.getElementById('listaNomes').innerHTML=[...new Set(lista.map(x=>(x.nome||'').toUpperCase()))].sort().map(n=>`<option value="${n}">`).join('');
- let html=''; lista.sort((a,b)=>(b.data||0)-(a.data||0)).forEach(it=>{html+=`<div class="item"><div><b>${it.prova}</b> - ${it.nome} <b style="color:#FFD700">${parseFloat(it.pontos).toFixed(2)}</b> ${(it.tiros||[]).join('|')}</div><div><button class="btn-editar" onclick="editar('${it.key}')">EDITAR</button><button class="btn-excluir" onclick="excluir('${it.key}')">EXCLUIR</button></div></div>`;});
+ let html=''; lista.sort((a,b)=>(b.data||0)-(a.data||0)).forEach(it=>{html+=`<div class="item"><div><b>${it.prova}</b> - ${it.nome} <b style="color:#FFD700">${parseFloat(it.pontos||0).toFixed(2)}</b> <span style="color:#888">${(it.tiros||[]).join('|')}</span></div><div><button class="btn-editar" onclick="editar('${it.key}')">EDITAR</button><button class="btn-excluir" onclick="excluir('${it.key}')">EXCLUIR</button></div></div>`;});
  document.getElementById('listaLancamentos').innerHTML=html;
 });
-function salvarLancamento(){let nome=document.getElementById('nomeAtleta').value.toUpperCase().trim(); if(!nome) return alert("Digite o NOME!"); let prova=document.getElementById('provaSelect').value; let tiros=[]; for(let i=1;i<=10;i++){let el=document.getElementById('t'+i); let v=el.value.trim(); if(v==''){alert("CAMPO EM BRANCO no tiro "+i+"°\nPreencha: X,10,9,8,7,6,5,4,3,2,1,0"); el.focus(); el.classList.add('errou'); return;} v=v.toUpperCase(); if(!PERMITIDOS.includes(v)){alert("VALOR INVÁLIDO no tiro "+i+"°"); return;} tiros.push(v);} let x=tiros.filter(t=>t=='X').length; let total=parseFloat((tiros.reduce((s,t)=>s+valorTiro(t),0)+x*0.01).toFixed(2)); let obj={nome,prova,tiros,pontos:total,data:Date.now()}; if(editKey) db.ref("FTERJ/"+editKey).set(obj).then(()=>{editKey=null; novoLancamento();}); else db.ref("FTERJ/serie_"+Date.now()).set(obj).then(()=>novoLancamento());}
-function novoLancamento(){editKey=null; document.getElementById('nomeAtleta').value=''; for(let i=1;i<=10;i++){let e=document.getElementById('t'+i); e.value=''; e.classList.remove('errou');} document.getElementById('totalPontos').innerText='0.00';}
+
+function salvarLancamento(){
+ let nome=document.getElementById('nomeAtleta').value.toUpperCase().trim(); if(!nome) return alert("Digite NOME");
+ let prova=document.getElementById('provaSelect').value;
+ let tiros=[]; for(let i=1;i<=10;i++){let el=document.getElementById('t'+i); let v=el.value.trim(); if(v==''){alert("CAMPO EM BRANCO no tiro "+i+"° - preencha X,10,9,8,7,6,5,4,3,2,1,0"); el.focus(); el.classList.add('errou'); return;} v=v.toUpperCase(); if(!PERMITIDOS.includes(v)){alert("VALOR INVÁLIDO no tiro "+i+"°: "+v); return;} tiros.push(v);}
+ if(!editKey){
+   let ja=Object.values(cache).some(s=>s.nome && s.nome.toUpperCase().trim()==nome && s.prova==prova);
+   if(ja) return alert("JÁ EXISTE "+nome+" na prova "+prova+"! O sistema vai sugerir a próxima (R3, R4...)");
+ }
+ let x=tiros.filter(t=>t=='X').length; let total=parseFloat((tiros.reduce((s,t)=>s+valorTiro(t),0)+x*0.01).toFixed(2));
+ let obj={nome,prova,tiros,pontos:total,data:Date.now()};
+ if(editKey) db.ref("FTERJ/"+editKey).set(obj).then(()=>{editKey=null; novoLancamento();});
+ else db.ref("FTERJ/serie_"+Date.now()).set(obj).then(()=>novoLancamento());
+}
+function novoLancamento(){editKey=null; document.getElementById('nomeAtleta').value=''; for(let i=1;i<=10;i++){let e=document.getElementById('t'+i); e.value=''; e.classList.remove('errou');} document.getElementById('totalPontos').innerText='0.00'; document.getElementById('nomeAtleta').focus();}
 function editar(k){db.ref("FTERJ/"+k).once('value',s=>{let v=s.val(); document.getElementById('nomeAtleta').value=v.nome; document.getElementById('provaSelect').value=v.prova; (v.tiros||[]).forEach((t,i)=>{document.getElementById('t'+(i+1)).value=t;}); calcTotal(); editKey=k;});}
-function excluir(k){if(confirm("Excluir lançamento?")) db.ref("FTERJ/"+k).remove();}
+function excluir(k){if(confirm("Excluir?")) db.ref("FTERJ/"+k).remove();}
+
+// *** CORREÇÃO DO BUG DO PRINT: THIAGO BORGES com R2 -> puxa R3 e não R1 ***
+document.getElementById('nomeAtleta').addEventListener('change',()=>{
+ let nome=document.getElementById('nomeAtleta').value.toUpperCase().trim();
+ if(nome.length<3 || editKey) return;
+ let provas=Object.values(cache).filter(s=>s.nome && s.nome.toUpperCase().trim()==nome).map(s=>s.prova);
+ if(provas.length==0) return;
+ let maxIdx=-1; provas.forEach(p=>{let idx=ORDEM_R.indexOf(p); if(idx>maxIdx) maxIdx=idx;});
+ let proxima=null;
+ if(maxIdx>=0 && maxIdx<4) proxima=ORDEM_R[maxIdx+1]; // R2->R3
+ else if(maxIdx==4) proxima='C';
+ else if(provas.includes('C')) proxima='C/R';
+ if(proxima){document.getElementById('provaSelect').value=proxima;}
+});
+
 document.addEventListener('keydown',e=>{if(e.key=='F2'){e.preventDefault(); salvarLancamento();} if(e.key=='F3'){e.preventDefault(); novoLancamento();}});
 </script></body></html>
