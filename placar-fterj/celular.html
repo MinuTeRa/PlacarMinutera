@@ -1,40 +1,96 @@
-<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>CELULAR - FTERJ</title>
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>3x7 MinuT&Ra - FTERJ - Celular</title>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 <style>
-html,body{background:#000;color:#fff;font-family:'Arial Black',Arial;margin:0;text-align:center}
-.topo{background:linear-gradient(90deg,#FF8C00,#FF4500);padding:8px 12px;display:flex;align-items:center;justify-content:space-between;border-bottom:3px solid #FFD700}
-.topo img{height:40px;background:#fff;padding:3px;border-radius:6px}.topo h1{font-size:4vw;margin:0;color:#000;flex:1}.logos-lado{display:flex;gap:6px}
-#lista{padding:6px;display:flex;flex-direction:column;gap:5px}
-.placar{display:flex;align-items:center;padding:10px 6px;background:#1a1a1a;border-left:5px solid #555;border-radius:6px;font-size:12px;font-weight:800}
-.placar.p1{background:#FFD700;color:#000}.placar.p2{background:#C0C0C0;color:#000}.placar.p3{background:#CD7F32;color:#000}
-.pos{width:10%}.nome{width:35%;text-align:left;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.prova{width:15%}.total{width:15%}.detalhe{width:25%;text-align:right;font-size:9px}
-.filtro{background:#222;padding:8px;display:flex;gap:6px;justify-content:center;flex-wrap:wrap}
-.filtro button{padding:6px 10px;background:#333;color:#FFD700;border:1px solid #FF8C00;border-radius:5px;font-weight:bold}
-.filtro button.ativo{background:#FF8C00;color:#000}
-.rodape{background:linear-gradient(90deg,#FF8C00,#FF4500);border-top:3px solid #FFD700;padding:10px;position:fixed;bottom:0;left:0;width:100%;box-sizing:border-box;height:70px;display:flex;align-items:center;justify-content:center}
-.rodape-conteudo{display:flex;gap:10px;align-items:center;transition:opacity 0.3s}.rodape-prop{color:#000;font-weight:900;font-size:16px}.rodape-contato{color:#fff;background:#000;padding:3px 8px;border-radius:12px;font-size:12px}
-</style></head><body>
-<div class="topo" id="topo-tv"></div>
-<div class="filtro" id="filtro-prova">
-<button onclick="filtrarProva('TODAS')" id="btn-TODAS" class="ativo">TODAS</button>
-<button onclick="filtrarProva('A')" id="btn-A">A</button>
-<button onclick="filtrarProva('B')" id="btn-B">B</button>
-<button onclick="filtrarProva('C')" id="btn-C">C</button>
-<button onclick="filtrarProva('D')" id="btn-D">D</button>
-</div>
-<div id="lista">AGUARDANDO...</div>
-<div class="rodape"><div class="rodape-conteudo" id="rodape-conteudo"></div></div>
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script><script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-<script src="./firebase-config.js?v=17"></script>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0e0e0e;color:#fff;font-family:Arial;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch}
+#header{background:linear-gradient(90deg,#FF8C00,#FF6A00);padding:14px 10px;text-align:center;position:sticky;top:0;z-index:100;box-shadow:0 2px 10px #000}
+#header h1{font-size:22px;color:#000;font-weight:900;line-height:1}
+#sub{font-size:11px;color:#000;font-weight:700;margin-top:2px;opacity:0.7}
+#ranking{display:flex;flex-direction:column;gap:4px;padding:6px;padding-bottom:20px}
+.linha{display:flex;flex-wrap:wrap;align-items:center;background:#1a1a1a;border-radius:8px;padding:8px 10px;min-height:52px}
+.linha.ouro{background:#FFD700;color:#000}.linha.prata{background:#C0C0C0;color:#000}.linha.bronze{background:#CD7F32;color:#fff}
+.top{display:flex;width:100%;align-items:center}
+.pos{width:32px;font-weight:900;text-align:center;font-size:14px}
+.nome{flex:1;font-size:13px;font-weight:800;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.prova{width:38px;text-align:center;color:#00E5FF;font-size:13px;font-weight:900}
+.linha.ouro.prova,.linha.prata.prova,.linha.bronze.prova{color:#000}
+.total{width:68px;text-align:center;color:#FFD700;font-size:14px;font-weight:900}
+.linha.ouro.total,.linha.prata.total,.linha.bronze.total{color:#000}
+.detalhe{width:100%;font-size:10px;opacity:0.75;margin-top:4px;text-align:right;letter-spacing:0.3px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+#contador{position:sticky;bottom:0;background:#000;border-top:1px solid #FF8C00;padding:6px;text-align:center;font-size:11px;color:#FFD700;z-index:100}
+
+#full{position:fixed;inset:0;background:rgba(0,0,0,0.96);display:none;align-items:center;justify-content:center;z-index:9999;flex-direction:column;padding:15px}
+#full img{max-width:95%;max-height:70%;border:3px solid gold;border-radius:12px}
+</style>
+</head>
+<body>
+<div id="header"><h1>3x7 MinuT&Ra - FTERJ</h1><div id="sub">RANKING GERAL - TODOS OS LANÇAMENTOS</div></div>
+<div id="ranking">CARREGANDO...</div>
+<div id="contador">-- atiradores</div>
+<div id="full"><img id="imgFull"><div id="txtFull" style="color:gold;margin-top:10px;font-size:16px;font-weight:bold;text-align:center"></div><div id="fullCount" style="color:#fff;margin-top:6px;font-size:12px"></div></div>
+
 <script>
-let ranking=[],PATROCINADORES_RODAPE=[],indiceRodape=0,filtroAtual='TODAS';
-function montarTopo(id){let e='<div class="logos-lado">',d='<div class="logos-lado">';if(QTD_LOGOS>=1) e+=`<img src="${LOGOS[0]}">`;if(QTD_LOGOS>=2) d+=`<img src="${LOGOS[1]}">`;e+='</div>';d+='</div>';document.getElementById(id).innerHTML=`${e}<h1>${NOME_CAMPEONATO} - ${NOME_CLUBE}</h1>${d}`;}montarTopo('topo-tv');
-firebase.initializeApp(firebaseConfig);const db=firebase.database();
-const urlParams=new URLSearchParams(window.location.search);let provaUrl=urlParams.get('prova');if(provaUrl){filtroAtual=provaUrl.toUpperCase();}
-function filtrarProva(p){filtroAtual=p;document.querySelectorAll('.filtro button').forEach(b=>b.classList.remove('ativo'));let btn=document.getElementById('btn-'+p);if(btn) btn.classList.add('ativo');atualizarTela();}
-function rotacionarRodape(){const r=document.getElementById('rodape-conteudo');if(!r||!PATROCINADORES_RODAPE.length) return;r.style.opacity=0;setTimeout(()=>{let p=PATROCINADORES_RODAPE[indiceRodape];if(p){r.innerHTML=`<div class="rodape-prop">${p.prop}</div><div class="rodape-contato">${p.contato}</div>`;}r.style.opacity=1;indiceRodape=(indiceRodape+1)%PATROCINADORES_RODAPE.length;},300);}
-function atualizarTela(){let html="";let listaFiltrada=ranking;if(filtroAtual!=='TODAS') listaFiltrada=ranking.filter(a=>a.prova===filtroAtual);for(let i=0;i<10&&i<listaFiltrada.length;i++){let a=listaFiltrada[i];let todos=(a.tiros||[]).join(' | ');html+=`<div class="placar ${i==0?'p1':i==1?'p2':i==2?'p3':''}"><span class="pos">${i+1}º</span><span class="nome">${a.nome}</span><span class="prova">${a.prova}</span><span class="total">${a.pontos.toFixed(2)}</span><span class="detalhe">${todos}</span></div>`;}document.getElementById('lista').innerHTML=html||`<div class='placar'>SEM RESULTADO PARA ${filtroAtual}</div>`;}
-db.ref(NOME_BANCO).on('value',snap=>{ranking=[];snap.forEach(c=>{let v=c.val();if(v) ranking.push(v);});ranking.sort((a,b)=>b.pontos-a.pontos);atualizarTela();});
-db.ref(CHAVE_RODAPE).on('value',s=>{if(s.val()) PATROCINADORES_RODAPE=s.val();});
-setInterval(rotacionarRodape,5000);
-if(filtroAtual!=='TODAS'){setTimeout(()=>filtrarProva(filtroAtual),200);}
-</script></body></html>
+const firebaseConfig={apiKey:"AIzaSyCTEXeRjxq0_3doBNyWm5AkQ0kmBXmjlSk",authDomain:"placar-minutera.firebaseapp.com",databaseURL:"https://placar-minutera-default-rtdb.firebaseio.com",projectId:"placar-minutera"};
+firebase.initializeApp(firebaseConfig); const db=firebase.database();
+function toArr(d){ if(!d) return []; if(Array.isArray(d)) return d.filter(x=>x); return Object.values(d).filter(x=>x); }
+
+let FULL=[]; let CFG={intervaloFull:120,tempoFull:7};
+
+db.ref("PATROCINADORES_FULL_FTERJ").on('value',s=>{
+ FULL=toArr(s.val()).map(i=>typeof i==='string'?{arte:i}:i).filter(f=>f.arte||f.url||f.imagem);
+});
+db.ref("CONFIG_ANUNCIOS_FTERJ").on('value',s=>{
+ let v=s.val(); if(v){ CFG.intervaloFull=v.intervaloFull||120; CFG.tempoFull=v.tempoFull||7; }
+});
+
+db.ref("FTERJ").on('value',snap=>{
+ let data=snap.val(); if(!data){ document.getElementById('ranking').innerHTML='SEM DADOS'; return; }
+ let lista=[];
+ Object.keys(data).forEach(k=>{
+  if(k.startsWith("serie_")){
+   let s=data[k]; let c=s.contagem||{}; let tiros=s.tiros||[];
+   let x=c["x10"]||0; let dez=c["10"]||0; let nove=c["9"]||0;
+   if(Object.keys(c).length<3){
+    x=tiros.filter(t=>String(t).toLowerCase()=='x').length;
+    dez=tiros.filter(t=>String(t)=='10').length;
+    nove=tiros.filter(t=>String(t)=='9').length;
+   }
+   let detalheStr = tiros.length>0? tiros.join(' | ') : `X:${x} | 10:${dez} | 9:${nove}`;
+   lista.push({nome:s.nome||'SEM NOME', prova:s.prova||'R2', pontos:parseFloat(s.pontos||0), detalhe:detalheStr});
+  }
+ });
+ lista.sort((a,b)=>b.pontos-a.pontos);
+ let html="";
+ lista.forEach((at,i)=>{
+  let cls=i==0?'ouro':i==1?'prata':i==2?'bronze':'';
+  html+=`<div class="linha ${cls}"><div class="top"><div class="pos">${i+1}º</div><div class="nome">${at.nome}</div><div class="prova">P:${at.prova}</div><div class="total">${at.pontos.toFixed(2)}</div></div><div class="detalhe">${at.detalhe}</div></div>`;
+ });
+ document.getElementById('ranking').innerHTML=html||'NENHUM LANÇAMENTO';
+ document.getElementById('contador').innerText=`${lista.length} atiradores - role para ver todos`;
+});
+
+// FULL BLOCO IGUAL TV
+let emBloco=false;
+async function mostraBlocoFull(){
+ if(FULL.length==0 || emBloco) return; emBloco=true;
+ for(let i=0;i<FULL.length;i++){
+  let f=FULL[i]; let url=f.arte||f.url||f.imagem||''; if(!url) continue;
+  document.getElementById('imgFull').src=url;
+  document.getElementById('txtFull').innerText=`${f.nome||''} ${f.prop||f.propaganda||''} ${f.contato||''}`.trim();
+  document.getElementById('fullCount').innerText=`${i+1}/${FULL.length}`;
+  document.getElementById('full').style.display='flex';
+  await new Promise(r=>setTimeout(r,(f.tempo||CFG.tempoFull||7)*1000));
+ }
+ document.getElementById('full').style.display='none'; emBloco=false;
+}
+setInterval(mostraBlocoFull, (CFG.intervaloFull||120)*1000);
+setTimeout(()=>{ if(FULL.length>0) mostraBlocoFull(); }, 20000);
+</script>
+</body>
+</html>
