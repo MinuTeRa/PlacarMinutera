@@ -5,11 +5,8 @@ let PATROCINADORES_RODAPE=[];let PATROCINADORES_FULL=[];
 const LISTA_TESTE=["THIAGO BORGES","RUAM CAMPOS","MARCOS SILVA"];
 let SENHA_MESTRA=null;const CHAVE_SENHA_FIREBASE='CONFIG_SENHA_OPERADOR_'+NOME_BANCO;
 const CHAVE_RODAPE='CONFIG_RODAPE_GLOBAL';const CHAVE_FULL='CONFIG_FULL_GLOBAL';const CHAVE_TEMPOS='CONFIG_TEMPOS_GLOBAL';
-const MOSTRAR_VOLTAMOS_EM = false;
-const ESCALA_PLACAR = 1.30;
-const MODO_VISAO_LANCAMENTO = "TIROS";
+const MOSTRAR_VOLTAMOS_EM=false;const ESCALA_PLACAR=1.30;const MODO_VISAO_LANCAMENTO="TIROS";
 </script><style>
-/* ===== 0. BASE ===== */
 html,body{background:#000;color:#fff;font-family:'Arial Black',Arial;margin:0;text-align:center}
 button{font-size:13px;padding:6px 10px;margin:3px 2px;border-radius:6px;border:none;cursor:pointer;font-weight:bold}
 .btn-lancar{background:#D2691E;color:#fff}.btn-mini{padding:3px 7px;font-size:10px;margin-left:3px;border-radius:4px}.btn-editar{background:#FFD700;color:#000}.btn-excluir{background:#c00;color:#fff}
@@ -40,52 +37,37 @@ button{font-size:13px;padding:6px 10px;margin:3px 2px;border-radius:6px;border:n
 .full-escala-wrap{width:100vw;height:100vh;display:flex;align-items:center;justify-content:center;transform:scale(var(--full-scale,1))}
 #contato-gigante{position:absolute;bottom:18px;left:50%;transform:translateX(-50%);font-size:14px;color:#fff;background:rgba(0,0,0,0.7);padding:5px 15px;border-radius:20px}
 
-/* ===== 1. MODO TV - V3 GIGANTE + LISTA PADRONIZADA ===== */
-html.modo-tv, body.modo-tv{height:100vh!important;overflow:hidden!important;background:#0a0a0a!important}
-body.modo-tv #tela-placar{position:fixed!important;top:0;left:0;width:100vw;height:100vh;overflow:hidden!important;background:#0a0a0a!important}
-body.modo-tv.topo{height:110px!important;padding:0 18px!important;background:linear-gradient(90deg,#FF8C00,#FF6A00)!important;border-bottom:5px solid #FFD700!important;display:flex!important;align-items:center!important}
-body.modo-tv.topo h1{font-size:clamp(22px,2.2vw,38px)!important;color:#000!important;text-shadow:1px 1px 0 #FFD700!important;font-weight:900!important;flex:1!important;text-align:center!important}
-body.modo-tv.topo img{height:84px!important;width:auto!important;background:#fff!important;padding:4px!important;border-radius:10px!important}
-body.modo-tv.logos-lado{gap:12px!important}
-body.modo-tv.relogio{top:8px!important;right:8px!important;font-size:10px!important;z-index:20}
-body.modo-tv #lista{height:calc(100vh - 220px)!important;padding:12px 14px!important;gap:8px!important;justify-content:flex-start!important;overflow:hidden!important}
-
-/* LISTA PADRONIZADA - TUDO MESMO TAMANHO */
-body.modo-tv.placar{
-  font-size:calc(20px * var(--escala-placar,1.3))!important;
-  margin:0!important;padding:10px 14px!important;border-radius:8px!important;
-  background:#1e1e1e!important;border-left:4px solid #333!important;
-}
-body.modo-tv.placar.p1{background:linear-gradient(90deg,#FFD700,#FFB700)!important;border-left:5px solid #FFD700!important;color:#000!important;box-shadow:0 0 0 2px #FFD700!important}
-body.modo-tv.placar.p2{background:linear-gradient(90deg,#E8E8E8,#B8B8B8)!important;border-left:5px solid #C0C0C0!important;color:#000!important}
-body.modo-tv.placar.p3{background:linear-gradient(90deg,#D49A5A,#8B5A2B)!important;border-left:5px solid #CD7F32!important;color:#000!important}
-
-body.modo-tv.pos,
-body.modo-tv.nome,
-body.modo-tv.prova,
-body.modo-tv.total,
-body.modo-tv.detalhe{
-  font-size:1em!important;
-  font-weight:700!important;
-  color:inherit!important;
-}
+/* ===== 1. MODO TV - V5 GIGANTÃO 30% ===== */
+html.modo-tv, body.modo-tv{height:100vh!important;overflow:hidden!important;background:#000!important}
+body.modo-tv #tela-placar{position:fixed!important;top:0;left:0;width:100vw;height:100vh;background:#000!important;overflow:hidden!important}
+body.modo-tv.topo{height:160px!important;padding:0 20px!important;background:linear-gradient(90deg,#FF8C00,#FF6A00)!important;border-bottom:8px solid #FFD700!important;display:flex!important;align-items:center!important;box-sizing:border-box}
+body.modo-tv.topo h1{font-size:42px!important;color:#000!important;text-shadow:none!important;font-weight:900!important;flex:1!important;text-align:center!important;line-height:1.1!important}
+body.modo-tv.topo img{height:120px!important;width:120px!important;min-width:120px!important;background:#fff!important;padding:6px!important;border-radius:14px!important;object-fit:contain!important}
+body.modo-tv.logos-lado{gap:16px!important;align-items:center!important}
+body.modo-tv.relogio{top:6px!important;right:6px!important;font-size:11px!important;padding:3px 8px!important}
+body.modo-tv #lista{height:calc(100vh - 320px)!important;padding:12px!important;gap:8px!important;display:flex!important;flex-direction:column!important;justify-content:space-between!important;overflow:hidden!important;box-sizing:border-box}
+body.modo-tv.placar{height:calc((100vh - 320px - 72px)/10)!important;min-height:70px!important;font-size:29px!important;padding:0 14px!important;margin:0!important;border-radius:10px!important;background:#1e1e1e!important;border-left:8px solid #333!important;display:flex!important;align-items:center!important;box-sizing:border-box}
+body.modo-tv.placar.p1{background:#FFD700!important;color:#000!important;border-left:8px solid #000!important}
+body.modo-tv.placar.p2{background:#E5E5E5!important;color:#000!important;border-left:8px solid #666!important}
+body.modo-tv.placar.p3{background:#FF8C00!important;color:#000!important;border-left:8px solid #000!important}
+body.modo-tv.pos, body.modo-tv.nome, body.modo-tv.prova, body.modo-tv.total, body.modo-tv.detalhe{font-size:29px!important;font-weight:900!important;color:inherit!important}
 body.modo-tv.pos{width:6%!important;text-align:center!important}
-body.modo-tv.nome{width:32%!important;text-align:left!important;overflow:hidden!important;text-overflow:ellipsis!important;white-space:nowrap!important}
+body.modo-tv.nome{width:28%!important;text-align:left!important;overflow:hidden!important;text-overflow:ellipsis!important;white-space:nowrap!important}
 body.modo-tv.prova{width:10%!important;text-align:center!important;background:none!important;padding:0!important}
-body.modo-tv.total{width:12%!important;text-align:center!important}
-body.modo-tv.detalhe{width:40%!important;text-align:right!important;font-family:monospace!important;letter-spacing:1px!important}
-
-body.modo-tv.rodape{height:110px!important;background:linear-gradient(90deg,#FF8C00,#FF4500)!important;border-top:5px solid #FFD700!important;position:fixed!important;bottom:0!important;left:0!important;width:100vw!important;display:flex!important;align-items:center!important;justify-content:center!important;z-index:100!important}
-body.modo-tv.rodape-conteudo{flex-wrap:nowrap!important;gap:30px!important;width:100%!important;justify-content:center!important}
-body.modo-tv.rodape-prop{color:#000!important;font-size:clamp(22px,2.2vw,34px)!important;font-weight:900!important;text-shadow:1px 1px 0 #FFD700!important;white-space:nowrap!important}
-body.modo-tv.rodape-contato{font-size:clamp(16px,1.6vw,22px)!important;padding:8px 18px!important;background:#000!important;color:#FFD700!important;border-radius:30px!important;white-space:nowrap!important}
+body.modo-tv.total{width:11%!important;text-align:center!important}
+body.modo-tv.detalhe{width:45%!important;text-align:right!important;font-family:monospace!important;font-size:24px!important;letter-spacing:1px!important}
+body.modo-tv.reorg{font-size:11px!important;padding:2px 6px!important}
+body.modo-tv.rodape{height:160px!important;background:linear-gradient(90deg,#FF8C00,#FF4500)!important;border-top:8px solid #FFD700!important;position:fixed!important;bottom:0!important;left:0!important;width:100vw!important;display:flex!important;align-items:center!important;justify-content:center!important;z-index:100!important;box-sizing:border-box}
+body.modo-tv.rodape-conteudo{gap:40px!important;width:100%!important;justify-content:center!important;flex-wrap:nowrap!important}
+body.modo-tv.rodape-prop{font-size:44px!important;color:#000!important;font-weight:900!important;text-shadow:none!important;white-space:nowrap!important}
+body.modo-tv.rodape-contato{font-size:36px!important;padding:10px 28px!important;background:#000!important;color:#FFD700!important;border-radius:30px!important;white-space:nowrap!important}
 body.modo-tv #prop-gigante img{object-fit:contain!important}
 
-/* ===== 2. MODO CELULAR - CONGELADO ===== */
+/* ===== 2. CELULAR CONGELADO ===== */
 body.modo-celular #lista{height:auto!important;overflow:visible!important;justify-content:flex-start!important;padding-bottom:100px}
 body.modo-celular.rodape{position:fixed;bottom:0;left:0;display:flex!important}
 
-/* ===== 3. MODO LANCAMENTO ===== */
+/* ===== 3. LANÇAMENTO ===== */
 .container-operador{display:flex;gap:8px;padding:8px;height:calc(100vh - 62px);background:#0f0f0f;box-sizing:border-box}
 .coluna-lancamento{width:38%;background:#1a1a1a;padding:8px;border-radius:8px;overflow-y:auto;border:1px solid #333}
 .coluna-lista{width:62%;background:#1a1a1a;padding:8px;border-radius:8px;overflow-y:auto;border:1px solid #333}
@@ -100,7 +82,7 @@ body.modo-celular.rodape{position:fixed;bottom:0;left:0;display:flex!important}
 .item-admin{background:#222;margin:5px 0;padding:8px 10px;border-radius:8px;border-left:4px solid #FF8C00;text-align:left}
 .linha-principal{display:flex;justify-content:space-between;align-items:center;font-size:12px;gap:5px}
 
-/* ===== 4 e 5. ADM / ANUNCIOS ===== */
+/* ADM / ANUNCIOS */
 html.modo-adm-scroll, body.modo-adm-scroll{height:auto!important;min-height:100vh!important;overflow-y:auto!important}
 .tela-adm,.tela-anuncios{background:#111;min-height:100vh;padding:20px;box-sizing:border-box;position:relative!important;width:100%!important;height:auto!important;overflow:visible!important;display:block;padding-bottom:120px!important}
 .card-adm{background:#1e1e1e;border:1px solid #333;border-radius:12px;padding:20px;margin:15px auto;max-width:900px;text-align:left}
@@ -115,8 +97,8 @@ html.modo-adm-scroll, body.modo-adm-scroll{height:auto!important;min-height:100v
 .barra-emoji button{font-size:20px;padding:6px 10px;background:#222;border:1px solid #444;border-radius:8px;cursor:pointer}
 </style></head><body>
 <div id="modal-erro"><div id="modal-erro-conteudo"><h2>❌ TIRO INVALIDO!</h2><p id="modal-erro-msg"></p><button onclick="fecharErro()">OK</button></div></div>
-<div id="tela-senha" class="tela-senha"><h2 id="tituloSenha">🔒 CARREGANDO...</h2><div id="areaSenha"></div><div id="erroSenha" style="color:#f55;margin-top:10px;font-family:Arial"></div></div>
-<div id="tela-adm" class="tela-adm" style="display:none;"><h1 style="color:#FFD700;">⚙️ ADM - <span id="nomeBancoADM"></span></h1><div class="card-adm" style="border:2px solid #FFD700"><h2>📢 CONTROLE FULL</h2><label class="switch"><input type="checkbox" id="toggleAnuncio" checked onchange="alternarAnuncios()"><span class="slider"></span></label><span id="statusAnuncio" style="margin-left:10px;color:#00FF00;font-weight:bold">LIGADOS</span></div><div class="card-adm"><h2>🔑 SENHA</h2><input type="password" id="novaSenhaADM" placeholder="Nova senha" style="padding:8px;border-radius:6px;background:#222;color:#fff;border:1px solid #444"><button class="btn-lancar" onclick="trocarSenhaADM()">SALVAR</button><div id="msgSenhaADM" style="color:#81C784;font-size:12px;margin-top:8px"></div></div><div class="card-adm"><h2>🔗 LINKS</h2><div id="links-adm"></div></div><div class="card-adm"><h2>📂 LISTA ATLETAS</h2><div id="infoListaADM" style="color:#aaa;font-size:12px;margin-bottom:10px"></div><input type="file" id="carregarListaADM" accept=".txt,.csv" style="color:#fff"><br><button class="btn-lancar" onclick="apagarListaAtletas()" style="background:#800;margin-top:10px">APAGAR LISTA</button><div id="previewLista" style="max-height:150px;overflow-y:auto;background:#000;padding:10px;margin-top:10px;font-size:11px;color:#ccc"></div></div><div class="card-adm"><h2>🔥 CONTROLE</h2><button class="btn-lancar" onclick="limparContadores()" style="background:#FF9800">ZERAR C/R</button><button class="btn-lancar" onclick="apagarPlacar()" style="background:#b00">APAGAR PLACAR</button><div id="statusADM" style="margin-top:10px;font-size:12px;color:#81C784"></div></div></div>
+<div id="tela-senha" class="tela-senha"><h2 id="tituloSenha">🔒 CARREGANDO...</h2><div id="areaSenha"></div><div id="erroSenha" style="color:#f55;margin-top:10px"></div></div>
+<div id="tela-adm" class="tela-adm" style="display:none;"><h1 style="color:#FFD700;">⚙️ ADM - <span id="nomeBancoADM"></span></h1><div class="card-adm" style="border:2px solid #FFD700"><h2>📢 FULL</h2><label class="switch"><input type="checkbox" id="toggleAnuncio" checked onchange="alternarAnuncios()"><span class="slider"></span></label><span id="statusAnuncio" style="margin-left:10px;color:#00FF00;font-weight:bold">LIGADOS</span></div><div class="card-adm"><h2>🔑 SENHA</h2><input type="password" id="novaSenhaADM" placeholder="Nova senha" style="padding:8px;border-radius:6px;background:#222;color:#fff;border:1px solid #444"><button class="btn-lancar" onclick="trocarSenhaADM()">SALVAR</button><div id="msgSenhaADM" style="color:#81C784;font-size:12px;margin-top:8px"></div></div><div class="card-adm"><h2>🔗 LINKS</h2><div id="links-adm"></div></div><div class="card-adm"><h2>📂 LISTA ATLETAS</h2><div id="infoListaADM" style="color:#aaa;font-size:12px;margin-bottom:10px"></div><input type="file" id="carregarListaADM" accept=".txt,.csv" style="color:#fff"><br><button class="btn-lancar" onclick="apagarListaAtletas()" style="background:#800;margin-top:10px">APAGAR LISTA</button><div id="previewLista" style="max-height:150px;overflow-y:auto;background:#000;padding:10px;margin-top:10px;font-size:11px;color:#ccc"></div></div><div class="card-adm"><h2>🔥 CONTROLE</h2><button class="btn-lancar" onclick="limparContadores()" style="background:#FF9800">ZERAR C/R</button><button class="btn-lancar" onclick="apagarPlacar()" style="background:#b00">APAGAR PLACAR</button><div id="statusADM" style="margin-top:10px;font-size:12px;color:#81C784"></div></div></div>
 <div id="tela-anuncios" class="tela-anuncios" style="display:none;"><h1 style="color:#FFD700;">📢 ANÚNCIOS GLOBAL</h1><div class="barra-emoji"><button onclick="inserirEmoji('🔥')">🔥</button><button onclick="inserirEmoji('🎯')">🎯</button><button onclick="inserirEmoji('🏆')">🏆</button><button onclick="inserirEmoji('💥')">💥</button><button onclick="inserirEmoji('⭐')">⭐</button><button onclick="inserirEmoji('⚡')">⚡</button><button onclick="inserirEmoji('🚀')">🚀</button><button onclick="inserirEmoji('📢')">📢</button></div><div class="card-adm"><h2>⚙️ TEMPOS</h2><div class="linha-config"><label>Rodapé s: <input type="number" id="segRodape" value="5"></label><label>Full s: <input type="number" id="esperaFull" value="60"></label><label>Escala: <input type="range" id="escalaFull" min="0.6" max="1.4" step="0.05" value="1" style="width:120px" oninput="document.getElementById('valEscala').innerText=Math.round(this.value*100)+'%'"><span id="valEscala">100%</span></label><button class="btn-lancar" onclick="salvarTempos()" style="background:#2196F3">SALVAR</button></div><div id="statusAnuncioSave" style="color:#81C784;font-size:12px"></div></div><div class="card-adm"><h2>🟠 RODAPÉS <span id="contadorRodape"></span></h2><div id="containerRodapes"></div><button class="btn-lancar" onclick="adicionarRodape()" style="background:#444">+ RODAPÉ</button><button class="btn-lancar" onclick="salvarRodapes()" style="background:#00C853">💾 SALVAR</button></div><div class="card-adm"><h2>🟡 FULL <span id="contadorFull"></span></h2><div id="containerFull"></div><button class="btn-lancar" onclick="adicionarFull()" style="background:#444">+ FULL</button><button class="btn-lancar" onclick="salvarFulls()" style="background:#00C853">💾 SALVAR</button></div></div>
 <div id="tela-placar" style="display:none;"><div class="topo" id="topo-tv"><div class="relogio" id="relogio-tv"></div></div><div id="lista"></div><div id="insercao-full"><div id="prop-gigante"></div><div id="contato-gigante"></div></div><div class="rodape" id="rodape-tv"><div class="rodape-conteudo" id="rodape-conteudo"></div></div></div>
 <div id="tela-lancamento" style="display:none;"><div class="topo" id="topo-operador"></div><div class="container-operador"><div class="coluna-lancamento"><div style="font-size:10px;color:#888">CLUBE: <span id="labelBanco" style="color:#FFD700"></span> | <a href="?modo=adm" style="color:#FFD700">ADM</a></div><div id="status" style="font-size:10px;color:#81C784"></div><div id="infoLista" style="font-size:11px;color:#FFD700;margin:4px 0"></div><div id="sugestoes"></div><div class="cabecalho"><input type="text" id="nome" placeholder="NOME"><input type="text" id="prova" placeholder="C"></div><table class="tabela-tiros"><thead><tr><th>TIRO</th><th>VALOR</th></tr></thead><tbody id="corpo-tabela"></tbody></table><div id="parcial">TOTAL: 0.00</div><button class="btn-lancar" id="btnSalvar" onclick="lancar()">SALVAR [F2]</button><button class="btn-lancar" onclick="novaSerie()">NOVA [F3]</button><button class="btn-lancar" id="btnCancelar" onclick="cancelarEdicao()" style="background:#555;display:none">CANCELAR</button></div><div class="coluna-lista"><div id="lista-admin"></div></div></div></div>
@@ -170,7 +152,7 @@ function valorTiro(v){if(!v) return 0;v=v.toString().toUpperCase().trim();if(v==
 function contarTiros(tiros){let c={x12_01:0,x10:0,x9:0,x8:0,x7:0,x6:0,x5:0,x4:0,x3:0,x2:0,x1:0,x0:0};tiros.forEach(t=>{let v=valorTiro(t);if(v===12.01) c.x12_01++;else c['x'+Math.floor(v)]++;});return c;}
 function gerarID(){return 'serie_'+Date.now()+'_'+Math.random().toString(36).substr(2,5);}
 function lancarBase(){let nome=document.getElementById('nome').value.toUpperCase().trim();let prova=document.getElementById('prova').value.toUpperCase().trim();if(!nome||!prova) return alert("Preencha Nome e Prova");if(!validarTiros()) return;let tiros=[];let pts=0;for(let i=1;i<=10;i++){let v=document.getElementById('t'+i).value;tiros.push(v);pts+=valorTiro(v);}let cont=contarTiros(tiros);let id=editandoId?editandoId:gerarID();db.ref(NOME_BANCO+'/'+id).set({id,nome,prova,pontos:pts,tiros,contagem:cont,timestamp:Date.now()}).then(()=>{editandoId=null;novaSerie();});}
-function atualizarListaAdmin(){let h="";if(historico.length==0){document.getElementById('lista-admin').innerHTML="<div style='color:#888'>Nenhum</div>";return;}let crono=[...historico].sort((a,b)=>a.timestamp-b.timestamp);let mapaOrdem={};crono.forEach((a,i)=>{mapaOrdem[a.id]=i+1;});let lista=[...historico].sort((a,b)=>b.timestamp-a.timestamp);lista.forEach((a)=>{let cor=a.prova==='C'?'#00FF00':'#FFD700';let c=a.contagem;let num=mapaOrdem[a.id]||0;let linha2="";if(MODO_VISAO_LANCAMENTO==="TIROS"){linha2=`Tiros: ${(a.tiros||[]).join(' | ')}`;}else{linha2=`X:${c.x12_01||0} | 10:${c.x10||0} | 9:${c.x9||0}`;}h+=`<div class="item-admin"><div class="linha-principal"><span><b style="color:#FF8C00">${num}º</b> <b style="color:${cor};">${a.prova}</b> - ${a.nome} <b style="color:#FFD700;">${a.pontos.toFixed(2)}</b> <span style="font-size:9px;color:#bbb">${linha2}</span></span><span><button class="btn-mini btn-editar" onclick="editarSerie('${a.id}')">EDITAR</button><button class="btn-mini btn-excluir" onclick="excluirSerie('${a.id}')">X</button></span></div></div>`;});document.getElementById('lista-admin').innerHTML=h;}
+function atualizarListaAdmin(){let h="";if(historico.length==0){document.getElementById('lista-admin').innerHTML="<div style='color:#888'>Nenhum</div>";return;}let crono=[...historico].sort((a,b)=>a.timestamp-b.timestamp);let mapaOrdem={};crono.forEach((a,i)=>{mapaOrdem[a.id]=i+1;});let lista=[...historico].sort((a,b)=>b.timestamp-a.timestamp);lista.forEach((a)=>{let cor=a.prova==='C'?'#00FF00':'#FFD700';let c=a.contagem;let num=mapaOrdem[a.id]||0;let linha2=`Tiros: ${(a.tiros||[]).join(' | ')}`;h+=`<div class="item-admin"><div class="linha-principal"><span><b style="color:#FF8C00">${num}º</b> <b style="color:${cor};">${a.prova}</b> - ${a.nome} <b style="color:#FFD700;">${a.pontos.toFixed(2)}</b> <span style="font-size:9px;color:#bbb">${linha2}</span></span><span><button class="btn-mini btn-editar" onclick="editarSerie('${a.id}')">EDITAR</button><button class="btn-mini btn-excluir" onclick="excluirSerie('${a.id}')">X</button></span></div></div>`;});document.getElementById('lista-admin').innerHTML=h;}
 function editarSerie(id){let s=historico.find(x=>x.id===id);if(!s) return;editandoId=id;document.getElementById('nome').value=s.nome;document.getElementById('prova').value=s.prova;for(let i=0;i<10;i++){document.getElementById('t'+(i+1)).value=s.tiros[i]||'';}calcularParcial();document.getElementById('btnSalvar').innerText='ATUALIZAR';document.getElementById('btnSalvar').style.background='#FFD700';document.getElementById('btnSalvar').style.color='#000';document.getElementById('btnCancelar').style.display='inline-block';}
 function cancelarEdicao(){editandoId=null;novaSerie();}
 function novaSerie(){editandoId=null;document.getElementById('nome').value="";document.getElementById('prova').value="";for(let i=1;i<=10;i++){let el=document.getElementById('t'+i);if(el){el.value="";el.classList.remove('erro');}}document.getElementById('parcial').innerText="TOTAL: 0.00";document.getElementById('sugestoes').innerHTML='';document.getElementById('btnSalvar').innerText='SALVAR [F2]';document.getElementById('btnSalvar').style.background='#D2691E';document.getElementById('btnSalvar').style.color='#fff';document.getElementById('btnCancelar').style.display='none';document.getElementById('nome').focus();}
