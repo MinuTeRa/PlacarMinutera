@@ -1,25 +1,27 @@
-<!DOCTYPE html><html><head><meta charset="UTF-8"><title>3x7 FTERJ V33 FINAL</title>
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Módulo Lançamento MinuT&Ra V33.1</title>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}body{background:#121212;color:#fff;font-family:Arial}
-#header{background:linear-gradient(90deg,#FF8C00,#FF6A00);padding:8px 12px;display:flex;justify-content:space-between;color:#000;font-weight:900}
-#main{display:flex;height:calc(100vh - 40px)}
+#header{background:linear-gradient(90deg,#FF8C00,#FF6A00);padding:12px 16px;display:flex;justify-content:space-between;color:#000;font-weight:900;font-size:18px;letter-spacing:0.3px}
+#main{display:flex;height:calc(100vh - 48px)}
 #left{width:340px;background:#1e1e1e;margin:8px;padding:10px;border-radius:8px;overflow:auto}
 #right{flex:1;background:#1e1e1e;margin:8px 8px 8px 0;padding:8px;border-radius:8px;overflow:auto}
 input,select{width:100%;padding:8px;background:#000;color:#fff;border:1px solid #444;border-radius:5px}
 .row{display:flex;gap:6px;margin-top:6px}
 .linha-tiro{display:flex;gap:6px;align-items:center;margin-top:4px}.linha-tiro b{width:24px;color:#aaa;font-size:11px}
-.item{display:grid;grid-template-columns:45px 1fr 65px 200px 135px;gap:15px;align-items:center;background:#2a2a2a;padding:5px 10px;margin-bottom:4px;border-radius:5px;border-left:4px solid #FF8C00;font-size:12px;height:36px;white-space:nowrap}
+.item{display:grid;grid-template-columns:50px 1fr 75px 240px 140px;gap:15px;align-items:center;background:#2a2a2a;padding:8px 12px;margin-bottom:5px;border-radius:6px;border-left:5px solid #FF8C00;font-size:15px;height:46px;white-space:nowrap}
+.item div:nth-child(2){font-size:15px;font-weight:700;letter-spacing:0.2px}
+.item div:nth-child(3){font-size:16px;font-weight:900;color:#FFD700}
 .btn{flex:1;padding:9px;border:none;border-radius:5px;font-weight:900;cursor:pointer;margin-top:6px}.btn-salvar{background:#FF8C00;color:#000}.btn-nova{background:#444;color:#fff}
-.btn-editar{background:#FFD700;color:#000;padding:3px 7px;border:none;border-radius:3px;font-size:9px;font-weight:900}.btn-excluir{background:#ff2e2e;color:#fff;padding:3px 7px;border:none;border-radius:3px;font-size:9px;margin-left:3px}
+.btn-editar{background:#FFD700;color:#000;padding:4px 9px;border:none;border-radius:3px;font-size:10px;font-weight:900}.btn-excluir{background:#ff2e2e;color:#fff;padding:4px 9px;border:none;border-radius:3px;font-size:10px;margin-left:4px}
 .total{color:#00BFFF;text-align:center;font-weight:900;margin:8px 0}
 #telaSenha{position:fixed;inset:0;background:rgba(0,0,0,0.97);z-index:9999;display:flex;align-items:center;justify-content:center}
 </style></head><body>
 
 <div id="telaSenha"><div style="background:#1e1e1e;padding:24px;border-radius:12px;text-align:center;border:2px solid #FF8C00;min-width:300px"><h2 style="color:#FF8C00">3x7 FTERJ</h2><input id="inputSenha" type="password" placeholder="Digite a senha" autocomplete="new-password" value="" style="text-align:center;margin-top:10px"><button onclick="checarSenha()" style="width:100%;margin-top:10px;padding:10px;background:#FF8C00;color:#000;border:none;border-radius:6px;font-weight:900">ENTRAR</button><p id="erroSenha" style="color:#f44;font-size:11px;display:none;margin-top:6px"></p></div></div>
 
-<div id="header"><span>3x7 MinuT&Ra - FTERJ V33 | X=12.01</span><span style="font-size:10px">INCREMENTAL + SENHA</span></div>
+<div id="header"><span>Módulo de Lançamento MinuT&Ra - <span id="nomeClubeTxt">FTERJ</span> | V33.1 FINAL</span><span style="font-size:11px;opacity:0.8">X=12.01 | INCREMENTAL</span></div>
 <div id="main">
 <div id="left">
 <div class="row"><input id="nomeAtleta" list="listaNomes" placeholder="NOME" style="text-transform:uppercase"><datalist id="listaNomes"></datalist><select id="provaSelect" style="width:80px"><option>R1</option><option>R2</option><option>R3</option><option>R4</option><option>R5</option><option>C</option><option>C/R</option></select></div>
@@ -39,49 +41,31 @@ firebase.initializeApp(firebaseConfig); const db=firebase.database();
 let SENHA_BANCO="minutera2025", editKey=null, cache={}, fileHandle=null;
 let chavesJaSalvas = new Set(JSON.parse(localStorage.getItem('chavesFTERJ')||'[]'));
 const PERMITIDOS=['X','10','9','8','7','6','5','4','3','2','1','0'], ORDEM_R=['R1','R2','R3','R4','R5'];
+// PEGA NOME DO CLUBE AUTOMATICO SE TIVER NO FIREBASE
+let NOME_CLUBE="FTERJ";
+db.ref("CONFIG_CLUBE_NOME").on('value',s=>{ if(s.val()){ NOME_CLUBE=s.val(); document.getElementById('nomeClubeTxt').innerText=NOME_CLUBE; } });
 db.ref("CONFIG_SENHA_OPERADOR_FTERJ").on('value',s=>{if(s.val()) SENHA_BANCO=String(s.val());});
-
 function checarSenha(){let s=document.getElementById('inputSenha').value.trim(); if(s===SENHA_BANCO){document.getElementById('telaSenha').style.display='none';} else{let e=document.getElementById('erroSenha'); e.style.display='block'; e.innerText="Senha incorreta!";}}
 document.getElementById('inputSenha').addEventListener('keydown',e=>{if(e.key==='Enter') checarSenha();});
 document.getElementById('telaSenha').style.display='flex';
-
 function valorTiro(v){v=String(v).trim().toUpperCase(); if(v=='X') return 12; let n=parseFloat(v); return isNaN(n)?0:n;}
 function calcTotal(){let s=0,x=0; for(let i=1;i<=10;i++){let v=document.getElementById('t'+i).value.toUpperCase(); if(v=='X') x++; s+=valorTiro(v);} document.getElementById('totalPontos').innerText=(s+x*0.01).toFixed(2);}
 function criar(){let c=document.getElementById('tirosContainer'); c.innerHTML=''; for(let i=1;i<=10;i++) c.innerHTML+=`<div class="linha-tiro"><b>${i}°</b><input id="t${i}" list="vals" oninput="calcTotal()" onblur="valida(this)"></div>`; c.innerHTML+=`<datalist id="vals"><option value="X"><option value="10"><option value="9"><option value="8"><option value="7"><option value="6"><option value="5"><option value="4"><option value="3"><option value="2"><option value="1"><option value="0"></datalist>`;} criar();
 function valida(el){let v=el.value.trim().toUpperCase(); if(!v) return true; if(!PERMITIDOS.includes(v)){alert("Inválido"); el.value=''; return false;} el.value=v; return true;}
-
 db.ref("FTERJ").on('value',s=>{
  cache=s.val()||{}; let lista=Object.keys(cache).filter(k=>k.startsWith('serie_')).map(k=>({key:k,...cache[k]}));
  document.getElementById('listaNomes').innerHTML=[...new Set(lista.map(x=>(x.nome||'').toUpperCase()))].sort().map(n=>`<option value="${n}">`).join('');
  let html=''; lista.sort((a,b)=>(b.data||0)-(a.data||0)).forEach(it=>{
-  html+=`<div class="item"><div><b>${it.prova}</b></div><div style="overflow:hidden;text-overflow:ellipsis">${it.nome}</div><div style="color:#FFD700;font-weight:900">${parseFloat(it.pontos||0).toFixed(2)}</div><div style="color:#888;font-size:10px">${(it.tiros||[]).join(' | ')}</div><div style="text-align:right"><button class="btn-editar" onclick="editar('${it.key}')">EDITAR</button><button class="btn-excluir" onclick="excluir('${it.key}')">EXCLUIR</button></div></div>`;
+  html+=`<div class="item"><div><b>${it.prova}</b></div><div>${it.nome}</div><div>${parseFloat(it.pontos||0).toFixed(2)}</div><div style="color:#aaa;font-size:13px">${(it.tiros||[]).join(' | ')}</div><div style="text-align:right"><button class="btn-editar" onclick="editar('${it.key}')">EDITAR</button><button class="btn-excluir" onclick="excluir('${it.key}')">EXCLUIR</button></div></div>`;
  }); document.getElementById('listaLancamentos').innerHTML=html;
 });
-
 function salvarLancamento(){let nome=document.getElementById('nomeAtleta').value.toUpperCase().trim(); if(!nome) return alert("NOME"); let prova=document.getElementById('provaSelect').value; let tiros=[]; for(let i=1;i<=10;i++){let el=document.getElementById('t'+i); let v=el.value.trim(); if(!v){alert("Tiro "+i+" branco"); return;} v=v.toUpperCase(); if(!PERMITIDOS.includes(v)) return alert("Inválido"); tiros.push(v);} if(!editKey){ if(Object.values(cache).some(s=>s.nome && s.nome.toUpperCase().trim()==nome && s.prova==prova)) return alert("Já existe "+prova+" pra "+nome); } let x=tiros.filter(t=>t=='X').length; let total=parseFloat((tiros.reduce((a,b)=>a+valorTiro(b),0)+x*0.01).toFixed(2)); let obj={nome,prova,tiros,pontos:total,data:Date.now()}; if(editKey) db.ref("FTERJ/"+editKey).set(obj).then(()=>{editKey=null; novoLancamento();}); else db.ref("FTERJ/serie_"+Date.now()).set(obj).then(()=>novoLancamento());}
 function novoLancamento(){editKey=null; document.getElementById('nomeAtleta').value=''; for(let i=1;i<=10;i++) document.getElementById('t'+i).value=''; document.getElementById('totalPontos').innerText='0.00';}
 function editar(k){db.ref("FTERJ/"+k).once('value',s=>{let v=s.val(); document.getElementById('nomeAtleta').value=v.nome; document.getElementById('provaSelect').value=v.prova; (v.tiros||[]).forEach((t,i)=>{document.getElementById('t'+(i+1)).value=t;}); calcTotal(); editKey=k;});}
 function excluir(k){if(confirm("Excluir?")) db.ref("FTERJ/"+k).remove();}
-
-async function escolherArquivo(){
-  if(!window.showSaveFilePicker){ alert("Use Chrome ou Edge no PC"); return; }
-  try{
-    fileHandle = await window.showSaveFilePicker({suggestedName:`FTERJ_LIVE_${new Date().toISOString().slice(0,10)}.csv`, types:[{description:'CSV', accept:{'text/csv':['.csv']}}]});
-    let w = await fileHandle.createWritable(); await w.write("PROVA;NOME;PONTOS;T1;T2;T3;T4;T5;T6;T7;T8;T9;T10;DATA;KEY\n"); await w.close();
-    document.getElementById('nomeArquivoFixo').innerText="✓ Incrementando: "+ (await fileHandle.getFile()).name;
-    chavesJaSalvas.clear(); localStorage.removeItem('chavesFTERJ');
-  }catch(e){}
-}
-async function salvarIncremental(){
-  let lista=Object.keys(cache).filter(k=>k.startsWith('serie_')).map(k=>({key:k,...cache[k]}));
-  let novos = lista.filter(it=>!chavesJaSalvas.has(it.key));
-  if(novos.length==0){ document.getElementById('statusAuto').innerText="● sem novos "+new Date().toLocaleTimeString(); return; }
-  let linhas=""; novos.forEach(it=>{linhas+=`${it.prova};${it.nome};${it.pontos};${(it.tiros||[]).join(';')};${new Date(it.data).toLocaleString()};${it.key}\n`; chavesJaSalvas.add(it.key);});
-  localStorage.setItem('chavesFTERJ', JSON.stringify([...chavesJaSalvas]));
-  if(fileHandle){ try{ let writable = await fileHandle.createWritable({keepExistingData:true}); let file = await fileHandle.getFile(); await writable.seek(file.size); await writable.write(linhas); await writable.close(); document.getElementById('statusAuto').innerText=`● +${novos.length} ${new Date().toLocaleTimeString()}`; }catch(e){ document.getElementById('statusAuto').innerText="Erro: escolha arquivo novamente"; } }
-}
-let intervaloAuto=null;
-function iniciarAutoSave(){ if(intervaloAuto) clearInterval(intervaloAuto); let minutos=parseInt(document.getElementById('autoTempo').value); if(minutos===0){document.getElementById('statusAuto').innerText="○ OFF"; return;} intervaloAuto=setInterval(salvarIncremental, minutos*60*1000); document.getElementById('statusAuto').innerText="● a cada "+minutos+"min"; }
+async function escolherArquivo(){ if(!window.showSaveFilePicker){ alert("Use Chrome ou Edge no PC"); return; } try{ fileHandle = await window.showSaveFilePicker({suggestedName:`FTERJ_LIVE_${new Date().toISOString().slice(0,10)}.csv`, types:[{description:'CSV', accept:{'text/csv':['.csv']}}]}); let w = await fileHandle.createWritable(); await w.write("PROVA;NOME;PONTOS;T1;T2;T3;T4;T5;T6;T7;T8;T9;T10;DATA;KEY\n"); await w.close(); document.getElementById('nomeArquivoFixo').innerText="✓ Incrementando: "+ (await fileHandle.getFile()).name; chavesJaSalvas.clear(); localStorage.removeItem('chavesFTERJ'); }catch(e){} }
+async function salvarIncremental(){ let lista=Object.keys(cache).filter(k=>k.startsWith('serie_')).map(k=>({key:k,...cache[k]})); let novos = lista.filter(it=>!chavesJaSalvas.has(it.key)); if(novos.length==0){ document.getElementById('statusAuto').innerText="● sem novos "+new Date().toLocaleTimeString(); return; } let linhas=""; novos.forEach(it=>{linhas+=`${it.prova};${it.nome};${it.pontos};${(it.tiros||[]).join(';')};${new Date(it.data).toLocaleString()};${it.key}\n`; chavesJaSalvas.add(it.key);}); localStorage.setItem('chavesFTERJ', JSON.stringify([...chavesJaSalvas])); if(fileHandle){ try{ let writable = await fileHandle.createWritable({keepExistingData:true}); let file = await fileHandle.getFile(); await writable.seek(file.size); await writable.write(linhas); await writable.close(); document.getElementById('statusAuto').innerText=`● +${novos.length} ${new Date().toLocaleTimeString()}`; }catch(e){ document.getElementById('statusAuto').innerText="Erro: escolha arquivo novamente"; } } }
+let intervaloAuto=null; function iniciarAutoSave(){ if(intervaloAuto) clearInterval(intervaloAuto); let minutos=parseInt(document.getElementById('autoTempo').value); if(minutos===0){document.getElementById('statusAuto').innerText="○ OFF"; return;} intervaloAuto=setInterval(salvarIncremental, minutos*60*1000); document.getElementById('statusAuto').innerText="● a cada "+minutos+"min"; }
 document.getElementById('autoTempo').addEventListener('change', iniciarAutoSave); iniciarAutoSave();
 document.addEventListener('keydown',e=>{if(e.key=='F2'){e.preventDefault(); salvarLancamento();} if(e.key=='F3'){e.preventDefault(); novoLancamento();}});
 </script></body></html>
