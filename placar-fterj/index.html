@@ -6,6 +6,8 @@ const LISTA_TESTE=["THIAGO BORGES","RUAM CAMPOS","MARCOS SILVA"];
 let SENHA_MESTRA=null;const CHAVE_SENHA_FIREBASE='CONFIG_SENHA_OPERADOR_'+NOME_BANCO;
 const CHAVE_RODAPE='CONFIG_RODAPE_GLOBAL';const CHAVE_FULL='CONFIG_FULL_GLOBAL';const CHAVE_TEMPOS='CONFIG_TEMPOS_GLOBAL';
 const MOSTRAR_VOLTAMOS_EM = false;
+// === TAMANHO GERAL DO PLACAR - AUMENTE AQUI ===
+// 1.30 = original pequeno | 1.90 = recomendado TV | 2.20 = gigante
 const ESCALA_PLACAR = 1.90;
 const MODO_VISAO_LANCAMENTO = "TIROS";
 </script><style>
@@ -14,24 +16,42 @@ body.modo-tv, html.modo-tv{height:100vh!important;overflow:hidden!important}
 body.modo-tv #tela-placar{position:fixed!important;top:0;left:0;width:100vw;height:100vh;overflow:hidden!important}
 html.modo-adm-scroll, body.modo-adm-scroll{height:auto!important;min-height:100vh!important;overflow-y:auto!important;overflow-x:hidden!important}
 #tela-placar{background:#000;z-index:5;width:100vw}
-.topo{background:linear-gradient(90deg,#FF8C00,#FF4500);padding:5px 20px;display:flex;align-items:center;justify-content:space-between;border-bottom:4px solid #FFD700;position:relative}.topo img{height:50px;border-radius:8px;background:#fff;padding:3px}.topo h1{font-size:1.8vw;margin:0;color:#000;text-shadow:2px 2px #FFD700;flex:1}.logos-lado{display:flex;gap:10px}
-.relogio{position:absolute;top:14px;right:85px;background:rgba(0,0,0,0.85);color:#FFD700;font-size:12px;padding:4px 14px;border-radius:20px;border:1px solid #FF8C00;z-index:90;font-family:monospace}
+
+/* ===== CABEÇALHO - TOPO LARANJA COM NOME DO CAMPEONATO ===== */
+.topo{background:linear-gradient(90deg,#FF8C00,#FF4500);padding:12px 20px!important;display:flex;align-items:center;justify-content:space-between;border-bottom:4px solid #FFD700;position:relative}
+.topo img{height:65px!important;border-radius:8px;background:#fff;padding:3px}
+.topo h1{font-size:2.6vw!important;margin:0;color:#000;text-shadow:2px 2px #FFD700;flex:1;font-weight:900!important;letter-spacing:1px} /* TAMANHO DO TITULO 3x7 MinuT&Ra */
+.logos-lado{display:flex;gap:10px}
+
+.relogio{position:absolute;top:14px;right:85px;background:rgba(0,0,0,0.85);color:#FFD700;font-size:14px!important;padding:5px 14px;border-radius:20px;border:1px solid #FF8C00;z-index:90;font-family:monospace}
+
+/* ===== LISTA DO PLACAR - ONDE FICAM OS 10 ATLETAS ===== */
 #lista{padding:8px;display:flex;flex-direction:column;gap:6px}
-body.modo-tv #lista{height:calc(100vh - 155px);overflow:hidden!important;justify-content:space-between}
+/* MODO TV - OCUPA A TELA TODA, SEM SOBRAR PRETO */
+body.modo-tv #lista{height:calc(100vh - 150px)!important;overflow:hidden!important;justify-content:space-evenly!important;gap:10px!important;padding:12px 12px!important;display:flex!important}
 body.modo-celular #lista{height:auto!important;overflow:visible!important;justify-content:flex-start!important;padding-bottom:100px}
-.placar{display:flex;justify-content:space-around;align-items:center;font-size:calc(15px * var(--escala-placar,1.3));margin:0 8px;padding:12px 8px;background:#1a1a1a;border-left:6px solid #555;border-radius:8px}
-.placar.p1{background:linear-gradient(90deg,#FFD700,#FFA500);color:#000;border-left:6px solid #FFD700;font-size:calc(17px * var(--escala-placar,1.3))}
+
+/* ===== LINHA DE CADA ATLETA - TAMANHO GIGANTE ===== */
+.placar{display:flex;justify-content:space-around;align-items:center;font-size:calc(21px * var(--escala-placar,1.9))!important;margin:0 4px!important;padding:20px 12px!important;background:#1a1a1a;border-left:8px solid #555;border-radius:10px;min-height:58px}
+.placar.p1{background:linear-gradient(90deg,#FFD700,#FFA500);color:#000;border-left:6px solid #FFD700;font-size:calc(23px * var(--escala-placar,1.9))!important}
 .placar.p2{background:linear-gradient(90deg,#C0C0C0,#A9A9A9);color:#000}.placar.p3{background:linear-gradient(90deg,#CD7F32,#8B4513);color:#000}
-.pos{width:8%}.nome{width:32%;text-align:left;padding-left:8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pos{width:8%}
+.nome{width:36%!important;text-align:left;padding-left:8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:1.05em!important;font-weight:900!important} /* NOME DO ATLETA */
 .prova{width:10%;color:#00FFFF!important}
-.total{width:14%;font-weight:900;color:#FFD700!important}
-.detalhe{width:36%;font-size:calc(11px * var(--escala-placar,1.3));color:#ccc!important;font-weight:bold}
+.total{width:16%!important;font-weight:900;color:#FFD700!important;font-size:1.15em!important} /* PONTUAÇÃO TOTAL 118.09 */
+.detalhe{width:30%!important;font-size:calc(16px * var(--escala-placar,1.9))!important;color:#ccc!important;font-weight:bold} /* DETALHE DOS TIROS X|10|9 */
+
 .reorg{background:#000;color:#00FF88;border:1px solid #00FF88;padding:2px 7px;border-radius:10px;font-weight:900;margin-left:8px;font-size:10px;animation:pisca 1s infinite}
 @keyframes pisca{0%,100%{opacity:1}50%{opacity:0.6}}
-.rodape{background:linear-gradient(90deg,#FF8C00,#FF4500);border-top:4px solid #FFD700;padding:12px 15px;width:100%;box-sizing:border-box;height:85px;z-index:100}
+
+/* ===== RODAPÉ - ANÚNCIOS QUE PASSAM EMBAIXO ===== */
+.rodape{background:linear-gradient(90deg,#FF8C00,#FF4500);border-top:4px solid #FFD700;padding:8px 10px!important;width:100%;box-sizing:border-box;height:95px!important;z-index:100}
 body.modo-tv.rodape{position:fixed;bottom:0;left:0;display:flex}
 body.modo-celular.rodape{position:fixed;bottom:0;left:0;display:flex!important}
-.rodape-conteudo{display:flex;justify-content:center;align-items:center;gap:20px;white-space:nowrap;height:100%;transition:opacity 0.3s;flex-wrap:wrap}.rodape-prop{color:#000;font-size:18px;font-weight:900;text-shadow:1px 1px #FFD700}.rodape-contato{color:#fff;font-size:15px;font-weight:bold;background:#000;padding:5px 12px;border-radius:20px}
+.rodape-conteudo{display:flex;justify-content:center;align-items:center;gap:30px!important;white-space:nowrap;height:100%;transition:opacity 0.3s;flex-wrap:wrap}
+.rodape-prop{color:#000;font-size:32px!important;font-weight:900!important;text-shadow:1px 1px #FFD700;letter-spacing:0.5px} /* TEXTO DO PATROCINADOR NO RODAPÉ */
+.rodape-contato{color:#fff;font-size:24px!important;font-weight:bold!important;background:#000;padding:8px 20px!important;border-radius:25px} /* TELEFONE DO RODAPÉ */
+
 #insercao-full{position:fixed;top:0;left:0;width:100vw;height:100vh;background:#000;z-index:9999;display:none;flex-direction:column;align-items:center;justify-content:center}
 #prop-gigante{width:100vw;height:100vh;display:flex;align-items:center;justify-content:center;background:#000;overflow:hidden}
 #prop-gigante img{width:100vw!important;height:100vh!important;object-fit:cover!important;border-radius:0!important}
@@ -47,7 +67,7 @@ body.modo-celular.rodape{position:fixed;bottom:0;left:0;display:flex!important}
 </style></head><body>
 <div id="modal-erro"><div id="modal-erro-conteudo"><h2>❌ TIRO INVALIDO!</h2><p id="modal-erro-msg"></p><button onclick="fecharErro()">OK</button></div></div>
 <div id="tela-senha" class="tela-senha"><h2 id="tituloSenha">🔒 CARREGANDO...</h2><div id="areaSenha"></div><div id="erroSenha" style="color:#f55;margin-top:10px;font-family:Arial"></div></div>
-<div id="tela-adm" class="tela-adm" style="display:none;"><h1 style="color:#FFD700;">⚙️ ADM - <span id="nomeBancoADM"></span></h1><div class="card-adm" style="border:2px solid #FFD700"><h2>📢 CONTROLE FULL</h2><label class="switch"><input type="checkbox" id="toggleAnuncio" checked onchange="alternarAnuncios()"><span class="slider"></span></label><span id="statusAnuncio" style="margin-left:10px;color:#00FF00;font-weight:bold">LIGADOS</span></div><div class="card-adm"><h2>🔑 SENHA</h2><input type="password" id="novaSenhaADM" placeholder="Nova senha" style="padding:8px;border-radius:6px;background:#222;color:#fff;border:1px solid #444"><button class="btn-lancar" onclick="trocarSenhaADM()">SALVAR</button><div id="msgSenhaADM" style="color:#81C784;font-size:12px;margin-top:8px"></div></div><div class="card-adm"><h2>🔗 LINKS</h2><div id="links-adm"></div></div><div class="card-adm"><h2>📂 LISTA ATLETAS</h2><div id="infoListaADM" style="color:#aaa;font-size:12px;margin-bottom:10px"></div><input type="file" id="carregarListaADM" accept=".txt,.csv" style="color:#fff"><br><button class="btn-lancar" onclick="apagarListaAtletas()" style="background:#800;margin-top:10px">APAGAR LISTA</button><div id="previewLista" style="max-height:150px;overflow-y:auto;background:#000;padding:10px;margin-top:10px;font-size:11px;color:#ccc"></div></div><div class="card-adm"><h2>🔥 CONTROLE</h2><button class="btn-lancar" onclick="limparContadores()" style="background:#FF9800">ZERAR C/R</button><button class="btn-lancar" onclick="apagarPlacar()" style="background:#b00">APAGAR PLACAR</button><div id="statusADM" style="margin-top:10px;font-size:12px;color:#81C784"></div></div></div>
+<div id="tela-adm" class="tela-adm" style="display:none;"><h1 style="color:#FFD700;">⚙️ ADM - <span id="nomeBancoADM"></span></h1><div class="card-adm" style="border:2px solid #FFD700"><h2>📢 CONTROLE FULL</h2><label class="switch"><input type="checkbox" id="toggleAnuncio" checked onchange="alternarAnuncios()"><span class="slider"></span></label><span id="statusAnuncio" style="margin-left:10px;color:#00FF00;font-weight:bold">LIGADOS</span></div><div class="card-adm"><h2>🔑 SENHA</h2><input type="password" id="novaSenhaADM" placeholder="Nova senha" style="padding:8px;border-radius:6px;background:#222;color:#fff;border:1px solid #444"><button class="btn-lancar" onclick="trocarSenhaADM()">SALVAR</button><div id="msgSenhaADM" style="color:#81C784;font-size:12px;margin-top:8px"></div></div><div class="card-adm"><h2>🔗 LINKS - CORRIGIDO</h2><div id="links-adm"></div></div><div class="card-adm"><h2>📂 LISTA ATLETAS</h2><div id="infoListaADM" style="color:#aaa;font-size:12px;margin-bottom:10px"></div><input type="file" id="carregarListaADM" accept=".txt,.csv" style="color:#fff"><br><button class="btn-lancar" onclick="apagarListaAtletas()" style="background:#800;margin-top:10px">APAGAR LISTA</button><div id="previewLista" style="max-height:150px;overflow-y:auto;background:#000;padding:10px;margin-top:10px;font-size:11px;color:#ccc"></div></div><div class="card-adm"><h2>🔥 CONTROLE</h2><button class="btn-lancar" onclick="limparContadores()" style="background:#FF9800">ZERAR C/R</button><button class="btn-lancar" onclick="apagarPlacar()" style="background:#b00">APAGAR PLACAR</button><div id="statusADM" style="margin-top:10px;font-size:12px;color:#81C784"></div></div></div>
 <div id="tela-anuncios" class="tela-anuncios" style="display:none;"><h1 style="color:#FFD700;">📢 ANÚNCIOS GLOBAL - EDITÁVEL</h1><div class="barra-emoji" id="barraEmoji"><button onclick="inserirEmoji('🔥')">🔥</button><button onclick="inserirEmoji('🎯')">🎯</button><button onclick="inserirEmoji('🏆')">🏆</button><button onclick="inserirEmoji('💥')">💥</button><button onclick="inserirEmoji('⭐')">⭐</button><button onclick="inserirEmoji('⚡')">⚡</button><button onclick="inserirEmoji('🚀')">🚀</button><button onclick="inserirEmoji('📢')">📢</button><button onclick="inserirEmoji('🔫')">🔫</button><button onclick="inserirEmoji('👉')">👉</button><button onclick="inserirEmoji('✅')">✅</button><button onclick="inserirEmoji('💰')">💰</button><button onclick="inserirEmoji('🎉')">🎉</button><button onclick="inserirEmoji('🏅')">🏅</button><button onclick="inserirEmoji('💣')">💣</button><button onclick="inserirEmoji('❤️')">❤️</button><button onclick="inserirEmoji('👑')">👑</button><button onclick="inserirEmoji('⚠️')">⚠️</button></div><div class="card-adm"><h2>⚙️ TEMPOS GERAIS</h2><div class="linha-config"><label>Tempo Rodapé (s): <input type="number" id="segRodape" value="5"></label><label>Intervalo FULL (s): <input type="number" id="esperaFull" value="60"></label><label>Escala FULL: <input type="range" id="escalaFull" min="0.6" max="1.4" step="0.05" value="1" style="width:120px" oninput="document.getElementById('valEscala').innerText=Math.round(this.value*100)+'%'"><span id="valEscala" style="color:#FFD700">100%</span></label><button class="btn-lancar" onclick="salvarTempos()" style="background:#2196F3">SALVAR TEMPOS</button></div><div id="statusAnuncioSave" style="color:#81C784;font-size:12px;margin-top:8px"></div></div><div class="card-adm"><h2>🟠 RODAPÉS <span id="contadorRodape" style="color:#aaa;font-size:12px"></span></h2><div id="containerRodapes"></div><button class="btn-lancar" onclick="adicionarRodape()" style="background:#444">+ ADICIONAR RODAPÉ</button><button class="btn-lancar" onclick="salvarRodapes()" style="background:#00C853">💾 SALVAR RODAPÉS</button></div><div class="card-adm"><h2>🟡 FULL <span id="contadorFull" style="color:#aaa;font-size:12px"></span></h2><div id="containerFull"></div><button class="btn-lancar" onclick="adicionarFull()" style="background:#444">+ ADICIONAR FULL</button><button class="btn-lancar" onclick="salvarFulls()" style="background:#00C853">💾 SALVAR FULLS</button></div><div class="card-adm"><a class="link-adm" href="?modo=tv" target="_blank">📺 VER TELÃO</a><a class="link-adm" href="?modo=adm">⚙️ VOLTAR ADM</a></div></div>
 <div id="tela-placar" style="display:none;"><div class="topo" id="topo-tv"><div class="relogio" id="relogio-tv"></div></div><div id="lista"></div><div id="insercao-full"><div id="prop-gigante"></div><div id="contato-gigante"></div></div><div class="rodape" id="rodape-tv"><div class="rodape-conteudo" id="rodape-conteudo"></div></div></div>
 <div id="tela-lancamento" style="display:none;"><div class="topo" id="topo-operador"></div><div class="container-operador"><div class="coluna-lancamento"><div style="font-size:10px;color:#888">CLUBE: <span id="labelBanco" style="color:#FFD700"></span> | <a href="?modo=adm" style="color:#FFD700">ADM</a> | <a href="?modo=anuncios" style="color:#00FFFF">ANUNCIOS</a></div><div id="status" style="font-size:10px;color:#81C784"></div><div id="infoLista" style="font-size:11px;color:#FFD700;margin:4px 0"></div><div id="sugestoes"></div><div class="cabecalho"><input type="text" id="nome" placeholder="NOME" autocomplete="off"><input type="text" id="prova" placeholder="C"></div><table class="tabela-tiros"><thead><tr><th>TIRO</th><th>VALOR</th></tr></thead><tbody id="corpo-tabela"></tbody></table><div id="parcial">TOTAL: 0.00</div><button class="btn-lancar" id="btnSalvar" onclick="lancar()">SALVAR [F2]</button><button class="btn-lancar" onclick="novaSerie()">NOVA [F3]</button><button class="btn-lancar" id="btnCancelar" onclick="cancelarEdicao()" style="background:#555;display:none">CANCELAR</button></div><div class="coluna-lista"><div id="lista-admin"></div></div></div></div>
@@ -93,7 +113,31 @@ function salvarTempos(){let tempos={segRodape:parseInt(document.getElementById('
 function iniciarFirebase(){db.ref('.info/connected').on('value',snap=>{let el=document.getElementById('status');if(el) el.innerText=snap.val()?'Online: '+new Date().toLocaleTimeString():'Conectando...';});db.ref(NOME_BANCO).on('value',snap=>{ranking=[];historico=[];snap.forEach(c=>{let v=c.val();if(v&&v.contagem){ranking.push(v);historico.push(v);}});ranking.sort((a,b)=>b.pontos-a.pontos);if(modo==='tv'||modo==='celular') atualizarTela();else if(modo!=='adm'&&modo!=='anuncios') atualizarListaAdmin();});db.ref('CONFIG_ANUNCIOS').on('value',snap=>{let val=snap.val();if(val===null) val=true;anunciosLigados=val;let toggle=document.getElementById('toggleAnuncio');let status=document.getElementById('statusAnuncio');if(toggle) toggle.checked=val;if(status){status.innerText=val?'LIGADOS':'DESLIGADOS';status.style.color=val?'#00FF00':'#ff4444';}});db.ref(CHAVE_RODAPE).on('value',snap=>{if(snap.val()) PATROCINADORES_RODAPE=snap.val();});db.ref(CHAVE_FULL).on('value',snap=>{if(snap.val()){PATROCINADORES_FULL=snap.val();}});db.ref(CHAVE_TEMPOS).on('value',snap=>{if(snap.val()){let t=snap.val();RODAPE_TEMPO_EXIBICAO_SEG=t.segRodape||5;FULL_TEMPO_ESPERA_SEG=t.esperaFull||60;FULL_ESCALA=t.escalaFull||1;document.documentElement.style.setProperty('--full-scale',FULL_ESCALA);if(modo==='tv'||modo==='celular'){iniciarTimerFull();}}});}
 function alternarAnuncios(){let toggle=document.getElementById('toggleAnuncio');db.ref('CONFIG_ANUNCIOS').set(toggle.checked);}
 if(modo==='adm'){window.modoADMpendente=true;}
-function montarLinksADM(){let base=window.location.href.split('?')[0];document.getElementById('links-adm').innerHTML=`<a class="link-adm" href="${base}?modo=tv" target="_blank">📺 TELÃO</a><a class="link-adm" href="${base}?modo=celular" target="_blank">📱 CELULAR</a><a class="link-adm" href="${base}" target="_blank">🎯 LANÇAMENTO</a><a class="link-adm" href="${base}?modo=adm" target="_blank">⚙️ ADM</a><a class="link-adm" href="${base}?modo=anuncios" target="_blank">📢 ANUNCIOS GLOBAL</a>`;}
+
+// === CORRIGIDO - LINKS SEMPRE APARECEM COM BOTÃO COPIAR ===
+function montarLinksADM(){
+  const baseFixa = 'https://minutera.com.br/placar-fterj/';
+  const links = [
+    { nome: 'TELÃO', modo: 'tv', icon: '📺' },
+    { nome: 'CELULAR', modo: 'celular', icon: '📱' },
+    { nome: 'LANÇAMENTO', modo: '', icon: '🎯' },
+    { nome: 'ADM', modo: 'adm', icon: '⚙️' },
+    { nome: 'ANUNCIOS GLOBAL', modo: 'anuncios', icon: '📢' }
+  ];
+  let html = '';
+  links.forEach(l=>{
+    const url = l.modo? baseFixa + '?modo=' + l.modo : baseFixa;
+    html += `<div style="display:flex;gap:6px;margin:8px 0;align-items:center">
+      <a class="link-adm" href="${url}" target="_blank" style="flex:1;word-break:break-all">${l.icon} ${l.nome}<br><small style="color:#aaa">${url}</small></a>
+      <button onclick="navigator.clipboard.writeText('${url}');this.innerText='COPIADO!';setTimeout(()=>this.innerText='COPIAR',1500)" style="background:#FFD700;color:#000;font-weight:900;padding:10px;border-radius:8px">COPIAR</button>
+    </div>`;
+  });
+  const el = document.getElementById('links-adm');
+  if(el) el.innerHTML = html;
+}
+document.addEventListener('DOMContentLoaded', ()=>{ setTimeout(montarLinksADM, 500); });
+setTimeout(montarLinksADM, 1000);
+
 function montarTabela(){let h="";for(let i=1;i<=10;i++) h+=`<tr><td>${i}º</td><td><input type="text" id="t${i}" onkeyup="proximoTiro(event,${i})" oninput="calcularParcial();this.classList.remove('erro')"></td></tr>`;document.getElementById('corpo-tabela').innerHTML=h;}
 function proximoTiro(e,n){if(e.key==='Enter'||e.key==='Tab'){e.preventDefault();if(n<10) document.getElementById('t'+(n+1)).focus();else document.getElementById('btnSalvar').focus();}}
 function calcularParcial(){let t=0;for(let i=1;i<=10;i++){let el=document.getElementById('t'+i);if(el) t+=valorTiro(el.value);}document.getElementById('parcial').innerText=`TOTAL: ${t.toFixed(2)}`;}
