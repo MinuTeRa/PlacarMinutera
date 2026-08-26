@@ -1,29 +1,31 @@
-<!DOCTYPE html><html><head><meta charset="UTF-8"><title>3x7 FTERJ V30</title>
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>3x7 FTERJ V31 - BACKUP</title>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}body{background:#121212;color:#fff;font-family:Arial}
-#header{background:linear-gradient(90deg,#FF8C00,#FF6A00);padding:8px 12px;display:flex;justify-content:space-between;color:#000;font-weight:900;font-size:18px}
-#main{display:flex;height:calc(100vh - 44px)}
+#header{background:linear-gradient(90deg,#FF8C00,#FF6A00);padding:10px 14px;display:flex;justify-content:space-between;color:#000;font-weight:900;font-size:18px}
+#main{display:flex;height:calc(100vh - 48px)}
 #left{width:360px;background:#1e1e1e;margin:8px;padding:10px;border-radius:8px}
-#right{flex:1;background:#1e1e1e;margin:8px 8px 8px 0;padding:8px;border-radius:8px;overflow:auto}
+#right{flex:1;background:#1e1e1e;margin:8px 8px 8px 0;padding:10px;border-radius:8px;overflow:auto}
 input,select{width:100%;padding:9px;background:#000;color:#fff;border:1px solid #444;border-radius:6px}
 .row{display:flex;gap:6px;margin-top:6px}
-.linha-tiro{display:flex;gap:6px;align-items:center;margin-top:4px}
+.linha-tiro{display:flex;gap:6px;align-items:center;margin-top:5px}
 .linha-tiro b{width:26px;color:#aaa;font-size:12px}
 .linha-tiro input.errou{border:2px solid #ff0000;background:#330000}
-.item{display:flex;justify-content:space-between;background:#2a2a2a;padding:6px;margin-bottom:4px;border-radius:5px;border-left:4px solid #FF8C00;font-size:11px;align-items:center}
+.item{display:flex;justify-content:space-between;align-items:center;background:#2a2a2a;padding:14px 12px;margin-bottom:10px;border-radius:8px;border-left:5px solid #FF8C00;font-size:13px;line-height:1.6;min-height:52px}
 .btn{flex:1;padding:10px;border:none;border-radius:6px;font-weight:900;cursor:pointer;margin-top:8px}
 .btn-salvar{background:#FF8C00;color:#000}.btn-nova{background:#444;color:#fff}
-.btn-editar{background:#FFD700;color:#000;padding:4px 8px;border:none;border-radius:4px;font-size:10px;font-weight:900}
-.btn-excluir{background:#ff2e2e;color:#fff;padding:4px 8px;border:none;border-radius:4px;font-size:10px;font-weight:900;margin-left:4px}
-.total{color:#00BFFF;text-align:center;font-weight:900;margin:10px 0;font-size:16px}
+.btn-editar{background:#FFD700;color:#000;padding:5px 9px;border:none;border-radius:4px;font-size:11px;font-weight:900}
+.btn-excluir{background:#ff2e2e;color:#fff;padding:5px 9px;border:none;border-radius:4px;font-size:11px;font-weight:900;margin-left:4px}
+.total{color:#00BFFF;text-align:center;font-weight:900;margin:12px 0;font-size:17px}
 #telaSenha{position:fixed;inset:0;background:rgba(0,0,0,0.97);z-index:9999;display:flex;align-items:center;justify-content:center}
+.btn-backup{width:100%;margin-top:8px;padding:10px;background:#00BFFF;color:#000;border:none;border-radius:6px;font-weight:900;cursor:pointer}
+.btn-backup:hover{background:#00d4ff}
 </style></head><body>
 
 <div id="telaSenha">
 <div style="background:#1e1e1e;padding:28px;border-radius:12px;text-align:center;border:2px solid #FF8C00;min-width:320px">
-<h2 style="color:#FF8C00;margin-bottom:4px">3x7 FTERJ</h2>
+<h2 style="color:#FF8C00">3x7 FTERJ</h2>
 <p style="font-size:10px;color:#777" id="infoSenha">Senha: CONFIG_SENHA_OPERADOR_FTERJ</p>
 <input id="inputSenha" type="password" placeholder="minutera2025" style="text-align:center;font-size:18px;letter-spacing:2px;margin-top:10px">
 <button onclick="checarSenha()" style="width:100%;margin-top:10px;padding:10px;background:#FF8C00;color:#000;border:none;border-radius:6px;font-weight:900;cursor:pointer">ENTRAR</button>
@@ -34,10 +36,12 @@ input,select{width:100%;padding:9px;background:#000;color:#fff;border:1px solid 
 <div id="header"><span>3x7 MinuT&Ra - FTERJ | X=12.01</span><span style="font-size:12px">ADM TV ANÚNCIOS</span></div>
 <div id="main">
 <div id="left">
-<div class="row"><input id="nomeAtleta" list="listaNomes" placeholder="NOME - digite" style="text-transform:uppercase"><datalist id="listaNomes"></datalist><select id="provaSelect" style="width:90px"><option value="R1">R1</option><option value="R2">R2</option><option value="R3">R3</option><option value="R4">R4</option><option value="R5">R5</option><option value="C">C</option><option value="C/R">C/R</option></select></div>
+<div class="row"><input id="nomeAtleta" list="listaNomes" placeholder="NOME" style="text-transform:uppercase"><datalist id="listaNomes"></datalist><select id="provaSelect" style="width:90px"><option value="R1">R1</option><option value="R2">R2</option><option value="R3">R3</option><option value="R4">R4</option><option value="R5">R5</option><option value="C">C</option><option value="C/R">C/R</option></select></div>
 <div id="tirosContainer" style="margin-top:10px"></div>
 <div class="total">TOTAL: <span id="totalPontos">0.00</span></div>
 <div style="display:flex;gap:6px"><button class="btn btn-salvar" onclick="salvarLancamento()">SALVAR [F2]</button><button class="btn btn-nova" onclick="novoLancamento()">NOVA [F3]</button></div>
+<button class="btn-backup" onclick="exportarBackup()">📥 EXPORTAR BACKUP (JSON)</button>
+<button class="btn-backup" style="background:#00ff88" onclick="exportarCSV()">📊 EXPORTAR CSV (Excel)</button>
 </div>
 <div id="right"><div id="listaLancamentos">Carregando...</div></div>
 </div>
@@ -49,12 +53,8 @@ let SENHA_BANCO="minutera2025", editKey=null, cache={};
 const PERMITIDOS=['X','10','9','8','7','6','5','4','3','2','1','0'];
 const ORDEM_R=['R1','R2','R3','R4','R5'];
 
-db.ref("CONFIG_SENHA_OPERADOR_FTERJ").on('value',s=>{let v=s.val(); if(v){SENHA_BANCO=String(v); document.getElementById('infoSenha').innerText="Senha do banco carregada";}});
-function checarSenha(){
- let s=document.getElementById('inputSenha').value.trim();
- if(s===SENHA_BANCO){document.getElementById('telaSenha').style.display='none'; localStorage.setItem('senhaFTERJ','ok');}
- else{let e=document.getElementById('erroSenha'); e.style.display='block'; e.innerText="Incorreta! Senha atual do banco é: "+SENHA_BANCO; }
-}
+db.ref("CONFIG_SENHA_OPERADOR_FTERJ").on('value',s=>{let v=s.val(); if(v){SENHA_BANCO=String(v); document.getElementById('infoSenha').innerText="Senha OK do banco";}});
+function checarSenha(){let s=document.getElementById('inputSenha').value.trim(); if(s===SENHA_BANCO){document.getElementById('telaSenha').style.display='none'; localStorage.setItem('senhaFTERJ','ok');} else{let e=document.getElementById('erroSenha'); e.style.display='block'; e.innerText="Incorreta! Atual: "+SENHA_BANCO;}}
 if(localStorage.getItem('senhaFTERJ')==='ok') document.getElementById('telaSenha').style.display='none';
 document.getElementById('inputSenha').addEventListener('keydown',e=>{if(e.key==='Enter') checarSenha();});
 
@@ -62,33 +62,31 @@ function valorTiro(v){v=String(v).trim().toUpperCase(); if(v=='X') return 12; le
 function calcTotal(){let soma=0,x=0; for(let i=1;i<=10;i++){let v=document.getElementById('t'+i).value.trim().toUpperCase(); if(v=='X') x++; soma+=valorTiro(v);} document.getElementById('totalPontos').innerText=(soma + x*0.01).toFixed(2);}
 function criar(){let c=document.getElementById('tirosContainer'); c.innerHTML=''; for(let i=1;i<=10;i++) c.innerHTML+=`<div class="linha-tiro"><b>${i}°</b><input id="t${i}" list="vals" autocomplete="off" oninput="calcTotal()" onblur="valida(this)"></div>`; c.innerHTML+=`<datalist id="vals"><option value="X"><option value="10"><option value="9"><option value="8"><option value="7"><option value="6"><option value="5"><option value="4"><option value="3"><option value="2"><option value="1"><option value="0"></datalist>`;}
 criar();
-function valida(el){let v=el.value.trim().toUpperCase(); if(v=='') return true; if(!PERMITIDOS.includes(v)){alert("INVÁLIDO: '"+el.value+"'. Só: X,10,9,8,7,6,5,4,3,2,1,0"); el.value=''; el.classList.add('errou'); return false;} el.value=v; el.classList.remove('errou'); return true;}
+function valida(el){let v=el.value.trim().toUpperCase(); if(v=='') return true; if(!PERMITIDOS.includes(v)){alert("INVÁLIDO: '"+el.value+"'"); el.value=''; el.classList.add('errou'); return false;} el.value=v; el.classList.remove('errou'); return true;}
 
 db.ref("FTERJ").on('value',s=>{
  cache=s.val()||{}; let lista=Object.keys(cache).filter(k=>k.startsWith('serie_')).map(k=>({key:k,...cache[k]}));
  document.getElementById('listaNomes').innerHTML=[...new Set(lista.map(x=>(x.nome||'').toUpperCase()))].sort().map(n=>`<option value="${n}">`).join('');
- let html=''; lista.sort((a,b)=>(b.data||0)-(a.data||0)).forEach(it=>{html+=`<div class="item"><div><b>${it.prova}</b> - ${it.nome} <b style="color:#FFD700">${parseFloat(it.pontos||0).toFixed(2)}</b> <span style="color:#888">${(it.tiros||[]).join('|')}</span></div><div><button class="btn-editar" onclick="editar('${it.key}')">EDITAR</button><button class="btn-excluir" onclick="excluir('${it.key}')">EXCLUIR</button></div></div>`;});
+ let html=''; lista.sort((a,b)=>(b.data||0)-(a.data||0)).forEach(it=>{
+  html+=`<div class="item"><div><b>${it.prova}</b> - ${it.nome} <b style="color:#FFD700;font-size:15px">${parseFloat(it.pontos||0).toFixed(2)}</b><br><span style="color:#aaa;font-size:11px;letter-spacing:1px">${(it.tiros||[]).join(' | ')}</span></div><div><button class="btn-editar" onclick="editar('${it.key}')">EDITAR</button><button class="btn-excluir" onclick="excluir('${it.key}')">EXCLUIR</button></div></div>`;
+ });
  document.getElementById('listaLancamentos').innerHTML=html;
 });
 
 function salvarLancamento(){
  let nome=document.getElementById('nomeAtleta').value.toUpperCase().trim(); if(!nome) return alert("Digite NOME");
  let prova=document.getElementById('provaSelect').value;
- let tiros=[]; for(let i=1;i<=10;i++){let el=document.getElementById('t'+i); let v=el.value.trim(); if(v==''){alert("CAMPO EM BRANCO no tiro "+i+"° - preencha X,10,9,8,7,6,5,4,3,2,1,0"); el.focus(); el.classList.add('errou'); return;} v=v.toUpperCase(); if(!PERMITIDOS.includes(v)){alert("VALOR INVÁLIDO no tiro "+i+"°: "+v); return;} tiros.push(v);}
- if(!editKey){
-   let ja=Object.values(cache).some(s=>s.nome && s.nome.toUpperCase().trim()==nome && s.prova==prova);
-   if(ja) return alert("JÁ EXISTE "+nome+" na prova "+prova+"! O sistema vai sugerir a próxima (R3, R4...)");
- }
+ let tiros=[]; for(let i=1;i<=10;i++){let el=document.getElementById('t'+i); let v=el.value.trim(); if(v==''){alert("BLANCO no tiro "+i+"°"); el.focus(); el.classList.add('errou'); return;} v=v.toUpperCase(); if(!PERMITIDOS.includes(v)){alert("INVÁLIDO no tiro "+i+"°"); return;} tiros.push(v);}
+ if(!editKey){ let ja=Object.values(cache).some(s=>s.nome && s.nome.toUpperCase().trim()==nome && s.prova==prova); if(ja) return alert("JÁ EXISTE "+nome+" na "+prova); }
  let x=tiros.filter(t=>t=='X').length; let total=parseFloat((tiros.reduce((s,t)=>s+valorTiro(t),0)+x*0.01).toFixed(2));
  let obj={nome,prova,tiros,pontos:total,data:Date.now()};
  if(editKey) db.ref("FTERJ/"+editKey).set(obj).then(()=>{editKey=null; novoLancamento();});
  else db.ref("FTERJ/serie_"+Date.now()).set(obj).then(()=>novoLancamento());
 }
-function novoLancamento(){editKey=null; document.getElementById('nomeAtleta').value=''; for(let i=1;i<=10;i++){let e=document.getElementById('t'+i); e.value=''; e.classList.remove('errou');} document.getElementById('totalPontos').innerText='0.00'; document.getElementById('nomeAtleta').focus();}
+function novoLancamento(){editKey=null; document.getElementById('nomeAtleta').value=''; for(let i=1;i<=10;i++){let e=document.getElementById('t'+i); e.value=''; e.classList.remove('errou');} document.getElementById('totalPontos').innerText='0.00';}
 function editar(k){db.ref("FTERJ/"+k).once('value',s=>{let v=s.val(); document.getElementById('nomeAtleta').value=v.nome; document.getElementById('provaSelect').value=v.prova; (v.tiros||[]).forEach((t,i)=>{document.getElementById('t'+(i+1)).value=t;}); calcTotal(); editKey=k;});}
 function excluir(k){if(confirm("Excluir?")) db.ref("FTERJ/"+k).remove();}
 
-// *** CORREÇÃO DO BUG DO PRINT: THIAGO BORGES com R2 -> puxa R3 e não R1 ***
 document.getElementById('nomeAtleta').addEventListener('change',()=>{
  let nome=document.getElementById('nomeAtleta').value.toUpperCase().trim();
  if(nome.length<3 || editKey) return;
@@ -96,11 +94,26 @@ document.getElementById('nomeAtleta').addEventListener('change',()=>{
  if(provas.length==0) return;
  let maxIdx=-1; provas.forEach(p=>{let idx=ORDEM_R.indexOf(p); if(idx>maxIdx) maxIdx=idx;});
  let proxima=null;
- if(maxIdx>=0 && maxIdx<4) proxima=ORDEM_R[maxIdx+1]; // R2->R3
+ if(maxIdx>=0 && maxIdx<4) proxima=ORDEM_R[maxIdx+1];
  else if(maxIdx==4) proxima='C';
  else if(provas.includes('C')) proxima='C/R';
- if(proxima){document.getElementById('provaSelect').value=proxima;}
+ if(proxima) document.getElementById('provaSelect').value=proxima;
 });
 
+// EXPORTAR BACKUP
+function exportarBackup(){
+ let lista=Object.values(cache).filter(v=>v && v.nome);
+ let data=new Date().toISOString().slice(0,10);
+ let nomeArq=`BACKUP_FTERJ_${data}_${lista.length}it.json`;
+ let blob=new Blob([JSON.stringify(lista,null,2)],{type:'application/json'});
+ let a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=nomeArq; a.click();
+}
+function exportarCSV(){
+ let lista=Object.values(cache).filter(v=>v && v.nome);
+ let csv="PROVA;NOME;PONTOS;T1;T2;T3;T4;T5;T6;T7;T8;T9;T10\n";
+ lista.forEach(it=>{ csv+=`${it.prova};${it.nome};${it.pontos};${(it.tiros||[]).join(';')}\n`; });
+ let blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
+ let a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=`FTERJ_${new Date().toISOString().slice(0,10)}.csv`; a.click();
+}
 document.addEventListener('keydown',e=>{if(e.key=='F2'){e.preventDefault(); salvarLancamento();} if(e.key=='F3'){e.preventDefault(); novoLancamento();}});
 </script></body></html>
