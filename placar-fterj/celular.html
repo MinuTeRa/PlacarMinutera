@@ -1,0 +1,40 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>CELULAR - FTERJ</title>
+<style>
+html,body{background:#000;color:#fff;font-family:'Arial Black',Arial;margin:0;text-align:center}
+.topo{background:linear-gradient(90deg,#FF8C00,#FF4500);padding:8px 12px;display:flex;align-items:center;justify-content:space-between;border-bottom:3px solid #FFD700}
+.topo img{height:40px;background:#fff;padding:3px;border-radius:6px}.topo h1{font-size:4vw;margin:0;color:#000;flex:1}.logos-lado{display:flex;gap:6px}
+#lista{padding:6px;display:flex;flex-direction:column;gap:5px}
+.placar{display:flex;align-items:center;padding:10px 6px;background:#1a1a1a;border-left:5px solid #555;border-radius:6px;font-size:12px;font-weight:800}
+.placar.p1{background:#FFD700;color:#000}.placar.p2{background:#C0C0C0;color:#000}.placar.p3{background:#CD7F32;color:#000}
+.pos{width:10%}.nome{width:35%;text-align:left;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.prova{width:15%}.total{width:15%}.detalhe{width:25%;text-align:right;font-size:9px}
+.filtro{background:#222;padding:8px;display:flex;gap:6px;justify-content:center;flex-wrap:wrap}
+.filtro button{padding:6px 10px;background:#333;color:#FFD700;border:1px solid #FF8C00;border-radius:5px;font-weight:bold}
+.filtro button.ativo{background:#FF8C00;color:#000}
+.rodape{background:linear-gradient(90deg,#FF8C00,#FF4500);border-top:3px solid #FFD700;padding:10px;position:fixed;bottom:0;left:0;width:100%;box-sizing:border-box;height:70px;display:flex;align-items:center;justify-content:center}
+.rodape-conteudo{display:flex;gap:10px;align-items:center;transition:opacity 0.3s}.rodape-prop{color:#000;font-weight:900;font-size:16px}.rodape-contato{color:#fff;background:#000;padding:3px 8px;border-radius:12px;font-size:12px}
+</style></head><body>
+<div class="topo" id="topo-tv"></div>
+<div class="filtro" id="filtro-prova">
+<button onclick="filtrarProva('TODAS')" id="btn-TODAS" class="ativo">TODAS</button>
+<button onclick="filtrarProva('A')" id="btn-A">A</button>
+<button onclick="filtrarProva('B')" id="btn-B">B</button>
+<button onclick="filtrarProva('C')" id="btn-C">C</button>
+<button onclick="filtrarProva('D')" id="btn-D">D</button>
+</div>
+<div id="lista">AGUARDANDO...</div>
+<div class="rodape"><div class="rodape-conteudo" id="rodape-conteudo"></div></div>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script><script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+<script src="./firebase-config.js?v=17"></script>
+<script>
+let ranking=[],PATROCINADORES_RODAPE=[],indiceRodape=0,filtroAtual='TODAS';
+function montarTopo(id){let e='<div class="logos-lado">',d='<div class="logos-lado">';if(QTD_LOGOS>=1) e+=`<img src="${LOGOS[0]}">`;if(QTD_LOGOS>=2) d+=`<img src="${LOGOS[1]}">`;e+='</div>';d+='</div>';document.getElementById(id).innerHTML=`${e}<h1>${NOME_CAMPEONATO} - ${NOME_CLUBE}</h1>${d}`;}montarTopo('topo-tv');
+firebase.initializeApp(firebaseConfig);const db=firebase.database();
+const urlParams=new URLSearchParams(window.location.search);let provaUrl=urlParams.get('prova');if(provaUrl){filtroAtual=provaUrl.toUpperCase();}
+function filtrarProva(p){filtroAtual=p;document.querySelectorAll('.filtro button').forEach(b=>b.classList.remove('ativo'));let btn=document.getElementById('btn-'+p);if(btn) btn.classList.add('ativo');atualizarTela();}
+function rotacionarRodape(){const r=document.getElementById('rodape-conteudo');if(!r||!PATROCINADORES_RODAPE.length) return;r.style.opacity=0;setTimeout(()=>{let p=PATROCINADORES_RODAPE[indiceRodape];if(p){r.innerHTML=`<div class="rodape-prop">${p.prop}</div><div class="rodape-contato">${p.contato}</div>`;}r.style.opacity=1;indiceRodape=(indiceRodape+1)%PATROCINADORES_RODAPE.length;},300);}
+function atualizarTela(){let html="";let listaFiltrada=ranking;if(filtroAtual!=='TODAS') listaFiltrada=ranking.filter(a=>a.prova===filtroAtual);for(let i=0;i<10&&i<listaFiltrada.length;i++){let a=listaFiltrada[i];let todos=(a.tiros||[]).join(' | ');html+=`<div class="placar ${i==0?'p1':i==1?'p2':i==2?'p3':''}"><span class="pos">${i+1}º</span><span class="nome">${a.nome}</span><span class="prova">${a.prova}</span><span class="total">${a.pontos.toFixed(2)}</span><span class="detalhe">${todos}</span></div>`;}document.getElementById('lista').innerHTML=html||`<div class='placar'>SEM RESULTADO PARA ${filtroAtual}</div>`;}
+db.ref(NOME_BANCO).on('value',snap=>{ranking=[];snap.forEach(c=>{let v=c.val();if(v) ranking.push(v);});ranking.sort((a,b)=>b.pontos-a.pontos);atualizarTela();});
+db.ref(CHAVE_RODAPE).on('value',s=>{if(s.val()) PATROCINADORES_RODAPE=s.val();});
+setInterval(rotacionarRodape,5000);
+if(filtroAtual!=='TODAS'){setTimeout(()=>filtrarProva(filtroAtual),200);}
+</script></body></html>
