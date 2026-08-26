@@ -1,112 +1,118 @@
-<!DOCTYPE html><html><head><meta charset="UTF-8"><title>CONFIG ANÚNCIOS - FTERJ V22 - RODAPÉ FADE</title>
+<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>MinuT&Ra - Admin Limpo V24</title>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
 <style>
-*{margin:0;padding:0;box-sizing:border-box}body{background:#111;color:#fff;font-family:Arial;padding:10px}
-h2{background:#FF8C00;color:#000;padding:8px;text-align:center;margin:10px 0;border-radius:6px;font-size:16px}
-.bloco{background:#222;padding:12px;border-radius:8px;margin-bottom:15px;border:1px solid #333}
-label{font-size:12px;color:#FF8C00;display:block;margin-top:8px;font-weight:bold}
-input{width:100%;padding:8px;background:#000;color:#fff;border:1px solid #444;border-radius:4px;margin-top:3px}
-button{background:#FF8C00;color:#000;font-weight:900;border:none;padding:8px 14px;border-radius:4px;cursor:pointer;margin-top:10px}
-button.verde{background:#00C851;color:#fff}
-button.vermelho{background:#ff4444;color:#fff;padding:4px 8px;font-size:11px}
-.lista{display:flex;align-items:center;gap:8px;background:#000;padding:6px;border-radius:4px;margin-top:5px}
-.lista img{width:50px;height:30px;object-fit:cover;border-radius:3px}
-.lista.info{flex:1;font-size:11px}
-.status-ativo{color:#00ff00;font-weight:bold;font-size:10px}
-.status-inativo{color:#ff4444;font-weight:bold;font-size:10px}
+*{margin:0;padding:0;box-sizing:border-box}body{background:#f5f5f7;font-family:Inter,Arial;color:#1d1d1f;padding:0}
+.header{background:#000;color:#FF8C00;padding:14px;text-align:center;font-weight:900;letter-spacing:1px}
+.tabs{display:flex;background:#fff;border-bottom:1px solid #ddd;position:sticky;top:0;z-index:10}
+.tab{flex:1;padding:14px;text-align:center;font-weight:700;cursor:pointer;border-bottom:3px solid transparent;color:#888}
+.tab.active{color:#000;border-bottom-color:#FF8C00;background:#fff}
+.painel{display:none;padding:16px;max-width:600px;margin:0 auto}
+.painel.active{display:block}
+.card{background:#fff;border-radius:16px;padding:16px;margin-bottom:16px;box-shadow:0 2px 10px rgba(0,0,0,0.06)}
+.card h3{font-size:14px;margin-bottom:12px;color:#FF6A00}
+label{font-size:11px;font-weight:700;color:#666;margin-top:10px;display:block}
+input{width:100%;padding:12px;background:#f5f5f7;border:1px solid #e5e5e5;border-radius:10px;margin-top:4px;font-size:14px}
+.btn{width:100%;padding:12px;border:none;border-radius:10px;font-weight:900;cursor:pointer;margin-top:12px;font-size:14px}
+.btn-laranja{background:#FF8C00;color:#000}.btn-preto{background:#000;color:#fff}
+.item{display:flex;align-items:center;gap:10px;background:#f9f9fb;padding:10px;border-radius:12px;margin-top:8px;border:1px solid #eee}
+.item img{width:48px;height:32px;object-fit:cover;border-radius:6px;background:#ddd}
+.item-info{flex:1;font-size:12px;line-height:1.3}.item-info b{font-size:13px;display:block}
+.badge{font-size:10px;padding:3px 6px;border-radius:20px;font-weight:800}.badge.on{background:#d4f8d4;color:#0a7a0a}.badge.off{background:#ffd6d6;color:#a00}
+.icon-btn{width:32px;height:32px;border-radius:8px;border:none;font-weight:900;cursor:pointer}.ativar{background:#000;color:#fff}.apagar{background:#ff3b30;color:#fff}
+.upload-area{border:2px dashed #FF8C00;border-radius:12px;padding:20px;text-align:center;background:#fff8f0;margin-top:8px;cursor:pointer}
+.upload-area span{font-size:12px;color:#FF8C00;font-weight:700}
+.progress{height:6px;background:#eee;border-radius:10px;margin-top:8px;display:none;overflow:hidden}.progress i{display:block;height:100%;background:#FF8C00;width:0%}
 </style></head><body>
-<h2>CONFIG ANÚNCIOS - FTERJ / MinuT&Ra - V22</h2>
-
-<div class="bloco">
-<label>1 - LOGOS (TV + CELULAR)</label>
-<label>Logo Clube (FTERJ) - URL da Imagem</label><input id="logoClube" placeholder="https://...">
-<label>Logo MinuT&Ra - URL da Imagem</label><input id="logoMinu" placeholder="https://...">
-<button onclick="salvarLogos()">SALVAR LOGOS</button>
+<div class="header">MinuT&Ra - FTERJ V24</div>
+<div class="tabs">
+<div class="tab active" onclick="aba('rodape')">🔥 RODAPÉ</div>
+<div class="tab" onclick="aba('full')">🖥️ TELA CHEIA</div>
+<div class="tab" onclick="aba('config')">⚙️ CONFIG</div>
 </div>
 
-<div class="bloco">
-<label>2 - CONFIG TEMPOS</label>
-<label>Intervalo entre blocos FULL (segundos) - padrão 120</label><input id="cfgIntervalo" type="number" value="120">
-<label>Tempo de cada arte FULL (segundos) - padrão 7</label><input id="cfgTempoFull" type="number" value="7">
-<label>Tempo de cada RODAPÉ em FADE (segundos) - padrão 6</label><input id="cfgTempoRodape" type="number" value="6">
-<button onclick="salvarTempos()">SALVAR TEMPOS</button>
+<!-- ABA RODAPE -->
+<div id="painel-rodape" class="painel active">
+<div class="card">
+<h3>Novo Rodapé (efeito FADE)</h3>
+<label>Texto da propaganda</label><input id="rdProp" placeholder="Ex: Armory Tiro - Melhor preço">
+<label>Telefone / Contato</label><input id="rdCont" placeholder="Ex: (28) 99944-9010">
+<button class="btn btn-laranja" onclick="addRodape()">+ ADICIONAR NO RODAPÉ</button>
 </div>
-
-<div class="bloco" style="border:2px solid #FF8C00">
-<label style="color:#FFD700;font-size:14px">3 - ADICIONAR RODAPÉ (Patrocinador que passa embaixo em FADE)</label>
-<label>Nome / Propaganda</label><input id="rdProp" placeholder="Ex: Loja X - Tiro Esportivo">
-<label>Contato / Telefone</label><input id="rdCont" placeholder="Ex: (28) 99944-9010">
-<button onclick="addRodape()" style="background:#FFD700">ADICIONAR RODAPÉ</button>
-</div>
-
-<div class="bloco">
-<label>4 - LISTA RODAPÉ - Clique para DESATIVAR/ATIVAR (AGORA EM FADE)</label>
+<div class="card">
+<h3>Rodapés Ativos (aparecem um por vez)</h3>
 <div id="listaRodape">Carregando...</div>
 </div>
-
-<div class="bloco" style="margin-top:20px">
-<label>5 - ADICIONAR FULL (Patrocinador Tela Cheia)</label>
-<label>Nome do Patrocinador</label><input id="fullNome" placeholder="Ex: Loja X">
-<label>URL da Arte (imagem)</label><input id="fullUrl" placeholder="https://...">
-<label>Tempo (opcional) - deixa vazio usa padrão</label><input id="fullTempo" type="number" placeholder="7">
-<button onclick="addFull()">ADICIONAR FULL</button>
 </div>
 
-<div class="bloco">
-<label>6 - LISTA FULL - Clique para DESATIVAR/ATIVAR</label>
+<!-- ABA FULL -->
+<div id="painel-full" class="painel">
+<div class="card">
+<h3>Novo Anúncio Tela Cheia</h3>
+<label>Nome do patrocinador</label><input id="fullNome" placeholder="Ex: Loja X">
+<label>Imagem - Clique para escolher do celular/PC</label>
+<label class="upload-area" for="fullFile"><span>📁 CLIQUE PARA ESCOLHER IMAGEM<br><small style="color:#999">ou arraste aqui</small></span><input type="file" id="fullFile" accept="image/*" hidden onchange="previewFile()"></label>
+<div id="preview" style="margin-top:10px;display:none"><img id="imgPrev" style="width:100%;border-radius:10px;max-height:180px;object-fit:contain"></div>
+<div class="progress" id="progFull"><i id="progBar"></i></div>
+<label>Ou cole URL da imagem (se já tiver)</label><input id="fullUrl" placeholder="https://...">
+<label>Tempo na tela (segundos)</label><input id="fullTempo" type="number" value="7">
+<button class="btn btn-preto" onclick="addFull()">+ ADICIONAR TELA CHEIA</button>
+</div>
+<div class="card">
+<h3>Anúncios de Tela Cheia</h3>
 <div id="listaFull">Carregando...</div>
+</div>
+</div>
+
+<!-- ABA CONFIG -->
+<div id="painel-config" class="painel">
+<div class="card">
+<h3>Tempos</h3>
+<label>Intervalo entre blocos FULL (seg)</label><input id="cfgIntervalo" type="number" value="120">
+<label>Duração de cada FULL (seg)</label><input id="cfgTempoFull" type="number" value="7">
+<label>Duração de cada RODAPÉ FADE (seg)</label><input id="cfgTempoRodape" type="number" value="6">
+<button class="btn btn-laranja" onclick="salvarTempos()">SALVAR TEMPOS</button>
+</div>
+<div class="card">
+<h3>Logos da TV</h3>
+<label>URL Logo Clube</label><input id="logoClube">
+<label>URL Logo MinuT&Ra</label><input id="logoMinu">
+<button class="btn btn-preto" onclick="salvarLogos()">SALVAR LOGOS</button>
+</div>
 </div>
 
 <script>
-const firebaseConfig={apiKey:"AIzaSyCTEXeRjxq0_3doBNyWm5AkQ0kmBXmjlSk",authDomain:"placar-minutera.firebaseapp.com",databaseURL:"https://placar-minutera-default-rtdb.firebaseio.com",projectId:"placar-minutera"};
-firebase.initializeApp(firebaseConfig); const db=firebase.database();
-function toArr(d){ if(!d) return []; if(Array.isArray(d)) return d.filter(x=>x); return Object.values(d); }
+const firebaseConfig={apiKey:"AIzaSyCTEXeRjxq0_3doBNyWm5AkQ0kmBXmjlSk",authDomain:"placar-minutera.firebaseapp.com",databaseURL:"https://placar-minutera-default-rtdb.firebaseio.com",projectId:"placar-minutera",storageBucket:"placar-minutera.appspot.com"};
+firebase.initializeApp(firebaseConfig); const db=firebase.database(); const storage=firebase.storage();
+function aba(nome){document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));document.querySelectorAll('.painel').forEach(p=>p.classList.remove('active'));document.getElementById('painel-'+nome).classList.add('active');event.target.classList.add('active');}
+function toArr(o){if(!o)return[];return Object.keys(o).map(k=>({key:k,...o[k]}))}
+function previewFile(){let f=document.getElementById('fullFile').files[0];if(!f)return;let r=new FileReader();r.onload=e=>{document.getElementById('imgPrev').src=e.target.result;document.getElementById('preview').style.display='block';};r.readAsDataURL(f);}
 
-// LOGOS
-db.ref("CONFIG_ANUNCIOS_FTERJ").on('value',s=>{
- let v=s.val()||{}; if(v.logoClube) document.getElementById('logoClube').value=v.logoClube; if(v.logoMinu) document.getElementById('logoMinu').value=v.logoMinu;
- if(v.intervaloFull) document.getElementById('cfgIntervalo').value=v.intervaloFull; if(v.tempoFull) document.getElementById('cfgTempoFull').value=v.tempoFull;
- if(v.tempoRodape) document.getElementById('cfgTempoRodape').value=v.tempoRodape;
-});
-function salvarLogos(){ db.ref("CONFIG_ANUNCIOS_FTERJ").update({logoClube:document.getElementById('logoClube').value, logoMinu:document.getElementById('logoMinu').value}); alert("Logos salvos!"); }
-function salvarTempos(){ db.ref("CONFIG_ANUNCIOS_FTERJ").update({intervaloFull:parseInt(document.getElementById('cfgIntervalo').value), tempoFull:parseInt(document.getElementById('cfgTempoFull').value), tempoRodape:parseInt(document.getElementById('cfgTempoRodape').value)}); alert("Tempos salvos! Rodapé em FADE = "+document.getElementById('cfgTempoRodape').value+"s"); }
+db.ref("CONFIG_ANUNCIOS_FTERJ").on('value',s=>{let v=s.val()||{};if(v.logoClube)document.getElementById('logoClube').value=v.logoClube;if(v.logoMinu)document.getElementById('logoMinu').value=v.logoMinu;if(v.intervaloFull)document.getElementById('cfgIntervalo').value=v.intervaloFull;if(v.tempoFull)document.getElementById('cfgTempoFull').value=v.tempoFull;if(v.tempoRodape)document.getElementById('cfgTempoRodape').value=v.tempoRodape;});
+function salvarLogos(){db.ref("CONFIG_ANUNCIOS_FTERJ").update({logoClube:logoClube.value,logoMinu:logoMinu.value});alert("Logos salvos ✅")}
+function salvarTempos(){db.ref("CONFIG_ANUNCIOS_FTERJ").update({intervaloFull:parseInt(cfgIntervalo.value),tempoFull:parseInt(cfgTempoFull.value),tempoRodape:parseInt(cfgTempoRodape.value)});alert("Tempos salvos ✅")}
 
-// RODAPE
-function addRodape(){
- let prop=document.getElementById('rdProp').value; let cont=document.getElementById('rdCont').value;
- if(!prop) return alert("Preencha propaganda");
- db.ref("PATROCINADORES_RODAPE_FTERJ").push({prop, propaganda:prop, contato:cont, ativo:true, data:Date.now()});
- document.getElementById('rdProp').value=""; document.getElementById('rdCont').value="";
-}
+function addRodape(){let p=rdProp.value,c=rdCont.value;if(!p)return alert("Digite o texto");db.ref("PATROCINADORES_RODAPE_FTERJ").push({prop:p,contato:c,ativo:true});rdProp.value="";rdCont.value="";}
 db.ref("PATROCINADORES_RODAPE_FTERJ").on('value',s=>{
- let lista=toArr(s.val()); let html="";
- lista.forEach((r,i)=>{
-   let key=Object.keys(s.val())[i];
-   let ativo = r.ativo==true || r.ativo=="true" || r.ativo==1 || r.ativo==undefined;
-   html+=`<div class="lista"><div class="info"><b>${r.prop||r.propaganda||''}</b> - ${r.contato||''} <br><span class="${ativo?'status-ativo':'status-inativo'}">${ativo?'ATIVADO - EM FADE':'DESATIVADO'}</span></div><button class="verde" onclick="toggleRodape('${key}',${ativo})">${ativo?'DESATIVAR':'ATIVAR'}</button><button class="vermelho" onclick="delRodape('${key}')">X</button></div>`;
- });
- document.getElementById('listaRodape').innerHTML=html||"Nenhum rodapé";
+ let arr=toArr(s.val()); let h=""; arr.forEach(r=>{let on=r.ativo==true||r.ativo=="true"||r.ativo==undefined; h+=`<div class="item"><div class="item-info"><b>${r.prop||''}</b>${r.contato||''}<br><span class="badge ${on?'on':'off'}">${on?'ATIVO - FADE':'DESATIVADO'}</span></div><button class="icon-btn ativar" onclick="db.ref('PATROCINADORES_RODAPE_FTERJ/${r.key}').update({ativo:${!on}})">${on?'||':'▶'}</button><button class="icon-btn apagar" onclick="if(confirm('Apagar?'))db.ref('PATROCINADORES_RODAPE_FTERJ/${r.key}').remove()">✕</button></div>`});
+ document.getElementById('listaRodape').innerHTML=h||"Nenhum rodapé ainda";
 });
-function toggleRodape(k,atual){ db.ref("PATROCINADORES_RODAPE_FTERJ/"+k).update({ativo:!atual}); }
-function delRodape(k){ if(confirm("Apagar?")) db.ref("PATROCINADORES_RODAPE_FTERJ/"+k).remove(); }
 
-// FULL
-function addFull(){
- let nome=document.getElementById('fullNome').value; let url=document.getElementById('fullUrl').value; let tempo=document.getElementById('fullTempo').value;
- if(!url) return alert("URL obrigatória");
- db.ref("PATROCINADORES_FULL_FTERJ").push({nome, arte:url, url:url, imagem:url, tempo:tempo?parseInt(tempo):7, ativo:true, data:Date.now()});
- document.getElementById('fullNome').value=""; document.getElementById('fullUrl').value=""; document.getElementById('fullTempo').value="";
+async function addFull(){
+ let nome=fullNome.value||"Patrocinador"; let url=fullUrl.value; let file=fullFile.files[0]; let tempo=parseInt(fullTempo.value)||7;
+ if(file){
+   progFull.style.display='block';
+   let ref=storage.ref("anuncios_fterj/"+Date.now()+"_"+file.name);
+   let task=ref.put(file);
+   task.on('state_changed',s=>{progBar.style.width=(s.bytesTransferred/s.totalBytes*100)+"%";},e=>alert(e.message),async()=>{
+     let dl=await task.snapshot.ref.getDownloadURL();
+     db.ref("PATROCINADORES_FULL_FTERJ").push({nome,arte:dl,ativo:true,tempo}); progFull.style.display='none'; fullFile.value=""; fullUrl.value=""; preview.style.display='none'; alert("Imagem enviada ✅");
+   });
+ } else if(url){ db.ref("PATROCINADORES_FULL_FTERJ").push({nome,arte:url,ativo:true,tempo}); fullUrl.value=""; alert("Adicionado via URL ✅"); } else { alert("Escolha imagem ou URL"); }
 }
 db.ref("PATROCINADORES_FULL_FTERJ").on('value',s=>{
- if(!s.val()){document.getElementById('listaFull').innerHTML="Nenhum"; return;}
- let lista=toArr(s.val()); let html="";
- Object.keys(s.val()).forEach((key,i)=>{
-   let r=lista[i]; let ativo=r.ativo==true||r.ativo=="true"||r.ativo==1||r.ativo==undefined;
-   html+=`<div class="lista"><img src="${r.arte||r.url}" onerror="this.src='https://via.placeholder.com/50x30'"><div class="info"><b>${r.nome||''}</b><br>${(r.arte||'').substring(0,40)}...<br><span class="${ativo?'status-ativo':'status-inativo'}">${ativo?'ATIVADO':'DESATIVADO'}</span> - Tempo: ${r.tempo||7}s</div><button class="verde" onclick="toggleFull('${key}',${ativo})">${ativo?'DESATIVAR':'ATIVAR'}</button><button class="vermelho" onclick="delFull('${key}')">X</button></div>`;
- });
- document.getElementById('listaFull').innerHTML=html;
+ let arr=toArr(s.val()); let h=""; arr.forEach(r=>{let on=r.ativo==true||r.ativo=="true"||r.ativo==undefined; h+=`<div class="item"><img src="${r.arte}" onerror="this.style.display='none'"><div class="item-info"><b>${r.nome}</b>${r.tempo||7}s<br><span class="badge ${on?'on':'off'}">${on?'ATIVO':'DESATIVADO'}</span></div><button class="icon-btn ativar" onclick="db.ref('PATROCINADORES_FULL_FTERJ/${r.key}').update({ativo:${!on}})">${on?'||':'▶'}</button><button class="icon-btn apagar" onclick="if(confirm('Apagar?'))db.ref('PATROCINADORES_FULL_FTERJ/${r.key}').remove()">✕</button></div>`});
+ document.getElementById('listaFull').innerHTML=h||"Nenhum anúncio";
 });
-function toggleFull(k,atual){ db.ref("PATROCINADORES_FULL_FTERJ/"+k).update({ativo:!atual}); }
-function delFull(k){ if(confirm("Apagar FULL?")) db.ref("PATROCINADORES_FULL_FTERJ/"+k).remove(); }
 </script></body></html>
