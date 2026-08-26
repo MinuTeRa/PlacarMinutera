@@ -1,9 +1,9 @@
-<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>V12 FINAL</title><script>
+<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>V13 FINAL FORCADO</title><script>
 const NOME_BANCO="FTERJ";const NOME_CLUBE="FTERJ";const NOME_CAMPEONATO="3x7 MinuT&Ra";const QTD_LOGOS=2;const LOGOS=["logo1.png","logo2.png"];const FULL_ATIVO=true;
 let FULL_TEMPO_ESPERA_SEG=60;let FULL_TEMPO_EXIBICAO_SEG=7;let RODAPE_TEMPO_EXIBICAO_SEG=5;let FULL_ESCALA=1;
 let PATROCINADORES_RODAPE=[];let PATROCINADORES_FULL=[];let SENHA_MESTRA=null;
 const CHAVE_SENHA_FIREBASE='CONFIG_SENHA_OPERADOR_'+NOME_BANCO;const CHAVE_RODAPE='CONFIG_RODAPE_GLOBAL';const CHAVE_FULL='CONFIG_FULL_GLOBAL';const CHAVE_TEMPOS='CONFIG_TEMPOS_GLOBAL';
-const MOSTRAR_VOLTAMOS_EM=false;const ESCALA_PLACAR=1.30;const LISTA_TESTE=["THIAGO BORGES","RUAM CAMPOS"];
+const MOSTRAR_VOLTAMOS_EM=false;const ESCALA_PLACAR=1.30;const LISTA_TESTE=["THIAGO BORGES","RUAM CAMPOS","MARCOS SILVA"];
 </script><style>
 html,body{background:#000;color:#fff;font-family:'Arial Black',Arial;margin:0;text-align:center}
 button{font-size:13px;padding:6px 10px;margin:3px 2px;border-radius:6px;border:none;cursor:pointer;font-weight:bold}
@@ -35,50 +35,41 @@ button{font-size:13px;padding:6px 10px;margin:3px 2px;border-radius:6px;border:n
 .full-escala-wrap{width:100vw;height:100vh;display:flex;align-items:center;justify-content:center;transform:scale(var(--full-scale,1))}
 #contato-gigante{position:absolute;bottom:18px;left:50%;transform:translateX(-50%);font-size:14px;color:#fff;background:rgba(0,0,0,0.7);padding:5px 15px;border-radius:20px}
 
-/* ===== V12 - TUDO COM ESPAÇO CORRETO ===== */
-html.modo-tv, body.modo-tv{height:100vh!important;overflow:hidden!important;background:#000!important;margin:0!important}
-body.modo-tv #tela-placar{position:fixed!important;top:0!important;left:0!important;width:100vw!important;height:100vh!important;display:flex!important;flex-direction:column!important}
-body.modo-tv.topo{height:115px!important;min-height:115px!important;background:#FF8C00!important;border-bottom:6px solid #FFD700!important;display:flex!important;align-items:center!important;flex-shrink:0!important;padding:0 15px!important}
-body.modo-tv.topo h1{font-size:30px!important;color:#000!important;font-weight:900!important;text-shadow:none!important;flex:1!important;text-align:center!important}
-body.modo-tv.topo img{height:95px!important;width:95px!important;min-width:95px!important;max-width:95px!important;background:#fff!important;padding:6px!important;border-radius:10px!important;object-fit:contain!important;display:block!important}
-body.modo-tv.logos-lado{display:flex!important;gap:12px!important}
-body.modo-tv.relogio{display:none!important}
-body.modo-tv #lista{flex:1!important;padding:8px!important;gap:6px!important;display:flex!important;flex-direction:column!important;justify-content:space-around!important}
-body.modo-tv.placar{flex:1!important;padding:0 12px!important;margin:0!important;display:flex!important;align-items:center!important;border-radius:8px!important}
-body.modo-tv.placar.p1{background:#FFD700!important;border-left:8px solid #000!important}
-body.modo-tv.placar.p2{background:#E8E8E8!important;border-left:8px solid #000!important}
-body.modo-tv.placar.p3{background:#FF8C00!important;border-left:8px solid #000!important}
-/* TOP 3 TUDO PRETO - COM ESPAÇO */
+/* V13 - COM ESPAÇO CORRETO */
+.modo-tv,.modo-tv body, body.modo-tv{height:100vh!important;overflow:hidden!important;background:#000!important;margin:0!important}
+.modo-tv #tela-placar, body.modo-tv #tela-placar{position:fixed!important;top:0!important;left:0!important;width:100vw!important;height:100vh!important;display:flex!important;flex-direction:column!important}
+.modo-tv.topo, body.modo-tv.topo{height:115px!important;min-height:115px!important;background:#FF8C00!important;border-bottom:6px solid #FFD700!important;flex-shrink:0!important}
+.modo-tv.topo h1, body.modo-tv.topo h1{font-size:30px!important;color:#000!important;font-weight:900!important;text-shadow:none!important}
+.modo-tv.topo img, body.modo-tv.topo img{height:95px!important;width:95px!important;min-width:95px!important;background:#fff!important;padding:6px!important;border-radius:10px!important}
+.modo-tv.relogio, body.modo-tv.relogio{display:none!important}
+.modo-tv #lista, body.modo-tv #lista{flex:1!important;padding:8px!important;gap:6px!important;display:flex!important;flex-direction:column!important;justify-content:space-around!important}
+.modo-tv.placar, body.modo-tv.placar{flex:1!important;padding:0 12px!important;margin:0!important;display:flex!important;align-items:center!important;border-radius:8px!important}
+.modo-tv.placar.p1, body.modo-tv.placar.p1{background:#FFD700!important;border-left:8px solid #000!important}
+.modo-tv.placar.p2, body.modo-tv.placar.p2{background:#E8E8E8!important;border-left:8px solid #000!important}
+.modo-tv.placar.p3, body.modo-tv.placar.p3{background:#FF8C00!important;border-left:8px solid #000!important}
+.modo-tv.placar.p1.pos,.modo-tv.placar.p1.nome,.modo-tv.placar.p1.prova,.modo-tv.placar.p1.total,.modo-tv.placar.p1.detalhe,
+.modo-tv.placar.p2.pos,.modo-tv.placar.p2.nome,.modo-tv.placar.p2.prova,.modo-tv.placar.p2.total,.modo-tv.placar.p2.detalhe,
+.modo-tv.placar.p3.pos,.modo-tv.placar.p3.nome,.modo-tv.placar.p3.prova,.modo-tv.placar.p3.total,.modo-tv.placar.p3.detalhe,
 body.modo-tv.placar.p1.pos, body.modo-tv.placar.p1.nome, body.modo-tv.placar.p1.prova, body.modo-tv.placar.p1.total, body.modo-tv.placar.p1.detalhe,
 body.modo-tv.placar.p2.pos, body.modo-tv.placar.p2.nome, body.modo-tv.placar.p2.prova, body.modo-tv.placar.p2.total, body.modo-tv.placar.p2.detalhe,
 body.modo-tv.placar.p3.pos, body.modo-tv.placar.p3.nome, body.modo-tv.placar.p3.prova, body.modo-tv.placar.p3.total, body.modo-tv.placar.p3.detalhe{
-  color:#000!important;font-weight:900!important;text-shadow:none!important;font-size:22px!important;
+  color:#000!important;font-weight:900!important;font-size:22px!important;text-shadow:none!important;opacity:1!important;
 }
-body.modo-tv.pos{width:5%!important;font-size:22px!important;font-weight:900!important}
-body.modo-tv.nome{width:26%!important;font-size:22px!important;font-weight:900!important}
-body.modo-tv.prova{width:10%!important;font-size:22px!important;font-weight:900!important;background:none!important}
-body.modo-tv.total{width:12%!important;font-size:22px!important;font-weight:900!important}
-body.modo-tv.detalhe{width:47%!important;font-size:22px!important;font-weight:900!important;text-align:right!important;letter-spacing:0.5px!important}
-body.modo-tv.reorg{background:#fff!important;color:#000!important;border:2px solid #000!important}
-body.modo-tv.rodape{height:95px!important;min-height:95px!important;background:linear-gradient(90deg,#FF8C00,#FF4500)!important;border-top:6px solid #FFD700!important;display:flex!important;align-items:center!important;justify-content:center!important;flex-shrink:0!important}
-body.modo-tv.rodape-prop{font-size:30px!important;color:#000!important;font-weight:900!important;text-shadow:none!important}
-body.modo-tv.rodape-contato{font-size:24px!important;padding:8px 22px!important;background:#000!important;color:#FFD700!important;border-radius:25px!important}
-body.modo-celular #lista{height:auto!important;overflow:visible!important;justify-content:flex-start!important;padding-bottom:100px}
-body.modo-celular.rodape{position:fixed;bottom:0;left:0;display:flex!important}
+.modo-tv.pos, body.modo-tv.pos{width:5%!important}.modo-tv.nome, body.modo-tv.nome{width:26%!important}.modo-tv.prova, body.modo-tv.prova{width:10%!important}.modo-tv.total, body.modo-tv.total{width:12%!important}.modo-tv.detalhe, body.modo-tv.detalhe{width:47%!important;text-align:right!important}
+.modo-tv.rodape, body.modo-tv.rodape{height:95px!important;min-height:95px!important;background:linear-gradient(90deg,#FF8C00,#FF4500)!important;border-top:6px solid #FFD700!important;flex-shrink:0!important}
+.modo-tv.rodape-prop, body.modo-tv.rodape-prop{font-size:30px!important;color:#000!important;text-shadow:none!important}
+.modo-tv.rodape-contato, body.modo-tv.rodape-contato{font-size:24px!important;background:#000!important;color:#FFD700!important}
+.modo-celular #lista{height:auto!important;overflow:visible!important;justify-content:flex-start!important;padding-bottom:100px}
+.modo-celular.rodape{position:fixed;bottom:0;left:0;display:flex!important}
 .container-operador{display:flex;gap:8px;padding:8px;height:calc(100vh - 62px);background:#0f0f0f;box-sizing:border-box}
 .coluna-lancamento{width:38%;background:#1a1a1a;padding:8px;border-radius:8px;overflow-y:auto;border:1px solid #333}
 .coluna-lista{width:62%;background:#1a1a1a;padding:8px;border-radius:8px;overflow-y:auto;border:1px solid #333}
 .cabecalho{display:flex;justify-content:center;gap:6px;margin-bottom:6px}
 .cabecalho input{font-size:14px;padding:6px;border-radius:6px;border:2px solid #444;font-weight:bold;background:#222;color:#e0e0e0}
 #nome{width:70%}#prova{width:25%;background:#3a3a3a;color:#FFD700}
-.tabela-tiros{width:100%;margin:5px auto;border-collapse:collapse}
-.tabela-tiros th{background:#2a2a2a;color:#FFA500;padding:3px;font-size:13px}
-.tabela-tiros td{padding:2px}
-.tabela-tiros input{width:90%;font-size:14px;padding:4px;text-align:center;border:2px solid #444;border-radius:4px;background:#222;color:#fff}
-#parcial{font-size:16px;color:#4FC3F7;margin:5px 0}
-.item-admin{background:#222;margin:5px 0;padding:8px 10px;border-radius:8px;border-left:4px solid #FF8C00;text-align:left}
-.linha-principal{display:flex;justify-content:space-between;align-items:center;font-size:12px;gap:5px}
-html.modo-adm-scroll, body.modo-adm-scroll{height:auto!important;min-height:100vh!important;overflow-y:auto!important}
+.tabela-tiros{width:100%;margin:5px auto;border-collapse:collapse}.tabela-tiros th{background:#2a2a2a;color:#FFA500;padding:3px;font-size:13px}.tabela-tiros td{padding:2px}.tabela-tiros input{width:90%;font-size:14px;padding:4px;text-align:center;border:2px solid #444;border-radius:4px;background:#222;color:#fff}
+#parcial{font-size:16px;color:#4FC3F7;margin:5px 0}.item-admin{background:#222;margin:5px 0;padding:8px 10px;border-radius:8px;border-left:4px solid #FF8C00;text-align:left}.linha-principal{display:flex;justify-content:space-between;align-items:center;font-size:12px;gap:5px}
+.modo-adm-scroll, body.modo-adm-scroll{height:auto!important;min-height:100vh!important;overflow-y:auto!important}
 .tela-adm,.tela-anuncios{background:#111;min-height:100vh;padding:20px;box-sizing:border-box;position:relative!important;width:100%!important;height:auto!important;overflow:visible!important;display:block;padding-bottom:120px!important}
 .card-adm{background:#1e1e1e;border:1px solid #333;border-radius:12px;padding:20px;margin:15px auto;max-width:900px;text-align:left}
 .link-adm{display:block;background:#222;color:#00FFFF;padding:10px;margin:6px 0;border-radius:8px;text-decoration:none;font-family:monospace;font-size:13px;border:1px solid #444}
@@ -86,8 +77,7 @@ html.modo-adm-scroll, body.modo-adm-scroll{height:auto!important;min-height:100v
 .linha-config input{width:70px;padding:8px;border-radius:6px;background:#000;color:#FFD700;border:1px solid #444;text-align:center;font-weight:bold}
 .box-anuncio{background:#1e1e1e;border:1px solid #444;border-radius:8px;padding:12px;margin:8px 0;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
 .box-anuncio input[type=text]{padding:8px;border-radius:6px;background:#000;color:#fff;border:1px solid #444;flex:1;min-width:180px}
-.box-anuncio input.tempo{width:60px;flex:none}
-.preview-arte{width:120px;height:70px;background:#000;border:1px solid #555;border-radius:6px;object-fit:contain}
+.box-anuncio input.tempo{width:60px;flex:none}.preview-arte{width:120px;height:70px;background:#000;border:1px solid #555;border-radius:6px;object-fit:contain}
 .barra-emoji{background:#111;border:2px solid #FFD700;border-radius:10px;padding:10px;margin:10px auto;max-width:900px;display:flex;flex-wrap:wrap;gap:8px;justify-content:center;position:sticky;top:0;z-index:50}
 .barra-emoji button{font-size:20px;padding:6px 10px;background:#222;border:1px solid #444;border-radius:8px;cursor:pointer}
 </style></head><body>
@@ -157,7 +147,38 @@ function apagarListaAtletas(){if(!confirm('Apagar lista?')) return;localStorage.
 function limparContadores(){if(confirm('Zerar C/R?')){CONTADOR_ATLETAS={};localStorage.setItem('contador_atletas',JSON.stringify(CONTADOR_ATLETAS));alert('Zerado!');}}
 document.addEventListener('keydown',function(e){if(e.key==='F2'&&senhaOk){e.preventDefault();lancar();}if(e.key==='F3'&&senhaOk){e.preventDefault();novaSerie();}if(e.key==='F8'){e.preventDefault();mostrarInsercaoFull();}if(e.key==='Escape'){fecharErro();}});
 function getRankingParaTV(lista){const ordenados=[...lista].sort((a,b)=>b.pontos-a.pontos);const topUnico=[];const vistos=new Set();for(let i=0;i<ordenados.length;i++){const item=ordenados[i];const chave=item.nome.trim().toUpperCase();if(!vistos.has(chave)){vistos.add(chave);topUnico.push({...item,originalPos:i+1,novaPos:topUnico.length+1,pulou:(i+1)-(topUnico.length+1)});}if(topUnico.length===5) break;}const idsTop=new Set(topUnico.map(t=>t.id));const resto=ordenados.filter(o=>!idsTop.has(o.id)).map(o=>({...o,originalPos:0,pulou:0}));return[...topUnico,...resto];}
-function atualizarTela(){let html="";const rankingTV=getRankingParaTV(ranking);let max=(modo==='celular'?rankingTV.length:10);for(let i=0;i<max&&i<rankingTV.length;i++){let a=rankingTV[i];let tag="";if(a.originalPos&&a.pulou>0){tag=`<span class="reorg">↑ era ${a.originalPos}º → ${a.novaPos}º</span>`;}let todosTiros=(a.tiros||[]).join(' | ');html+=`<div class="placar ${i==0?'p1':i==1?'p2':i==2?'p3':''}"><span class="pos">${i+1}º</span><span class="nome">${a.nome} ${tag}</span><span class="prova">P:${a.prova}</span><span class="total">${a.pontos.toFixed(2)}</span><span class="detalhe">${todosTiros}</span></div>`;}document.getElementById('lista').innerHTML=html||"<div class='placar'>AGUARDANDO</div>";}
+function atualizarTela(){
+  let html="";const rankingTV=getRankingParaTV(ranking);let max=(modo==='celular'?rankingTV.length:10);
+  for(let i=0;i<max&&i<rankingTV.length;i++){
+    let a=rankingTV[i];let tag="";if(a.originalPos&&a.pulou>0){tag=`<span class="reorg">↑ era ${a.originalPos}º → ${a.novaPos}º</span>`;}
+    let todosTiros=(a.tiros||[]).join(' | ');
+    html+=`<div class="placar ${i==0?'p1':i==1?'p2':i==2?'p3':''}"><span class="pos">${i+1}º</span><span class="nome">${a.nome} ${tag}</span><span class="prova">P:${a.prova}</span><span class="total">${a.pontos.toFixed(2)}</span><span class="detalhe">${todosTiros}</span></div>`;
+  }
+  document.getElementById('lista').innerHTML=html||"<div class='placar'>AGUARDANDO</div>";
+
+  // FORÇA PRETO NA MARRA - V13 - FUNCIONA MESMO SE CSS FALHAR
+  if(modo==='tv'){
+    setTimeout(()=>{
+      document.querySelectorAll('.topo img').forEach(img=>{
+        img.style.setProperty('height','95px','important');
+        img.style.setProperty('width','95px','important');
+        img.style.setProperty('min-width','95px','important');
+        img.style.setProperty('display','block','important');
+      });
+      document.querySelectorAll('.placar').forEach((el,i)=>{
+        if(i<3){
+          el.querySelectorAll('.pos,.nome,.prova,.total,.detalhe').forEach(s=>{
+            s.style.setProperty('color','#000','important');
+            s.style.setProperty('font-weight','900','important');
+            s.style.setProperty('font-size','22px','important');
+            s.style.setProperty('text-shadow','none','important');
+            s.style.setProperty('opacity','1','important');
+          });
+        }
+      });
+    },10);
+  }
+}
 let LISTA_ATLETAS=null;let CONTADOR_ATLETAS=JSON.parse(localStorage.getItem('contador_atletas')||'{}');
 function atualizarInfoLista(){const el=document.getElementById('infoLista');if(el) el.innerHTML=LISTA_ATLETAS&&LISTA_ATLETAS.length?`✅ ${LISTA_ATLETAS.length} atletas`:'';}
 function atualizarInfoListaADM(){const el=document.getElementById('infoListaADM');const prev=document.getElementById('previewLista');if(!el) return;if(LISTA_ATLETAS&&LISTA_ATLETAS.length){el.innerHTML=`✅ ${LISTA_ATLETAS.length}`;if(prev) prev.innerHTML=LISTA_ATLETAS.slice(0,80).join('<br>');}else{el.innerHTML='❌ Nenhuma';if(prev) prev.innerHTML='';}atualizarInfoLista();}
