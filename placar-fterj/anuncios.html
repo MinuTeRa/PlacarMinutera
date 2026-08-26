@@ -1,35 +1,19 @@
-<!DOCTYPE html><html><head><meta charset="UTF-8"><title>ANUNCIOS - FTERJ</title>
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script><script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-<script src="./firebase-config.js?v=17"></script>
-<style>body{background:#111;color:#fff;font-family:Arial;padding:12px}input{padding:8px;background:#222;color:#FFD700;border:1px solid #555;border-radius:6px;margin:3px}button{padding:8px 14px;border:none;border-radius:6px;font-weight:bold;cursor:pointer}.card{background:#1e1e1e;padding:14px;border-radius:10px;margin:12px 0;border:1px solid #333}</style>
-</head><body>
-<h2 style="color:#FFD700">📢 ANUNCIOS V17 - FTERJ <a href="./index.html" style="color:#FFD700;font-size:14px">VOLTAR</a></h2>
-
-<div class="card">
-Rodapé s: <input id="tRodape" type="number" style="width:70px" value="5"> Full s: <input id="tFull" type="number" style="width:70px" value="60"> 
-Escala: <input id="escala" type="range" min="50" max="150" value="100" oninput="document.getElementById('vEscala').innerText=this.value+'%'"> <span id="vEscala">100%</span><br><br>
-RODAPÉ: PROP px: <input id="propPx" type="number" style="width:70px" value="52"> CONT px: <input id="contPx" type="number" style="width:70px" value="36"> <button onclick="salvarConfig()" style="background:#2196F3;color:#fff">💾 SALVAR</button>
-</div>
-
-<div class="card"><h3>🟠 RODAPÉS</h3><div id="listaRodape"></div><input id="nProp" placeholder="Propaganda" style="width:35%"><input id="nCont" placeholder="Contato" style="width:25%"><button onclick="addRodape()" style="background:#FF8C00">+ RODAPÉ</button> <button onclick="salvarTudo()" style="background:#4CAF50">SALVAR</button></div>
-
-<div class="card"><h3>🟡 FULL</h3><div id="listaFull"></div><input id="nFull" placeholder="Texto FULL" style="width:60%"><button onclick="addFull()" style="background:#FF8C00">+ FULL</button> <button onclick="salvarTudo()" style="background:#4CAF50">SALVAR</button></div>
-
+<script src="./firebase-config.js?v=17.1"></script>
 <script>
-firebase.initializeApp(firebaseConfig); const db=firebase.database();
-const CHAVE_RODAPE="PATROCINADORES_RODAPE_"+NOME_BANCO;
-const CHAVE_FULL="PATROCINADORES_FULL_"+NOME_BANCO;
-const CHAVE_CONFIG="CONFIG_ANUNCIOS_"+NOME_BANCO;
-let rodapes=[], fulls=[];
+// LEITURA BLINDADA - lê FTERJ e GLOBAL
+let RODAPES=[]; let FULL=[];
+function paraArray(d){ if(!d) return []; if(Array.isArray(d)) return d; if(d.rodapes) return d.rodapes; return Object.values(d); }
 
-function salvarConfig(){ db.ref(CHAVE_CONFIG).set({tempoRodape:parseInt(document.getElementById('tRodape').value), tempoFull:parseInt(document.getElementById('tFull').value), escala:parseInt(document.getElementById('escala').value), propPx:parseInt(document.getElementById('propPx').value), contPx:parseInt(document.getElementById('contPx').value)}).then(()=>alert("Config salva!")); }
-
-function addRodape(){ let p=document.getElementById('nProp').value, c=document.getElementById('nCont').value; if(!p) return; rodapes.push({prop:p, contato:c}); document.getElementById('nProp').value=''; document.getElementById('nCont').value=''; render(); }
-function addFull(){ let t=document.getElementById('nFull').value; if(!t) return; fulls.push({texto:t}); document.getElementById('nFull').value=''; render(); }
-function salvarTudo(){ db.ref(CHAVE_RODAPE).set(rodapes); db.ref(CHAVE_FULL).set(fulls); alert("Anúncios salvos no banco!"); }
-function render(){ let h=""; rodapes.forEach((r,i)=>{ h+=`<div style="background:#222;margin:4px;padding:6px;border-radius:5px">${r.prop} - ${r.contato} <button onclick="rodapes.splice(${i},1);render()" style="background:#c00;color:#fff;padding:2px 6px">X</button></div>`; }); document.getElementById('listaRodape').innerHTML=h; let hf=""; fulls.forEach((f,i)=>{ hf+=`<div style="background:#222;margin:4px;padding:6px;border-radius:5px">${f.texto} <button onclick="fulls.splice(${i},1);render()" style="background:#c00;color:#fff;padding:2px 6px">X</button></div>`; }); document.getElementById('listaFull').innerHTML=hf; }
-
-db.ref(CHAVE_RODAPE).on('value',s=>{ if(s.val()){ rodapes=s.val(); render(); } });
-db.ref(CHAVE_FULL).on('value',s=>{ if(s.val()){ fulls=s.val(); render(); } });
-db.ref(CHAVE_CONFIG).on('value',s=>{ if(s.val()){ let c=s.val(); document.getElementById('tRodape').value=c.tempoRodape||5; document.getElementById('tFull').value=c.tempoFull||60; document.getElementById('escala').value=c.escala||100; document.getElementById('propPx').value=c.propPx||52; document.getElementById('contPx').value=c.contPx||36; document.getElementById('vEscala').innerText=(c.escala||100)+'%'; } });
-</script></body></html>
+db.ref("PATROCINADORES_RODAPE_FTERJ").on('value', s=>{
+  let a=paraArray(s.val());
+  if(a.length>0){ RODAPES=a; render(); console.log("Lido FTERJ",a); }
+  else {
+    db.ref("CONFIG_RODAPE_GLOBAL").once('value', sg=>{
+      let b=paraArray(sg.val());
+      if(b.length>0){ RODAPES=b; render(); 
+        document.getElementById('status').innerText="↪️ Carregado do GLOBAL - clique SALVAR pra fixar";
+      }
+    });
+  }
+});
+</script>
