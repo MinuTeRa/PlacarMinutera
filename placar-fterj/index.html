@@ -1,39 +1,209 @@
-<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>LANCAMENTO - FTERJ</title>
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>3x7 MinuT&Ra - FTERJ - V25 FIX</title>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 <style>
-html,body{background:#000;color:#fff;font-family:'Arial Black',Arial;margin:0}
-button{font-size:13px;padding:6px 10px;margin:3px 2px;border-radius:6px;border:none;cursor:pointer;font-weight:bold}
-.btn-lancar{background:#D2691E;color:#fff}.btn-mini{padding:3px 7px;font-size:10px;margin-left:3px;border-radius:4px}.btn-editar{background:#FFD700;color:#000}.btn-excluir{background:#c00;color:#fff}
-.tela-senha{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;background:#0f0f0f}
-.topo{background:linear-gradient(90deg,#FF8C00,#FF4500);padding:5px 20px;display:flex;align-items:center;justify-content:space-between;border-bottom:4px solid #FFD700}
-.topo img{height:50px;border-radius:8px;background:#fff;padding:3px}.topo h1{font-size:1.8vw;margin:0;color:#000;flex:1}.logos-lado{display:flex;gap:10px}
-.container-operador{display:flex;gap:8px;padding:8px;height:calc(100vh - 62px);background:#0f0f0f}
-.coluna-lancamento{width:38%;background:#1a1a1a;padding:8px;border-radius:8px;overflow-y:auto;border:1px solid #333}
-.coluna-lista{width:62%;background:#0f0f0f;padding:8px;border-radius:8px;overflow-y:auto;border:1px solid #333}
-.cabecalho{display:flex;gap:6px;margin-bottom:6px}.cabecalho input{padding:8px;border-radius:6px;border:2px solid #444;background:#222;color:#e0e0e0}
-#nome{width:70%}#prova{width:25%}.tabela-tiros{width:100%;border-collapse:collapse}.tabela-tiros th{background:#2a2a2a;color:#FFA500;padding:5px;font-size:13px}.tabela-tiros td{padding:3px}.tabela-tiros input{width:94%;padding:6px;text-align:center;background:#222;color:#fff;border:2px solid #444;border-radius:4px}
-#parcial{color:#4FC3F7;margin:8px 0;font-weight:bold}.item-admin{background:#222;margin:6px 0;padding:8px 10px;border-radius:8px;border-left:4px solid #FF8C00;text-align:left}.linha-principal{display:flex;justify-content:space-between;align-items:center;font-size:12px;gap:5px}
+*{margin:0;padding:0;box-sizing:border-box}body{background:#121212;color:#fff;font-family:Arial}
+#topo{background:linear-gradient(90deg,#FF8C00,#FF6A00);padding:10px;display:flex;align-items:center;justify-content:space-between}
+#topo h1{color:#000;font-weight:900;font-size:22px}
+#logosTop{display:flex;gap:10px;align-items:center}
+#logosTop img{height:40px;background:#fff;border-radius:6px;padding:2px 6px}
+#main{display:flex;gap:10px;padding:10px}
+#esq{width:32%;background:#1e1e1e;padding:12px;border-radius:8px}
+#dir{flex:1;background:#1e1e1e;padding:12px;border-radius:8px;max-height:85vh;overflow:auto}
+input,select{width:100%;padding:8px;background:#000;color:#fff;border:1px solid #444;border-radius:4px;margin-top:4px}
+.linha-tiro{display:flex;gap:8px;align-items:center;margin-top:6px}
+.linha-tiro b{width:30px}
+.btn{padding:8px 12px;border:none;border-radius:6px;font-weight:900;cursor:pointer;margin-top:8px}
+.btn-laranja{background:#FF8C00;color:#000}.btn-cinza{background:#444;color:#fff}
+.item-lanc{display:flex;justify-content:space-between;align-items:center;background:#2a2a2a;padding:8px;border-radius:6px;margin-top:6px;border-left:3px solid #FF8C00}
+.badge-prova{background:#FF8C00;color:#000;padding:2px 6px;border-radius:4px;font-weight:900;font-size:11px;margin-right:4px}
+.btn-editar{background:#FFD700;color:#000;padding:4px 8px;border:none;border-radius:4px;font-weight:900;cursor:pointer;font-size:11px}
+.btn-excluir{background:#ff4444;color:#fff;padding:4px 8px;border:none;border-radius:4px;font-weight:900;cursor:pointer;font-size:11px;margin-left:4px}
 </style></head><body>
-<div id="tela-senha" class="tela-senha"><h2 id="tituloSenha">🔒 CARREGANDO...</h2><div id="areaSenha"></div><div id="erroSenha" style="color:#f55"></div></div>
-<div id="tela-lancamento" style="display:none;"><div class="topo" id="topo-operador"></div><div class="container-operador"><div class="coluna-lancamento"><div style="font-size:10px;color:#888">CLUBE: <span id="labelBanco" style="color:#FFD700"></span> | <a href="adm.html" style="color:#FFD700">ADM</a> | <a href="tv.html" target="_blank" style="color:#00FFFF">TV</a></div><div id="status" style="font-size:10px;color:#81C784"></div><div class="cabecalho"><input type="text" id="nome" placeholder="NOME"><input type="text" id="prova" placeholder="C"></div><table class="tabela-tiros"><thead><tr><th>TIRO</th><th>VALOR</th></tr></thead><tbody id="corpo-tabela"></tbody></table><div id="parcial">TOTAL: 0.00</div><button class="btn-lancar" id="btnSalvar" onclick="lancar()">SALVAR [F2]</button><button class="btn-lancar" onclick="novaSerie()">NOVA [F3]</button><button class="btn-lancar" id="btnCancelar" onclick="cancelarEdicao()" style="background:#555;display:none">CANCELAR</button></div><div class="coluna-lista"><div id="lista-admin"></div></div></div></div>
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script><script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-<script src="./firebase-config.js?v=17"></script>
+<div id="topo">
+<h1>3x7 MinuT&Ra - FTERJ</h1>
+<div id="logosTop">
+<img id="logoMinuTop" src="" style="display:none">
+<img id="logoClubeTop" src="" style="display:none">
+<div><a href="adm.html" style="color:#000;font-weight:900;text-decoration:none">ADM</a> | <a href="tv.html" style="color:#000;font-weight:900;text-decoration:none">TV</a></div>
+</div>
+</div>
+
+<div id="main">
+<div id="esq">
+<label>CLUBE: FTERJ | <span id="statusConexao">...</span></label>
+<div style="display:flex;gap:6px">
+<input id="nomeAtleta" list="listaNomes" placeholder="MAURI" autocomplete="off" style="text-transform:uppercase">
+<datalist id="listaNomes"></datalist>
+<select id="provaSelect" style="width:90px">
+<option value="C">C</option>
+<option value="R1">R1</option>
+<option value="R2">R2</option>
+<option value="R3">R3</option>
+<option value="R4">R4</option>
+<option value="R5">R5</option>
+<option value="C/R">C/R</option>
+</select>
+</div>
+
+<div style="display:flex;justify-content:space-between;margin-top:10px;font-weight:900;color:#FF8C00"><span>TIRO</span><span>VALOR</span></div>
+<div id="tirosContainer"></div>
+<div style="margin-top:10px;color:#00BFFF;font-weight:900">TOTAL: <span id="totalPontos">0.00</span></div>
+<button class="btn btn-laranja" onclick="salvarLancamento()">SALVAR [F2]</button>
+<button class="btn btn-cinza" onclick="novoLancamento()">NOVA [F3]</button>
+</div>
+
+<div id="dir">
+<div id="listaLancamentos">Carregando...</div>
+</div>
+</div>
+
 <script>
-let ranking=[],historico=[],editandoId=null,SENHA_MESTRA=null,senhaOk=false;
-function montarTopo(id){let e='<div class="logos-lado">',d='<div class="logos-lado">';if(QTD_LOGOS>=1) e+=`<img src="${LOGOS[0]}">`;if(QTD_LOGOS>=2) d+=`<img src="${LOGOS[1]}">`;e+='</div>';d+='</div>';let el=document.getElementById(id);if(el){el.innerHTML=`${e}<h1>${NOME_CAMPEONATO} - ${NOME_CLUBE}</h1>${d}`;}}montarTopo('topo-operador');
-firebase.initializeApp(firebaseConfig);const db=firebase.database();
-function renderTelaCriarSenha(){document.getElementById('tituloSenha').innerText='🔑 PRIMEIRO ACESSO';document.getElementById('areaSenha').innerHTML=`<input type="password" id="novaSenha" placeholder="CRIAR SENHA" style="padding:12px;background:#222;color:#fff"><br><input type="password" id="confirmaSenha" placeholder="CONFIRMAR" style="padding:12px;background:#222;color:#fff;margin-top:8px"><br><button onclick="salvarSenhaFirebase()" style="margin-top:12px;background:#FFD700;color:#000;padding:12px 30px">SALVAR</button>`;}
-function renderTelaLogin(){document.getElementById('tituloSenha').innerText='🔒 ACESSO RESTRITO';document.getElementById('areaSenha').innerHTML=`<input type="password" id="inputSenha" placeholder="SENHA" style="padding:12px;background:#222;color:#fff"><br><button onclick="verificarSenha()" style="margin-top:12px;background:#FF8C00;color:#000;padding:10px 25px">ENTRAR</button>`;}
-function salvarSenhaFirebase(){let s1=document.getElementById('novaSenha').value.trim(),s2=document.getElementById('confirmaSenha').value.trim();if(s1!==s2){document.getElementById('erroSenha').innerText='Não conferem';return;}db.ref(CHAVE_SENHA_FIREBASE).set(s1).then(()=>{SENHA_MESTRA=s1;renderTelaLogin();});}
-function verificarSenha(){let d=document.getElementById('inputSenha').value;if(d===SENHA_MESTRA){document.getElementById('tela-senha').style.display='none';document.getElementById('tela-lancamento').style.display='block';montarTabela();iniciarFirebase();}else document.getElementById('erroSenha').innerText='INCORRETA';}
-function checarSenhaFirebase(){document.getElementById('labelBanco').innerText=NOME_BANCO;db.ref(CHAVE_SENHA_FIREBASE).once('value',s=>{if(s.val()){SENHA_MESTRA=s.val();renderTelaLogin();}else renderTelaCriarSenha();});}checarSenhaFirebase();
-function montarTabela(){let h="";for(let i=1;i<=10;i++) h+=`<tr><td>${i}º</td><td><input type="text" id="t${i}" oninput="calcularParcial()"></td></tr>`;document.getElementById('corpo-tabela').innerHTML=h;}
-function calcularParcial(){let t=0;for(let i=1;i<=10;i++){let el=document.getElementById('t'+i);if(el) t+=valorTiro(el.value);}document.getElementById('parcial').innerText=`TOTAL: ${t.toFixed(2)}`;}
-function valorTiro(v){if(!v) return 0;v=v.toString().toUpperCase().trim();if(v==='X') return 12.01;let n=parseFloat(v.replace(',','.'));return isNaN(n)?0:n;}
-function gerarID(){return 'serie_'+Date.now()+'_'+Math.random().toString(36).substr(2,5);}
-function lancar(){let nome=document.getElementById('nome').value.toUpperCase().trim();let prova=document.getElementById('prova').value.toUpperCase().trim()||'C';if(!nome) return;let tiros=[],pts=0;for(let i=1;i<=10;i++){let v=document.getElementById('t'+i).value;tiros.push(v);pts+=valorTiro(v);}let id=editandoId||gerarID();db.ref(NOME_BANCO+'/'+id).set({id,nome,prova,pontos:pts,tiros,timestamp:Date.now()}).then(()=>novaSerie());}
-function novaSerie(){editandoId=null;document.getElementById('nome').value="";document.getElementById('prova').value="";for(let i=1;i<=10;i++) document.getElementById('t'+i).value="";document.getElementById('parcial').innerText="TOTAL: 0.00";document.getElementById('btnSalvar').innerText='SALVAR [F2]';document.getElementById('btnCancelar').style.display='none';}
-function editarSerie(id){let s=historico.find(x=>x.id===id);if(!s) return;editandoId=id;document.getElementById('nome').value=s.nome;document.getElementById('prova').value=s.prova;for(let i=0;i<10;i++) document.getElementById('t'+(i+1)).value=s.tiros[i]||'';calcularParcial();document.getElementById('btnSalvar').innerText='ATUALIZAR';document.getElementById('btnCancelar').style.display='inline-block';}
-function cancelarEdicao(){novaSerie();}
-function atualizarListaAdmin(){let h="";[...historico].sort((a,b)=>b.timestamp-a.timestamp).forEach(a=>{h+=`<div class="item-admin"><div class="linha-principal"><span><b>${a.prova}</b> - ${a.nome} <b style="color:#FFD700">${a.pontos.toFixed(2)}</b> <span style="font-size:9px;color:#aaa">${(a.tiros||[]).join(' | ')}</span></span><span><button class="btn-mini btn-editar" onclick="editarSerie('${a.id}')">EDITAR</button><button class="btn-mini btn-excluir" onclick="db.ref(NOME_BANCO+'/'+a.id).remove()">X</button></span></div></div>`;});document.getElementById('lista-admin').innerHTML=h;}
-function iniciarFirebase(){db.ref(NOME_BANCO).on('value',snap=>{ranking=[];historico=[];snap.forEach(c=>{let v=c.val();if(v){ranking.push(v);historico.push(v);}});ranking.sort((a,b)=>b.pontos-a.pontos);atualizarListaAdmin();});}
+const firebaseConfig={apiKey:"AIzaSyCTEXeRjxq0_3doBNyWm5AkQ0kmBXmjlSk",authDomain:"placar-minutera.firebaseapp.com",databaseURL:"https://placar-minutera-default-rtdb.firebaseio.com",projectId:"placar-minutera"};
+firebase.initializeApp(firebaseConfig); const db=firebase.database();
+let editKey=null;
+
+function toArr(o){ if(!o) return []; return Object.keys(o).map(k=>({key:k,...o[k]})); }
+
+// 1. LOGOS - CORRIGIDO
+db.ref("CONFIG_ANUNCIOS_FTERJ").on('value',s=>{
+ let v=s.val()||{};
+ if(v.logoMinu){ document.getElementById('logoMinuTop').src=v.logoMinu; document.getElementById('logoMinuTop').style.display='block'; }
+ if(v.logoClube){ document.getElementById('logoClubeTop').src=v.logoClube; document.getElementById('logoClubeTop').style.display='block'; }
+});
+
+// 2. AUTOCOMPLETE - CORRIGIDO
+let todosNomes = new Set();
+db.ref("FTERJ").on('value',snap=>{
+ let data=snap.val()||{};
+ let lista=toArr(data).filter(x=>x.key.startsWith('serie_'));
+ let datalist=document.getElementById('listaNomes');
+ let nomesHtml="";
+ lista.forEach(s=>{
+   if(s.nome) todosNomes.add(s.nome.toUpperCase().trim());
+ });
+ datalist.innerHTML = Array.from(todosNomes).map(n=>`<option value="${n}">`).join('');
+ document.getElementById('statusConexao').innerText = lista.length+" lançamentos";
+ renderLista(lista);
+});
+
+// 3. TIROS
+function criarCamposTiros(){
+ let c=document.getElementById('tirosContainer'); c.innerHTML="";
+ for(let i=1;i<=10;i++){
+   c.innerHTML+=`<div class="linha-tiro"><b>${i}°</b><input id="t${i}" list="valoresTiro" placeholder="" oninput="calcTotal()" autocomplete="off"></div>`;
+ }
+ c.innerHTML+=`<datalist id="valoresTiro"><option value="X"><option value="10"><option value="9"><option value="8"><option value="7"><option value="6"><option value="5"><option value="4"><option value="3"><option value="2"><option value="1"><option value="0"></datalist>`;
+}
+criarCamposTiros();
+
+function valorTiro(v){
+ v=String(v).trim().toUpperCase();
+ if(v=='X' || v=='10') return 10;
+ if(v=='' ) return 0;
+ let n=parseFloat(v); return isNaN(n)?0:n;
+}
+function calcTotal(){
+ let tot=0;
+ for(let i=1;i<=10;i++){ tot+=valorTiro(document.getElementById('t'+i).value); }
+ document.getElementById('totalPontos').innerText=tot.toFixed(2);
+ return tot;
+}
+
+// 4. SALVAR COM C/R - CORRIGIDO
+function salvarLancamento(){
+ let nome=document.getElementById('nomeAtleta').value.toUpperCase().trim();
+ let prova=document.getElementById('provaSelect').value;
+ if(!nome) return alert("Digite nome");
+ let tiros=[];
+ for(let i=1;i<=10;i++) tiros.push(document.getElementById('t'+i).value.toUpperCase().trim()||"0");
+ let pontos=calcTotal();
+ // Calcula X,10,9 para contagem
+ let x=tiros.filter(t=>t=='X').length;
+ let dez=tiros.filter(t=>t=='10').length;
+ let nove=tiros.filter(t=>t=='9').length;
+
+ let obj={nome, prova, tiros, pontos, contagem:{x10:x,"10":dez,"9":nove}, data:Date.now()};
+
+ if(editKey){
+   db.ref("FTERJ/"+editKey).update(obj).then(()=>{ alert("Atualizado!"); editKey=null; novoLancamento(); });
+ } else {
+   db.ref("FTERJ").push({["serie_"+Date.now()]:obj}).once('value').then(()=>{});
+   // Compatível com seu banco antigo que usa serie_ direto
+   db.ref("FTERJ/serie_"+Date.now()).set(obj);
+   novoLancamento();
+ }
+}
+
+function novoLancamento(){
+ editKey=null;
+ document.getElementById('nomeAtleta').value="";
+ for(let i=1;i<=10;i++) document.getElementById('t'+i).value="";
+ document.getElementById('totalPontos').innerText="0.00";
+ document.getElementById('nomeAtleta').focus();
+}
+
+// 5. LISTA + BOTAO EXCLUIR CORRIGIDO + REGISTRO C/R CORRIGIDO
+function renderLista(lista){
+ lista.sort((a,b)=>(b.data||0)-(a.data||0));
+ let html="";
+ lista.forEach(item=>{
+   // Seu banco tem objeto dentro de serie_
+   let dados=item;
+   if(item.key && item.key.startsWith('serie_') && Object.keys(item).length==1) { dados = item[Object.keys(item)[0]] || item; }
+   // Se veio direto como serie_XXX
+   let real = dados.nome? dados : (dados[Object.keys(dados).find(k=>k.nome)] || dados);
+   // fallback: se item já é o objeto serie
+   let nome = dados.nome || item.nome || "SEM NOME";
+   let prova = dados.prova || item.prova || "R2";
+   let pontos = parseFloat(dados.pontos || item.pontos || 0).toFixed(2);
+   let tirosStr = (dados.tiros||item.tiros||[]).join(' | ');
+   let key = item.key;
+
+   // CORREÇÃO C/R - mostra badge correto
+   let badgeClass = prova=="C/R"? "background:#00E5FF;color:#000" : "";
+   html+=`<div class="item-lanc">
+     <div><span class="badge-prova" style="${badgeClass}">${prova}</span><b>${nome}</b> <span style="color:#FFD700">${pontos}</span> <span style="font-size:10px;color:#aaa">${tirosStr}</span></div>
+     <div><button class="btn-editar" onclick="editarLanc('${key}')">EDITAR</button><button class="btn-excluir" onclick="excluirLanc('${key}')">X</button></div>
+   </div>`;
+ });
+ document.getElementById('listaLancamentos').innerHTML=html||"Nenhum lançamento";
+}
+
+function editarLanc(key){
+ db.ref("FTERJ/"+key).once('value',s=>{
+  let v=s.val(); if(!v) return;
+  // Se v tem sub-chave
+  if(v.nome==undefined){ let k=Object.keys(v)[0]; v=v[k]; }
+  document.getElementById('nomeAtleta').value=v.nome||"";
+  document.getElementById('provaSelect').value=v.prova||"R2";
+  (v.tiros||[]).forEach((t,i)=>{ if(document.getElementById('t'+(i+1))) document.getElementById('t'+(i+1)).value=t; });
+  calcTotal();
+  editKey=key;
+ });
+}
+
+// EXCLUIR - CORRIGIDO - AGORA FUNCIONA
+function excluirLanc(key){
+ if(!confirm("Excluir lançamento "+key+"?")) return;
+ db.ref("FTERJ/"+key).remove().then(()=>{ alert("Excluído!"); }).catch(e=>alert("Erro: "+e.message));
+}
+
+// F2 SALVAR F3 NOVO
+document.addEventListener('keydown',e=>{ if(e.key=='F2'){e.preventDefault(); salvarLancamento();} if(e.key=='F3'){e.preventDefault(); novoLancamento();} });
+
+// AUTOCOMPLETE ao digitar nome -> preenche prova se já existir
+document.getElementById('nomeAtleta').addEventListener('change',()=>{
+ let nome=document.getElementById('nomeAtleta').value.toUpperCase().trim();
+ db.ref("FTERJ").once('value',snap=>{
+   let data=snap.val()||{};
+   Object.values(data).forEach(serie=>{
+     let s=serie;
+     if(serie.nome==undefined && typeof serie=='object'){ let k=Object.keys(serie)[0]; if(serie[k] && serie[k].nome) s=serie[k]; }
+     if(s.nome && s.nome.toUpperCase().trim()==nome){
+       document.getElementById('provaSelect').value=s.prova||"R2";
+     }
+   });
+ });
+});
 </script></body></html>
