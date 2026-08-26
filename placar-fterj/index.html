@@ -17,7 +17,7 @@ input,select{width:100%;padding:8px;background:#000;color:#fff;border:1px solid 
 #telaSenha{position:fixed;inset:0;background:rgba(0,0,0,0.97);z-index:9999;display:flex;align-items:center;justify-content:center}
 </style></head><body>
 
-<div id="telaSenha"><div style="background:#1e1e1e;padding:24px;border-radius:12px;text-align:center;border:2px solid #FF8C00;min-width:300px"><h2 style="color:#FF8C00">3x7 FTERJ</h2><input id="inputSenha" type="password" placeholder="minutera2025" style="text-align:center;margin-top:10px"><button onclick="checarSenha()" style="width:100%;margin-top:10px;padding:10px;background:#FF8C00;color:#000;border:none;border-radius:6px;font-weight:900">ENTRAR</button><p id="erroSenha" style="color:#f44;font-size:11px;display:none;margin-top:6px"></p></div></div>
+<div id="telaSenha"><div style="background:#1e1e1e;padding:24px;border-radius:12px;text-align:center;border:2px solid #FF8C00;min-width:300px"><h2 style="color:#FF8C00">3x7 FTERJ</h2><input id="inputSenha" type="password" placeholder="Digite a senha" autocomplete="new-password" value="" style="text-align:center;margin-top:10px"><button onclick="checarSenha()" style="width:100%;margin-top:10px;padding:10px;background:#FF8C00;color:#000;border:none;border-radius:6px;font-weight:900">ENTRAR</button><p id="erroSenha" style="color:#f44;font-size:11px;display:none;margin-top:6px"></p></div></div>
 
 <div id="header"><span>3x7 MinuT&Ra - FTERJ V33 | X=12.01</span><span style="font-size:10px">INCREMENTAL + SENHA</span></div>
 <div id="main">
@@ -41,9 +41,8 @@ let chavesJaSalvas = new Set(JSON.parse(localStorage.getItem('chavesFTERJ')||'[]
 const PERMITIDOS=['X','10','9','8','7','6','5','4','3','2','1','0'], ORDEM_R=['R1','R2','R3','R4','R5'];
 db.ref("CONFIG_SENHA_OPERADOR_FTERJ").on('value',s=>{if(s.val()) SENHA_BANCO=String(s.val());});
 
-function checarSenha(){let s=document.getElementById('inputSenha').value.trim(); if(s===SENHA_BANCO){document.getElementById('telaSenha').style.display='none';} else{let e=document.getElementById('erroSenha'); e.style.display='block'; e.innerText="Senha errada! Atual: "+SENHA_BANCO;}}
+function checarSenha(){let s=document.getElementById('inputSenha').value.trim(); if(s===SENHA_BANCO){document.getElementById('telaSenha').style.display='none';} else{let e=document.getElementById('erroSenha'); e.style.display='block'; e.innerText="Senha incorreta!";}}
 document.getElementById('inputSenha').addEventListener('keydown',e=>{if(e.key==='Enter') checarSenha();});
-// FORÇA PEDIR SENHA SEMPRE
 document.getElementById('telaSenha').style.display='flex';
 
 function valorTiro(v){v=String(v).trim().toUpperCase(); if(v=='X') return 12; let n=parseFloat(v); return isNaN(n)?0:n;}
