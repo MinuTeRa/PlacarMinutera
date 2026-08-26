@@ -1,4 +1,4 @@
-<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>V16.3 LANC ORIGINAL</title><script>
+<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>V16.4 TV + LANC OK</title><script>
 const NOME_BANCO="FTERJ";const NOME_CLUBE="FTERJ";const NOME_CAMPEONATO="3x7 MinuT&Ra";const QTD_LOGOS=2;const LOGOS=["logo1.png","logo2.png"];const FULL_ATIVO=true;
 let FULL_TEMPO_ESPERA_SEG=60;let FULL_TEMPO_EXIBICAO_SEG=7;let RODAPE_TEMPO_EXIBICAO_SEG=5;let FULL_ESCALA=1;
 let RODAPE_FONTE_PROP=52;let RODAPE_FONTE_CONTATO=36;
@@ -8,78 +8,94 @@ const CHAVE_SENHA_FIREBASE='CONFIG_SENHA_OPERADOR_'+NOME_BANCO;const CHAVE_RODAP
 html,body{background:#000;color:#fff;font-family:'Arial Black',Arial;margin:0;text-align:center}
 button{font-size:13px;padding:6px 10px;margin:3px 2px;border-radius:6px;border:none;cursor:pointer;font-weight:bold}
 .btn-lancar{background:#D2691E;color:#fff}.btn-mini{padding:3px 7px;font-size:10px;margin-left:3px;border-radius:4px}.btn-editar{background:#FFD700;color:#000}.btn-excluir{background:#c00;color:#fff}
-.reorg{background:#000;color:#00FF88;border:1px solid #00FF88;padding:2px 7px;border-radius:10px;font-weight:900;margin-left:8px;font-size:10px}
-#modal-erro{position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.85);z-index:99999;display:none;align-items:center;justify-content:center}
 .tela-senha{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;background:#0f0f0f}
-.switch{position:relative;display:inline-block;width:44px;height:24px}.switch input{opacity:0;width:0;height:0}.slider{position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background:#444;transition:.4s;border-radius:24px}.slider:before{position:absolute;content:"";height:18px;width:18px;left:3px;bottom:3px;background:#fff;transition:.4s;border-radius:50%}input:checked+.slider{background:#00C853}input:checked+.slider:before{transform:translateX(20px)}
 .topo{background:linear-gradient(90deg,#FF8C00,#FF4500);padding:5px 20px;display:flex;align-items:center;justify-content:space-between;border-bottom:4px solid #FFD700;position:relative}
 .topo img{height:50px;border-radius:8px;background:#fff;padding:3px}
-.topo h1{font-size:1.8vw;margin:0;color:#000;text-shadow:2px 2px #FFD700;flex:1}
+.topo h1{font-size:1.8vw;margin:0;color:#000;flex:1}
 .logos-lado{display:flex;gap:10px}
-.relogio{position:absolute;top:14px;right:85px;background:rgba(0,0,0,0.85);color:#FFD700;font-size:12px;padding:4px 14px;border-radius:20px;border:1px solid #FF8C00;z-index:90;font-family:monospace}
+.relogio{position:absolute;top:10px;right:20px;background:rgba(0,0,0,0.85);color:#FFD700;font-size:14px;padding:6px 16px;border-radius:20px;border:1px solid #FF8C00;z-index:90;font-family:monospace}
 #lista{padding:8px;display:flex;flex-direction:column;gap:6px}
-.placar{display:flex;justify-content:space-around;align-items:center;margin:0 8px;padding:12px 8px;background:#1a1a1a;border-left:6px solid #555;border-radius:8px}
-.placar.p1{background:linear-gradient(90deg,#FFD700,#FFA500);color:#000}.placar.p2{background:linear-gradient(90deg,#C0C0C0,#A9A9A9);color:#000}.placar.p3{background:linear-gradient(90deg,#CD7F32,#8B4513);color:#000}
-.pos{width:8%}.nome{width:32%;text-align:left;padding-left:8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.prova{width:10%;color:#00FFFF!important}.total{width:14%;font-weight:900;color:#FFD700!important}.detalhe{width:36%;font-size:11px;color:#ccc!important;font-weight:bold}
-.rodape{background:linear-gradient(90deg,#FF8C00,#FF4500);border-top:4px solid #FFD700;padding:12px 15px;width:100%;box-sizing:border-box;height:85px;z-index:100}
-.rodape-conteudo{display:flex;justify-content:center;align-items:center;gap:20px;height:100%;transition:opacity 0.3s;flex-wrap:wrap}
-.rodape-prop{color:#000;font-weight:900;text-shadow:1px 1px #FFD700;font-size:var(--fonte-prop,52px)}.rodape-contato{color:#fff;font-weight:bold;background:#000;padding:5px 12px;border-radius:20px;font-size:var(--fonte-cont,36px)}
+.placar{display:flex;align-items:center;padding:12px 8px;background:#1a1a1a;border-left:6px solid #555;border-radius:8px;margin:0 8px}
+.placar.p1{background:#FFD700;color:#000}.placar.p2{background:#C0C0C0;color:#000}.placar.p3{background:#CD7F32;color:#000}
+.pos{width:8%}.nome{width:30%;text-align:left;padding-left:8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.prova{width:10%}.total{width:12%}.detalhe{width:40%;text-align:right;font-size:11px}
+.rodape{background:linear-gradient(90deg,#FF8C00,#FF4500);border-top:4px solid #FFD700;padding:12px;width:100%;box-sizing:border-box;height:85px}
+.rodape-conteudo{display:flex;justify-content:center;align-items:center;gap:20px;height:100%;flex-wrap:wrap;transition:opacity 0.3s}
+.rodape-prop{color:#000;font-weight:900;font-size:var(--fonte-prop,52px)}.rodape-contato{color:#fff;background:#000;padding:5px 12px;border-radius:20px;font-size:var(--fonte-cont,36px)}
 #insercao-full{position:fixed;top:0;left:0;width:100vw;height:100vh;background:#000;z-index:9999;display:none;align-items:center;justify-content:center}
-#prop-gigante img{width:100vw!important;height:100vh!important;object-fit:cover!important}
-.full-escala-wrap{width:100vw;height:100vh;display:flex;align-items:center;justify-content:center;transform:scale(var(--full-scale,1))}
-/* MODO TV */
-.modo-tv{height:100vh!important;overflow:hidden!important;background:#000!important}
-.modo-tv #tela-placar{position:fixed!important;top:0!important;left:0!important;width:100vw!important;height:100vh!important;display:flex!important;flex-direction:column!important}
-.modo-tv.topo{height:115px!important;min-height:115px!important}.modo-tv.topo img{height:95px!important;width:95px!important;min-width:95px!important}
-.modo-tv.relogio{display:block!important;font-size:22px!important}
-.modo-tv #lista{flex:1!important;justify-content:space-around!important}
-.modo-tv.rodape{height:140px!important;min-height:140px!important}
-/* LANCAMENTO ORIGINAL - IGUAL SEU PRINT */
+#prop-gigante img{width:100vw;height:100vh;object-fit:cover}
+/* LANCAMENTO - IGUAL SEU PRINT */
 .container-operador{display:flex;gap:8px;padding:8px;height:calc(100vh - 62px);background:#0f0f0f}
 .coluna-lancamento{width:38%;background:#1a1a1a;padding:8px;border-radius:8px;overflow-y:auto;border:1px solid #333}
 .coluna-lista{width:62%;background:#0f0f0f;padding:8px;border-radius:8px;overflow-y:auto;border:1px solid #333}
 .cabecalho{display:flex;gap:6px;margin-bottom:6px}.cabecalho input{padding:8px;border-radius:6px;border:2px solid #444;background:#222;color:#e0e0e0}
-#nome{width:70%;text-transform:uppercase}#prova{width:25%;text-transform:uppercase}
-.tabela-tiros{width:100%;border-collapse:collapse}.tabela-tiros th{background:#2a2a2a;color:#FFA500;padding:5px;font-size:13px}.tabela-tiros td{padding:3px}.tabela-tiros input{width:94%;padding:6px;text-align:center;background:#222;color:#fff;border:2px solid #444;border-radius:4px;font-weight:bold}
-#parcial{color:#4FC3F7;margin:8px 0;font-size:16px;font-weight:bold}
+#nome{width:70%}#prova{width:25%}
+.tabela-tiros{width:100%;border-collapse:collapse}.tabela-tiros th{background:#2a2a2a;color:#FFA500;padding:5px;font-size:13px}.tabela-tiros td{padding:3px}.tabela-tiros input{width:94%;padding:6px;text-align:center;background:#222;color:#fff;border:2px solid #444;border-radius:4px}
+#parcial{color:#4FC3F7;margin:8px 0;font-weight:bold}
 .item-admin{background:#222;margin:6px 0;padding:8px 10px;border-radius:8px;border-left:4px solid #FF8C00;text-align:left}
 .linha-principal{display:flex;justify-content:space-between;align-items:center;font-size:12px;gap:5px}
-.modo-adm-scroll{height:auto!important;min-height:100vh!important;overflow-y:auto!important}
-.tela-adm,.tela-anuncios{background:#111;min-height:100vh;padding:20px;box-sizing:border-box;display:none;padding-bottom:120px!important}
+.tela-adm,.tela-anuncios{background:#111;min-height:100vh;padding:20px;box-sizing:border-box;display:none;padding-bottom:120px}
 .card-adm{background:#1e1e1e;border:1px solid #333;border-radius:12px;padding:20px;margin:15px auto;max-width:900px;text-align:left}
-.link-adm{display:block;background:#222;color:#00FFFF;padding:10px;margin:6px 0;border-radius:8px;text-decoration:none;font-family:monospace;font-size:13px;border:1px solid #444}
+.link-adm{display:block;background:#222;color:#00FFFF;padding:10px;margin:6px 0;border-radius:8px;text-decoration:none;font-family:monospace;border:1px solid #444}
 .linha-config{display:flex;gap:15px;align-items:center;background:#222;padding:10px;border-radius:8px;margin:10px 0;flex-wrap:wrap}
 .linha-config input{width:70px;padding:8px;border-radius:6px;background:#000;color:#FFD700;border:1px solid #444;text-align:center;font-weight:bold}
 .box-anuncio{background:#1e1e1e;border:1px solid #444;border-radius:8px;padding:12px;margin:8px 0;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-.box-anuncio input[type=text]{padding:8px;border-radius:6px;background:#000;color:#fff;border:1px solid #444;flex:1;min-width:180px}
-.box-anuncio input.tempo{width:60px;flex:none}.preview-arte{width:120px;height:70px;background:#000;border:1px solid #555;border-radius:6px;object-fit:contain}
+.box-anuncio input[type=text]{padding:8px;border-radius:6px;background:#000;color:#fff;border:1px solid #444;flex:1;min-width:150px}
+.box-anuncio input.tempo{width:60px;flex:none}.preview-arte{width:120px;height:70px;background:#000;border:1px solid #555;object-fit:contain}
+
+/* ===== TV CORRIGIDA - ESPAÇO CERTO ===== */
+body.modo-tv{height:100vh!important;overflow:hidden!important}
+body.modo-tv #tela-placar{position:fixed!important;top:0!important;left:0!important;width:100vw!important;height:100vh!important;display:flex!important;flex-direction:column!important}
+body.modo-tv.topo{height:115px!important;min-height:115px!important}
+body.modo-tv.topo img{height:95px!important;width:95px!important;min-width:95px!important;background:#fff!important;padding:6px!important;border-radius:10px!important}
+body.modo-tv.topo h1{font-size:32px!important}
+body.modo-tv #lista{flex:1!important;justify-content:space-around!important;display:flex!important;flex-direction:column!important}
+body.modo-tv.placar{padding:16px 12px!important;margin:4px 10px!important}
+body.modo-tv.placar.pos,
+body.modo-tv.placar.nome,
+body.modo-tv.placar.prova,
+body.modo-tv.placar.total,
+body.modo-tv.placar.detalhe{font-size:26px!important;font-weight:900!important}
+body.modo-tv.placar.p1.pos,
+body.modo-tv.placar.p1.nome,
+body.modo-tv.placar.p1.prova,
+body.modo-tv.placar.p1.total,
+body.modo-tv.placar.p1.detalhe,
+body.modo-tv.placar.p2.pos,
+body.modo-tv.placar.p2.nome,
+body.modo-tv.placar.p2.prova,
+body.modo-tv.placar.p2.total,
+body.modo-tv.placar.p2.detalhe,
+body.modo-tv.placar.p3.pos,
+body.modo-tv.placar.p3.nome,
+body.modo-tv.placar.p3.prova,
+body.modo-tv.placar.p3.total,
+body.modo-tv.placar.p3.detalhe{color:#000!important}
+body.modo-tv.relogio{display:block!important;font-size:22px!important;top:15px!important;right:20px!important}
+body.modo-tv.rodape{height:140px!important;min-height:140px!important;display:flex!important;align-items:center!important;justify-content:center!important}
+body.modo-tv.rodape.rodape-conteudo{gap:30px!important}
+body.modo-tv.rodape.rodape-prop{font-size:52px!important;line-height:1.1!important;color:#000!important}
+body.modo-tv.rodape.rodape-contato{font-size:36px!important;padding:10px 22px!important}
 </style></head><body>
-<div id="modal-erro"><div style="background:#1a1a1a;border:3px solid #f00;border-radius:12px;padding:25px"><p id="modal-erro-msg"></p><button onclick="document.getElementById('modal-erro').style.display='none'">OK</button></div></div>
-<div id="tela-senha" class="tela-senha"><h2 id="tituloSenha">🔒 CARREGANDO...</h2><div id="areaSenha"></div><div id="erroSenha" style="color:#f55;margin-top:10px"></div></div>
-<div id="tela-adm" class="tela-adm"><h1 style="color:#FFD700;">⚙️ ADM - <span id="nomeBancoADM"></span></h1><div class="card-adm" style="border:2px solid #FFD700"><h2>📢 FULL</h2><label class="switch"><input type="checkbox" id="toggleAnuncio" checked onchange="alternarAnuncios()"><span class="slider"></span></label><span id="statusAnuncio" style="margin-left:10px;color:#00FF00;font-weight:bold">LIGADOS</span></div><div class="card-adm"><h2>🔑 SENHA</h2><input type="password" id="novaSenhaADM" placeholder="Nova senha" style="padding:8px;border-radius:6px;background:#222;color:#fff;border:1px solid #444"><button class="btn-lancar" onclick="trocarSenhaADM()">SALVAR</button><div id="msgSenhaADM" style="color:#81C784"></div></div><div class="card-adm"><h2>🔗 LINKS</h2><div id="links-adm"></div></div></div>
-<div id="tela-anuncios" class="tela-anuncios"><h1 style="color:#FFD700;">📢 ANÚNCIOS V16.3</h1><div class="card-adm"><h2>⚙️ TEMPOS E FONTES RODAPÉ</h2><div class="linha-config"><label>Rodapé s: <input type="number" id="segRodape" value="5"></label><label>Full s: <input type="number" id="esperaFull" value="60"></label><label>Escala: <input type="range" id="escalaFull" min="0.6" max="1.4" step="0.05" value="1" style="width:120px" oninput="document.getElementById('valEscala').innerText=Math.round(this.value*100)+'%'"><span id="valEscala">100%</span></label></div><div class="linha-config" style="border:2px solid #FFD700"><b style="color:#FFD700">RODAPÉ:</b><label>PROP px: <input type="number" id="fonteProp" value="52" style="border:2px solid #FFD700;width:80px"></label><label>CONT px: <input type="number" id="fonteCont" value="36" style="border:2px solid #00FFFF;width:80px"></label><button class="btn-lancar" onclick="salvarTempos()" style="background:#2196F3">💾 SALVAR</button></div><div id="statusAnuncioSave" style="color:#81C784"></div></div><div class="card-adm"><h2>🟠 RODAPÉS</h2><div id="containerRodapes"></div><button class="btn-lancar" onclick="adicionarRodape()">+ RODAPÉ</button><button class="btn-lancar" onclick="salvarRodapes()" style="background:#00C853">SALVAR</button></div><div class="card-adm"><h2>🟡 FULL</h2><div id="containerFull"></div><button class="btn-lancar" onclick="adicionarFull()">+ FULL</button><button class="btn-lancar" onclick="salvarFulls()" style="background:#00C853">SALVAR</button></div></div>
+<div id="tela-senha" class="tela-senha"><h2 id="tituloSenha">🔒 CARREGANDO...</h2><div id="areaSenha"></div><div id="erroSenha" style="color:#f55"></div></div>
+<div id="tela-adm" class="tela-adm"><h1>ADM</h1><div id="links-adm"></div></div>
+<div id="tela-anuncios" class="tela-anuncios"><h1>📢 ANUNCIOS V16.4</h1><div class="card-adm"><div class="linha-config"><label>Rodapé s: <input type="number" id="segRodape" value="5"></label><label>Full s: <input type="number" id="esperaFull" value="60"></label><label>Escala: <input type="range" id="escalaFull" min="0.6" max="1.4" step="0.05" value="1" oninput="document.getElementById('valEscala').innerText=Math.round(this.value*100)+'%'"><span id="valEscala">100%</span></label></div><div class="linha-config" style="border:2px solid #FFD700"><b>RODAPÉ:</b><label>PROP px: <input type="number" id="fonteProp" value="52" style="border:2px solid #FFD700;width:80px"></label><label>CONT px: <input type="number" id="fonteCont" value="36" style="border:2px solid #00FFFF;width:80px"></label><button class="btn-lancar" onclick="salvarTempos()" style="background:#2196F3">💾 SALVAR</button></div><div id="statusAnuncioSave" style="color:#81C784"></div></div><div class="card-adm"><h2>🟠 RODAPÉS</h2><div id="containerRodapes"></div><button class="btn-lancar" onclick="adicionarRodape()">+ RODAPÉ</button><button class="btn-lancar" onclick="salvarRodapes()" style="background:#00C853">SALVAR</button></div><div class="card-adm"><h2>🟡 FULL</h2><div id="containerFull"></div><button class="btn-lancar" onclick="adicionarFull()">+ FULL</button><button class="btn-lancar" onclick="salvarFulls()" style="background:#00C853">SALVAR</button></div></div>
 <div id="tela-placar" style="display:none;"><div class="topo" id="topo-tv"><div class="relogio" id="relogio-tv"></div></div><div id="lista"></div><div id="insercao-full"><div id="prop-gigante"></div></div><div class="rodape" id="rodape-tv"><div class="rodape-conteudo" id="rodape-conteudo"></div></div></div>
-<div id="tela-lancamento" style="display:none;"><div class="topo" id="topo-operador"></div><div class="container-operador">
-<div class="coluna-lancamento"><div style="font-size:10px;color:#888">CLUBE: <span id="labelBanco" style="color:#FFD700"></span> | <a href="?modo=adm" style="color:#FFD700">ADM</a></div><div id="status" style="font-size:10px;color:#81C784"></div><div id="infoLista" style="font-size:11px;color:#FFD700;margin:4px 0"></div><div id="sugestoes"></div><div class="cabecalho"><input type="text" id="nome" placeholder="NOME"><input type="text" id="prova" placeholder="C"></div><table class="tabela-tiros"><thead><tr><th>TIRO</th><th>VALOR</th></tr></thead><tbody id="corpo-tabela"></tbody></table><div id="parcial">TOTAL: 0.00</div><button class="btn-lancar" id="btnSalvar" onclick="lancar()">SALVAR [F2]</button><button class="btn-lancar" onclick="novaSerie()">NOVA [F3]</button><button class="btn-lancar" id="btnCancelar" onclick="cancelarEdicao()" style="background:#555;display:none">CANCELAR</button></div>
-<div class="coluna-lista"><div id="lista-admin"></div></div>
-</div></div>
+<div id="tela-lancamento" style="display:none;"><div class="topo" id="topo-operador"></div><div class="container-operador"><div class="coluna-lancamento"><div style="font-size:10px;color:#888">CLUBE: <span id="labelBanco" style="color:#FFD700"></span> | <a href="?modo=adm" style="color:#FFD700">ADM</a></div><div id="status" style="font-size:10px;color:#81C784"></div><div id="infoLista" style="font-size:11px;color:#FFD700"></div><div id="sugestoes"></div><div class="cabecalho"><input type="text" id="nome" placeholder="NOME"><input type="text" id="prova" placeholder="C"></div><table class="tabela-tiros"><thead><tr><th>TIRO</th><th>VALOR</th></tr></thead><tbody id="corpo-tabela"></tbody></table><div id="parcial">TOTAL: 0.00</div><button class="btn-lancar" id="btnSalvar" onclick="lancar()">SALVAR [F2]</button><button class="btn-lancar" onclick="novaSerie()">NOVA [F3]</button><button class="btn-lancar" id="btnCancelar" onclick="cancelarEdicao()" style="background:#555;display:none">CANCELAR</button></div><div class="coluna-lista"><div id="lista-admin"></div></div></div></div>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script><script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script><script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script><script>
 const firebaseConfig={apiKey:"AIzaSyCTEXeRjxq0_3doBNyWm5AkQ0kmBXmjlSk",authDomain:"placar-minutera.firebaseapp.com",databaseURL:"https://placar-minutera-default-rtdb.firebaseio.com",projectId:"placar-minutera",storageBucket:"placar-minutera.firebasestorage.app",messagingSenderId:"689991648080",appId:"1:689991648080:web:9deeb958183eae23e255"};firebase.initializeApp(firebaseConfig);const db=firebase.database();const storage=firebase.storage();
-let ranking=[];let historico=[];let editandoId=null;let senhaOk=false;let anunciosLigados=true;
-function montarTopo(id){let e='<div class="logos-lado">',d='<div class="logos-lado">';if(QTD_LOGOS>=1) e+=`<img src="${LOGOS[0]}">`;if(QTD_LOGOS>=2) d+=`<img src="${LOGOS[1]}">`;e+='</div>';d+='</div>';let el=document.getElementById(id);if(el){el.innerHTML=`${e}<h1>${NOME_CAMPEONATO} - ${NOME_CLUBE} (${NOME_BANCO})</h1>${d}${id==='topo-tv'?'<div class="relogio" id="relogio-tv"></div>':''}`;}}montarTopo('topo-tv');montarTopo('topo-operador');
+let ranking=[];let historico=[];let editandoId=null;let senhaOk=false;
+function montarTopo(id){let e='<div class="logos-lado">',d='<div class="logos-lado">';if(QTD_LOGOS>=1) e+=`<img src="${LOGOS[0]}">`;if(QTD_LOGOS>=2) d+=`<img src="${LOGOS[1]}">`;e+='</div>';d+='</div>';let el=document.getElementById(id);if(el){el.innerHTML=`${e}<h1>${NOME_CAMPEONATO}</h1>${d}${id==='topo-tv'?'<div class="relogio" id="relogio-tv"></div>':''}`;}}montarTopo('topo-tv');montarTopo('topo-operador');
 const urlParams=new URLSearchParams(window.location.search);const modo=(urlParams.get('modo')||'').toLowerCase();
-if(modo==='celular'){document.documentElement.classList.add('modo-celular');document.body.classList.add('modo-celular');}
+if(modo==='tv'){document.documentElement.classList.add('modo-tv');document.body.classList.add('modo-tv');}
 else if(modo==='anuncios'||modo==='adm'){document.documentElement.classList.add('modo-adm-scroll');document.body.classList.add('modo-adm-scroll');}
-else if(modo==='tv'){document.documentElement.classList.add('modo-tv');document.body.classList.add('modo-tv');}
 let indiceRodape=0;function rotacionarRodape(){const r=document.getElementById('rodape-conteudo');if(!r||!PATROCINADORES_RODAPE.length) return;r.style.opacity=0;setTimeout(()=>{let p=PATROCINADORES_RODAPE[indiceRodape];if(p){r.innerHTML=`<div class="rodape-prop">${p.prop}</div><div class="rodape-contato">${p.contato}</div>`;aplicarFontesRodape();}r.style.opacity=1;indiceRodape=(indiceRodape+1)%PATROCINADORES_RODAPE.length;},300);}
-function aplicarFontesRodape(){document.documentElement.style.setProperty('--fonte-prop',RODAPE_FONTE_PROP+'px');document.documentElement.style.setProperty('--fonte-cont',RODAPE_FONTE_CONTATO+'px');document.querySelectorAll('.rodape-prop').forEach(e=>e.style.setProperty('font-size',RODAPE_FONTE_PROP+'px','important'));document.querySelectorAll('.rodape-contato').forEach(e=>e.style.setProperty('font-size',RODAPE_FONTE_CONTATO+'px','important'));}
-function iniciarTimerFull(){}
+function aplicarFontesRodape(){document.documentElement.style.setProperty('--fonte-prop',RODAPE_FONTE_PROP+'px');document.documentElement.style.setProperty('--fonte-cont',RODAPE_FONTE_CONTATO+'px');document.querySelectorAll('.rodape-prop').forEach(e=>{e.style.setProperty('font-size',RODAPE_FONTE_PROP+'px','important');e.style.setProperty('color','#000','important');});document.querySelectorAll('.rodape-contato').forEach(e=>e.style.setProperty('font-size',RODAPE_FONTE_CONTATO+'px','important'));}
 function renderTelaCriarSenha(){document.getElementById('tituloSenha').innerText='🔑 PRIMEIRO ACESSO';document.getElementById('areaSenha').innerHTML=`<input type="password" id="novaSenha" placeholder="CRIAR SENHA" style="padding:12px;background:#222;color:#fff"><br><input type="password" id="confirmaSenha" placeholder="CONFIRMAR" style="padding:12px;background:#222;color:#fff;margin-top:8px"><br><button onclick="salvarSenhaFirebase()" style="margin-top:12px;background:#FFD700;color:#000;padding:12px 30px">SALVAR</button>`;}
 function renderTelaLogin(){document.getElementById('tituloSenha').innerText='🔒 ACESSO RESTRITO';document.getElementById('areaSenha').innerHTML=`<input type="password" id="inputSenha" placeholder="SENHA" style="padding:12px;background:#222;color:#fff"><br><button onclick="verificarSenha()" style="margin-top:12px;background:#FF8C00;color:#000;padding:10px 25px">ENTRAR</button>`;}
 function salvarSenhaFirebase(){let s1=document.getElementById('novaSenha').value.trim();let s2=document.getElementById('confirmaSenha').value.trim();if(s1!==s2){document.getElementById('erroSenha').innerText='Não conferem';return;}db.ref(CHAVE_SENHA_FIREBASE).set(s1).then(()=>{SENHA_MESTRA=s1;renderTelaLogin();});}
-function trocarSenhaADM(){let ns=document.getElementById('novaSenhaADM').value.trim();if(ns.length<4) return;db.ref(CHAVE_SENHA_FIREBASE).set(ns).then(()=>{SENHA_MESTRA=ns;document.getElementById('msgSenhaADM').innerText='✅ Atualizada';});}
-function verificarSenha(){let d=document.getElementById('inputSenha').value;if(d===SENHA_MESTRA){senhaOk=true;document.getElementById('tela-senha').style.display='none';if(window.modoADMpendente){document.getElementById('tela-adm').style.display='block';montarLinksADM();}else if(modo==='anuncios'){document.getElementById('tela-anuncios').style.display='block';carregarAnunciosTela();}else{document.getElementById('tela-lancamento').style.display='block';montarTabela();}iniciarFirebase();iniciarListaAtletas();}else{document.getElementById('erroSenha').innerText='INCORRETA';}}
-function checarSenhaFirebase(){let el=document.getElementById('labelBanco'); if(el) el.innerText=NOME_BANCO;let el2=document.getElementById('nomeBancoADM'); if(el2) el2.innerText=NOME_BANCO;if(modo==='tv'||modo==='celular'){document.getElementById('tela-senha').style.display='none';document.getElementById('tela-placar').style.display='block';rotacionarRodape();setInterval(rotacionarRodape,RODAPE_TEMPO_EXIBICAO_SEG*1000);iniciarFirebase();return;}db.ref(CHAVE_SENHA_FIREBASE).once('value',snap=>{if(snap.val()){SENHA_MESTRA=snap.val();if(modo==='adm') window.modoADMpendente=true;renderTelaLogin();}else{renderTelaCriarSenha();}});}
+function verificarSenha(){let d=document.getElementById('inputSenha').value;if(d===SENHA_MESTRA){senhaOk=true;document.getElementById('tela-senha').style.display='none';if(window.modoADMpendente){document.getElementById('tela-adm').style.display='block';montarLinksADM();}else if(modo==='anuncios'){document.getElementById('tela-anuncios').style.display='block';carregarAnunciosTela();}else{document.getElementById('tela-lancamento').style.display='block';montarTabela();}iniciarFirebase();}else{document.getElementById('erroSenha').innerText='INCORRETA';}}
+function checarSenhaFirebase(){let el=document.getElementById('labelBanco'); if(el) el.innerText=NOME_BANCO;if(modo==='tv'||modo==='celular'){document.getElementById('tela-senha').style.display='none';document.getElementById('tela-placar').style.display='block';rotacionarRodape();setInterval(rotacionarRodape,RODAPE_TEMPO_EXIBICAO_SEG*1000);iniciarFirebase();return;}db.ref(CHAVE_SENHA_FIREBASE).once('value',snap=>{if(snap.val()){SENHA_MESTRA=snap.val();if(modo==='adm') window.modoADMpendente=true;renderTelaLogin();}else{renderTelaCriarSenha();}});}
 checarSenhaFirebase();
 let listaRodapeTemp=[];let listaFullTemp=[];
 function carregarAnunciosTela(){db.ref(CHAVE_TEMPOS).once('value',s=>{if(s.val()){let t=s.val();document.getElementById('segRodape').value=t.segRodape||5;document.getElementById('esperaFull').value=t.esperaFull||60;document.getElementById('escalaFull').value=t.escalaFull||1;document.getElementById('valEscala').innerText=Math.round((t.escalaFull||1)*100)+'%';document.getElementById('fonteProp').value=t.fonteProp||52;document.getElementById('fonteCont').value=t.fonteCont||36;RODAPE_FONTE_PROP=t.fonteProp||52;RODAPE_FONTE_CONTATO=t.fonteCont||36;}});db.ref(CHAVE_RODAPE).once('value',s=>{listaRodapeTemp=s.val()||[];renderRodapes();});db.ref(CHAVE_FULL).once('value',s=>{listaFullTemp=s.val()||[];renderFulls();});}
@@ -91,20 +107,33 @@ function adicionarFull(){listaFullTemp.push({prop:'',arte:'',tempo:7});renderFul
 function salvarFulls(){let lista=[];listaFullTemp.forEach((_,i)=>{let p=document.getElementById('full_prop_'+i)?.value||'';let a=document.getElementById('full_arte_'+i)?.value||'';let t=parseInt(document.getElementById('full_tempo_'+i)?.value)||7;if(p||a) lista.push({prop:p,arte:a,tempo:t});});db.ref(CHAVE_FULL).set(lista).then(()=>{document.getElementById('statusAnuncioSave').innerText='✅ Full';});}
 async function uploadArte(idx,input){let file=input.files[0];if(!file) return;let ref=storage.ref(`anuncios/global/${Date.now()}_${file.name}`);let snap=await ref.put(file);let url=await snap.ref.getDownloadURL();document.getElementById('full_arte_'+idx).value=url;document.getElementById('full_prev_'+idx).src=url;listaFullTemp[idx].arte=url;}
 function salvarTempos(){let tempos={segRodape:parseInt(document.getElementById('segRodape').value)||5,esperaFull:parseInt(document.getElementById('esperaFull').value)||60,escalaFull:parseFloat(document.getElementById('escalaFull').value)||1,fonteProp:parseInt(document.getElementById('fonteProp').value)||52,fonteCont:parseInt(document.getElementById('fonteCont').value)||36};db.ref(CHAVE_TEMPOS).set(tempos).then(()=>{document.getElementById('statusAnuncioSave').innerText='✅ PROP '+tempos.fonteProp+'px CONT '+tempos.fonteCont+'px';RODAPE_FONTE_PROP=tempos.fonteProp;RODAPE_FONTE_CONTATO=tempos.fonteCont;aplicarFontesRodape();});}
-function iniciarFirebase(){db.ref(NOME_BANCO).on('value',snap=>{ranking=[];historico=[];snap.forEach(c=>{let v=c.val();if(v){ranking.push(v);historico.push(v);}});ranking.sort((a,b)=>b.pontos-a.pontos);if(modo==='tv'||modo==='celular') atualizarTela();else atualizarListaAdmin();});db.ref(CHAVE_RODAPE).on('value',snap=>{if(snap.val()) PATROCINADORES_RODAPE=snap.val();});db.ref(CHAVE_FULL).on('value',snap=>{if(snap.val()) PATROCINADORES_FULL=snap.val();});db.ref(CHAVE_TEMPOS).on('value',snap=>{if(snap.val()){let t=snap.val();RODAPE_FONTE_PROP=t.fonteProp||52;RODAPE_FONTE_CONTATO=t.fonteCont||36;FULL_ESCALA=t.escalaFull||1;aplicarFontesRodape();}});db.ref('CONFIG_ANUNCIOS').on('value',snap=>{anunciosLigados=snap.val()!==false;});}
-function montarLinksADM(){let base=window.location.href.split('?')[0];document.getElementById('links-adm').innerHTML=`<a class="link-adm" href="${base}?modo=tv" target="_blank">📺 TELÃO</a><a class="link-adm" href="${base}?modo=celular" target="_blank">📱 CELULAR</a><a class="link-adm" href="${base}" target="_blank">🎯 LANÇAMENTO</a><a class="link-adm" href="${base}?modo=anuncios" target="_blank">📢 ANUNCIOS</a>`;}
+function iniciarFirebase(){db.ref(NOME_BANCO).on('value',snap=>{ranking=[];historico=[];snap.forEach(c=>{let v=c.val();if(v){ranking.push(v);historico.push(v);}});ranking.sort((a,b)=>b.pontos-a.pontos);if(modo==='tv'||modo==='celular') atualizarTela();else atualizarListaAdmin();});db.ref(CHAVE_RODAPE).on('value',snap=>{if(snap.val()) PATROCINADORES_RODAPE=snap.val();});db.ref(CHAVE_FULL).on('value',snap=>{if(snap.val()) PATROCINADORES_FULL=snap.val();});db.ref(CHAVE_TEMPOS).on('value',snap=>{if(snap.val()){let t=snap.val();RODAPE_FONTE_PROP=t.fonteProp||52;RODAPE_FONTE_CONTATO=t.fonteCont||36;aplicarFontesRodape();}});}
+function montarLinksADM(){let base=window.location.href.split('?')[0];document.getElementById('links-adm').innerHTML=`<a class="link-adm" href="${base}?modo=tv" target="_blank">📺 TELÃO</a><a class="link-adm" href="${base}" target="_blank">🎯 LANÇAMENTO</a><a class="link-adm" href="${base}?modo=anuncios" target="_blank">📢 ANUNCIOS</a>`;}
 function montarTabela(){let h="";for(let i=1;i<=10;i++) h+=`<tr><td>${i}º</td><td><input type="text" id="t${i}" oninput="calcularParcial()"></td></tr>`;document.getElementById('corpo-tabela').innerHTML=h;}
 function calcularParcial(){let t=0;for(let i=1;i<=10;i++){let el=document.getElementById('t'+i);if(el) t+=valorTiro(el.value);}document.getElementById('parcial').innerText=`TOTAL: ${t.toFixed(2)}`;}
 function valorTiro(v){if(!v) return 0;v=v.toString().toUpperCase().trim();if(v==='X') return 12.01;let n=parseFloat(v.replace(',','.'));return isNaN(n)?0:n;}
 function gerarID(){return 'serie_'+Date.now()+'_'+Math.random().toString(36).substr(2,5);}
 function lancar(){let nome=document.getElementById('nome').value.toUpperCase().trim();let prova=document.getElementById('prova').value.toUpperCase().trim()||'C';if(!nome) return;let tiros=[];let pts=0;for(let i=1;i<=10;i++){let v=document.getElementById('t'+i).value;tiros.push(v);pts+=valorTiro(v);}let id=editandoId||gerarID();db.ref(NOME_BANCO+'/'+id).set({id,nome,prova,pontos:pts,tiros,timestamp:Date.now(),contagem:{}}).then(()=>novaSerie());}
-function novaSerie(){editandoId=null;document.getElementById('nome').value="";document.getElementById('prova').value="";for(let i=1;i<=10;i++) document.getElementById('t'+i).value="";document.getElementById('parcial').innerText="TOTAL: 0.00";document.getElementById('btnSalvar').innerText='SALVAR [F2]';document.getElementById('btnSalvar').style.background='#D2691E';document.getElementById('btnCancelar').style.display='none';}
-function editarSerie(id){let s=historico.find(x=>x.id===id);if(!s) return;editandoId=id;document.getElementById('nome').value=s.nome;document.getElementById('prova').value=s.prova;for(let i=0;i<10;i++) document.getElementById('t'+(i+1)).value=s.tiros[i]||'';calcularParcial();document.getElementById('btnSalvar').innerText='ATUALIZAR';document.getElementById('btnSalvar').style.background='#FFD700';document.getElementById('btnCancelar').style.display='inline-block';}
+function novaSerie(){editandoId=null;document.getElementById('nome').value="";document.getElementById('prova').value="";for(let i=1;i<=10;i++) document.getElementById('t'+i).value="";document.getElementById('parcial').innerText="TOTAL: 0.00";document.getElementById('btnSalvar').innerText='SALVAR [F2]';document.getElementById('btnCancelar').style.display='none';}
+function editarSerie(id){let s=historico.find(x=>x.id===id);if(!s) return;editandoId=id;document.getElementById('nome').value=s.nome;document.getElementById('prova').value=s.prova;for(let i=0;i<10;i++) document.getElementById('t'+(i+1)).value=s.tiros[i]||'';calcularParcial();document.getElementById('btnSalvar').innerText='ATUALIZAR';document.getElementById('btnCancelar').style.display='inline-block';}
 function cancelarEdicao(){novaSerie();}
-function atualizarListaAdmin(){let h="";[...historico].sort((a,b)=>b.timestamp-a.timestamp).forEach(a=>{h+=`<div class="item-admin"><div class="linha-principal"><span><b>${a.prova}</b> - ${a.nome} <b style="color:#FFD700">${a.pontos.toFixed(2)}</b> <span style="font-size:9px;color:#aaa">Tiros: ${(a.tiros||[]).join(' | ')}</span></span><span><button class="btn-mini btn-editar" onclick="editarSerie('${a.id}')">EDITAR</button><button class="btn-mini btn-excluir" onclick="db.ref(NOME_BANCO+'/${a.id}').remove()">X</button></span></div></div>`;});document.getElementById('lista-admin').innerHTML=h;}
-function atualizarTela(){let html="";for(let i=0;i<10&&i<ranking.length;i++){let a=ranking[i];let todos=(a.tiros||[]).join(' | ');html+=`<div class="placar ${i==0?'p1':i==1?'p2':i==2?'p3':''}"><span class="pos">${i+1}º</span><span class="nome">${a.nome}</span><span class="prova">P:${a.prova}</span><span class="total">${a.pontos.toFixed(2)}</span><span class="detalhe">${todos}</span></div>`;}document.getElementById('lista').innerHTML=html||"<div class='placar'>AGUARDANDO</div>";if(modo==='tv'){setTimeout(()=>{document.querySelectorAll('.placar.pos,.placar.nome,.placar.prova,.placar.total,.placar.detalhe').forEach(s=>{s.style.setProperty('font-size','26px','important');s.style.setProperty('font-weight','900','important');});aplicarFontesRodape();},10);}}
-function iniciarListaAtletas(){}
-function alternarAnuncios(){let t=document.getElementById('toggleAnuncio');db.ref('CONFIG_ANUNCIOS').set(t.checked);}
+function atualizarListaAdmin(){let h="";[...historico].sort((a,b)=>b.timestamp-a.timestamp).forEach(a=>{h+=`<div class="item-admin"><div class="linha-principal"><span><b>${a.prova}</b> - ${a.nome} <b style="color:#FFD700">${a.pontos.toFixed(2)}</b> <span style="font-size:9px;color:#aaa">${(a.tiros||[]).join(' | ')}</span></span><span><button class="btn-mini btn-editar" onclick="editarSerie('${a.id}')">EDITAR</button><button class="btn-mini btn-excluir" onclick="db.ref(NOME_BANCO+'/${a.id}').remove()">X</button></span></div></div>`;});document.getElementById('lista-admin').innerHTML=h;}
+function atualizarTela(){
+  let html="";for(let i=0;i<10&&i<ranking.length;i++){let a=ranking[i];let todos=(a.tiros||[]).join(' | ');html+=`<div class="placar ${i==0?'p1':i==1?'p2':i==2?'p3':''}"><span class="pos">${i+1}º</span><span class="nome">${a.nome}</span><span class="prova">P:${a.prova}</span><span class="total">${a.pontos.toFixed(2)}</span><span class="detalhe">${todos}</span></div>`;}
+  document.getElementById('lista').innerHTML=html||"<div class='placar'>AGUARDANDO</div>";
+  if(modo==='tv'){
+    document.querySelectorAll('.topo img').forEach(img=>{img.style.setProperty('height','95px','important');img.style.setProperty('width','95px','important');});
+    document.querySelectorAll('.placar.pos,.placar.nome,.placar.prova,.placar.total,.placar.detalhe').forEach(s=>{
+      s.style.setProperty('font-size','26px','important');
+      s.style.setProperty('font-weight','900','important');
+    });
+    document.querySelectorAll('.placar.p1.pos,.placar.p1.nome,.placar.p1.prova,.placar.p1.total,.placar.p1.detalhe,.placar.p2.pos,.placar.p2.nome,.placar.p2.prova,.placar.p2.total,.placar.p2.detalhe,.placar.p3.pos,.placar.p3.nome,.placar.p3.prova,.placar.p3.total,.placar.p3.detalhe').forEach(s=>s.style.setProperty('color','#000','important'));
+    aplicarFontesRodape();
+    let rel=document.getElementById('relogio-tv');if(rel) rel.style.display='block';
+  }
+}
 if(modo==='adm') window.modoADMpendente=true;
 setInterval(()=>{let el=document.getElementById('relogio-tv');if(el) el.innerText=new Date().toLocaleString('pt-BR');},1000);
+// força TV a cada 500ms
+setInterval(()=>{if(modo==='tv'){aplicarFontesRodape();}},500);
 </script></body></html>
