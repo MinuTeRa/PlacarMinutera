@@ -11,21 +11,27 @@
 body{background:#0e0e0e;color:#fff;font-family:Arial;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch}
 #header{background:linear-gradient(90deg,#FF8C00,#FF6A00);padding:10px 8px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 2px 8px #000}
 .logo-box{background:#fff;border-radius:6px;padding:3px 6px;display:flex;align-items:center;justify-content:center;height:38px;min-width:70px}
-.logo-box img{max-height:32px;max-width:65px;object-fit:contain;font-size:10px;color:#000;font-weight:900}
+.logo-box img{max-height:32px;max-width:65px;object-fit:contain}
 #centro{flex:1;text-align:center;padding:0 8px}
 #centro h1{font-size:16px;color:#000;font-weight:900;line-height:1.1}
 #centro div{font-size:10px;color:#000;font-weight:700;opacity:0.7}
 #ranking{display:flex;flex-direction:column;gap:4px;padding:6px;padding-bottom:25px}
 .linha{display:flex;flex-wrap:wrap;align-items:center;background:#1a1a1a;border-radius:8px;padding:8px 10px;min-height:52px}
-.linha.ouro{background:#FFD700;color:#000}.linha.prata{background:#C0C0C0;color:#000}.linha.bronze{background:#CD7F32;color:#000}
 .top{display:flex;width:100%;align-items:center}
 .pos{width:38px;font-weight:900;text-align:center;font-size:13px}
 .nome{flex:1;font-size:12px;font-weight:800;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .prova{width:45px;text-align:center;color:#00E5FF;font-size:12px;font-weight:900}
-.linha.ouro.prova,.linha.prata.prova,.linha.bronze.prova{color:#000!important}
 .total{width:62px;text-align:right;color:#FFD700;font-size:13px;font-weight:900}
-.linha.ouro.total,.linha.prata.total,.linha.bronze.total{color:#000!important}
 .detalhe{width:100%;font-size:10px;opacity:0.75;margin-top:4px;text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* PODIO - COR DA LETRA DOS 3 PRIMEIROS */
+.linha.ouro{background:#FFD700}
+.linha.prata{background:#C0C0C0}
+.linha.bronze{background:#CD7F32}
+.linha.ouro.pos,.linha.ouro.nome,.linha.ouro.prova,.linha.ouro.total,.linha.ouro.detalhe{color:#000!important}
+.linha.prata.pos,.linha.prata.nome,.linha.prata.prova,.linha.prata.total,.linha.prata.detalhe{color:#000!important}
+.linha.bronze.pos,.linha.bronze.nome,.linha.bronze.prova,.linha.bronze.total,.linha.bronze.detalhe{color:#000!important}
+
 #contador{position:sticky;bottom:0;background:#000;border-top:1px solid #FF8C00;padding:8px;text-align:center;font-size:11px;color:#FFD700;z-index:100}
 #full{position:fixed;inset:0;background:rgba(0,0,0,0.96);display:none;align-items:center;justify-content:center;z-index:9999;flex-direction:column;padding:15px}
 #full img{max-width:95%;max-height:70%;border:3px solid gold;border-radius:12px;object-fit:contain}
@@ -33,53 +39,37 @@ body{background:#0e0e0e;color:#fff;font-family:Arial;overflow-y:auto;overflow-x:
 </head>
 <body>
 <div id="header">
-<div class="logo-box"><img id="logoClube" src="" alt="FTERJ" onerror="this.style.display='none';this.parentElement.innerText='FTERJ'"></div>
+<div class="logo-box"><img id="logoClube" src="" alt="FTERJ"></div>
 <div id="centro"><h1>3x7 MinuT&Ra - FTERJ</h1><div>RANKING GERAL - TODOS</div></div>
-<div class="logo-box"><img id="logoMinutera" src="" alt="Minutera" onerror="this.style.display='none';this.parentElement.innerText='MinuT&Ra'"></div>
+<div class="logo-box"><img id="logoMinutera" src="" alt="MinuT&Ra"></div>
 </div>
-
 <div id="ranking">CARREGANDO...</div>
 <div id="contador">-- atiradores - role para ver todos</div>
-
-<div id="full">
-<img id="imgFull" src="">
-<div id="txtFull" style="color:gold;margin-top:12px;font-size:16px;font-weight:bold;text-align:center"></div>
-<div id="fullCount" style="color:#fff;margin-top:6px;font-size:12px"></div>
-</div>
+<div id="full"><img id="imgFull" src=""><div id="txtFull" style="color:gold;margin-top:12px;font-size:16px;font-weight:bold;text-align:center"></div><div id="fullCount" style="color:#fff;margin-top:6px;font-size:12px"></div></div>
 
 <script>
 const firebaseConfig={apiKey:"AIzaSyCTEXeRjxq0_3doBNyWm5AkQ0kmBXmjlSk",authDomain:"placar-minutera.firebaseapp.com",databaseURL:"https://placar-minutera-default-rtdb.firebaseio.com",projectId:"placar-minutera"};
 firebase.initializeApp(firebaseConfig);
 const db=firebase.database();
-
 function toArr(d){ if(!d) return []; if(Array.isArray(d)) return d.filter(x=>x); return Object.values(d).filter(x=>x); }
 
 let FULL=[];
 let CFG={intervaloFull:120,tempoFull:7};
 
-// LOGOS - busca do CONFIG_ANUNCIOS_FTERJ
 db.ref("CONFIG_ANUNCIOS_FTERJ").on('value',s=>{
  let v=s.val(); if(!v) return;
- CFG.intervaloFull = v.intervaloFull || 120;
- CFG.tempoFull = v.tempoFull || 7;
- if(v.logoClube){
-   let el=document.getElementById('logoClube'); el.src=v.logoClube; el.style.display='block';
- }
- if(v.logoMinutera){
-   let el=document.getElementById('logoMinutera'); el.src=v.logoMinutera; el.style.display='block';
- }
+ CFG.intervaloFull=v.intervaloFull||120;
+ CFG.tempoFull=v.tempoFull||7;
+ if(v.logoClube) document.getElementById('logoClube').src=v.logoClube;
+ if(v.logoMinutera) document.getElementById('logoMinutera').src=v.logoMinutera;
 });
 
-// FULL COM FILTRO DE ATIVO CORRIGIDO
 db.ref("PATROCINADORES_FULL_FTERJ").on('value',s=>{
  let raw=s.val();
  if(!raw){ FULL=[]; return; }
- FULL=toArr(raw).map(i=>typeof i==='string'?{arte:i,ativo:true}:i)
- .filter(f=> f.ativo!==false && f.ativo!=="false" && (f.arte||f.url||f.imagem||f.link));
- console.log("FULL ATIVOS CELULAR:", FULL.length);
+ FULL=toArr(raw).map(i=>typeof i==='string'?{arte:i,ativo:true}:i).filter(f=> f.ativo!==false && f.ativo!=="false" && (f.arte||f.url||f.imagem||f.link));
 });
 
-// RANKING TODOS COM ROLAGEM
 db.ref("FTERJ").on('value',snap=>{
  let data=snap.val();
  if(!data){ document.getElementById('ranking').innerHTML='SEM DADOS'; return; }
@@ -87,15 +77,8 @@ db.ref("FTERJ").on('value',snap=>{
  Object.keys(data).forEach(k=>{
   if(k.startsWith("serie_")){
    let s=data[k];
-   let c=s.contagem||{};
    let tiros=s.tiros||[];
-   let x=c["x10"]||0; let dez=c["10"]||0; let nove=c["9"]||0;
-   if(Object.keys(c).length<3){
-    x=tiros.filter(t=>String(t).toLowerCase()=='x').length;
-    dez=tiros.filter(t=>String(t)=='10').length;
-    nove=tiros.filter(t=>String(t)=='9').length;
-   }
-   let detalheStr = tiros.length>0? tiros.join(' | ') : `X:${x} | 10:${dez} | 9:${nove}`;
+   let detalheStr = tiros.length>0? tiros.join(' | ') : '';
    lista.push({nome:s.nome||'SEM NOME', prova:s.prova||'R2', pontos:parseFloat(s.pontos||0), detalhe:detalheStr});
   }
  });
@@ -105,11 +88,10 @@ db.ref("FTERJ").on('value',snap=>{
   let cls=i==0?'ouro':i==1?'prata':i==2?'bronze':'';
   html+=`<div class="linha ${cls}"><div class="top"><div class="pos">${i+1}º</div><div class="nome">${at.nome}</div><div class="prova">P:${at.prova}</div><div class="total">${at.pontos.toFixed(2)}</div></div><div class="detalhe">${at.detalhe}</div></div>`;
  });
- document.getElementById('ranking').innerHTML=html||'NENHUM LANÇAMENTO';
+ document.getElementById('ranking').innerHTML=html;
  document.getElementById('contador').innerText=`${lista.length} atiradores - role para ver todos`;
 });
 
-// BLOCO FULL IGUAL TV - RESPEITA ATIVO
 let emBloco=false;
 async function mostraBlocoFull(){
  if(FULL.length==0 || emBloco) return;
@@ -121,7 +103,7 @@ async function mostraBlocoFull(){
   if(!url) continue;
   document.getElementById('imgFull').src=url;
   document.getElementById('txtFull').innerText=`${f.nome||''} ${f.prop||f.propaganda||''} ${f.contato||''}`.trim();
-  document.getElementById('fullCount').innerText=`${i+1}/${FULL.length} - ${f.nome||'Patrocinador'}`;
+  document.getElementById('fullCount').innerText=`${i+1}/${FULL.length}`;
   document.getElementById('full').style.display='flex';
   await new Promise(r=>setTimeout(r,(f.tempo||CFG.tempoFull||7)*1000));
  }
