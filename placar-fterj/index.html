@@ -37,7 +37,7 @@ button{font-size:13px;padding:6px 10px;margin:3px 2px;border-radius:6px;border:n
 .full-escala-wrap{width:100vw;height:100vh;display:flex;align-items:center;justify-content:center;transform:scale(var(--full-scale,1))}
 #contato-gigante{position:absolute;bottom:18px;left:50%;transform:translateX(-50%);font-size:14px;color:#fff;background:rgba(0,0,0,0.7);padding:5px 15px;border-radius:20px}
 
-/* ===== 1. MODO TV - V6 CORRIGIDO - SEM ESPAÇO E LOGO LEGIVEL ===== */
+/* ===== 1. MODO TV - V6.1 CORRIGIDO ===== */
 html.modo-tv, body.modo-tv{height:100vh!important;overflow:hidden!important;background:#000!important;margin:0!important;padding:0!important}
 body.modo-tv #tela-placar{position:fixed!important;top:0!important;left:0!important;width:100vw!important;height:100vh!important;background:#000!important;overflow:hidden!important;display:flex!important;flex-direction:column!important}
 body.modo-tv.topo{height:95px!important;min-height:95px!important;max-height:95px!important;padding:0 12px!important;background:linear-gradient(90deg,#FF8C00,#FF6A00)!important;border-bottom:5px solid #FFD700!important;display:flex!important;align-items:center!important;justify-content:space-between!important;flex-shrink:0!important;box-sizing:border-box!important}
@@ -104,12 +104,12 @@ html.modo-adm-scroll, body.modo-adm-scroll{height:auto!important;min-height:100v
 const firebaseConfig={apiKey:"AIzaSyCTEXeRjxq0_3doBNyWm5AkQ0kmBXmjlSk",authDomain:"placar-minutera.firebaseapp.com",databaseURL:"https://placar-minutera-default-rtdb.firebaseio.com",projectId:"placar-minutera",storageBucket:"placar-minutera.firebasestorage.app",messagingSenderId:"689991648080",appId:"1:689991648080:web:9deeb958183eae23e255"};firebase.initializeApp(firebaseConfig);const db=firebase.database();const storage=firebase.storage();
 let ranking=[];let historico=[];let editandoId=null;let senhaOk=false;let offsetServidor=0;let anunciosLigados=true;
 async function sincronizarHoraBrasilia(){try{let r=await fetch('https://worldtimeapi.org/api/timezone/America/Sao_Paulo');let d=await r.json();offsetServidor=new Date(d.datetime).getTime()-Date.now();}catch(e){offsetServidor=0;}}function atualizarRelogio(){let agora=new Date(Date.now()+offsetServidor);let txt=agora.toLocaleDateString('pt-BR')+' | '+agora.toLocaleTimeString('pt-BR');let el=document.getElementById('relogio-tv');if(el) el.innerText=txt;}sincronizarHoraBrasilia();setInterval(atualizarRelogio,1000);
-function montarTopo(id){let e='<div class="logos-lado">',d='<div class="logos-lado">';if(QTD_LOGOS>=1) e+=`<img src="${LOGOS[0]}">`;if(QTD_LOGOS>=2) d+=`<img src="${LOGOS[1]}">`;e+='</div>';d+='</div>';let el=document.getElementById(id);if(el){let rel=document.getElementById('relogio-tv');let relHtml=rel?rel.outerHTML:'';el.innerHTML=`${e}<h1>${NOME_CAMPEONATO} - ${NOME_CLUBE} (${NOME_BANCO})</h1>${d}${id==='topo-tv'?relHtml:''}`;}}montarTopo('topo-tv');montarTopo('topo-operador');
+function montarTopo(id){let e='<div class="logos-lado">',d='<div class="logos-lado">';if(QTD_LOGOS>=1) e+=`<img src="${LOGOS[0]}">`;if(QTD_LOGOS>=2) d+=`<img src="${LOGOS[1]}">`;e+='</div>';d+='</div>';let el=document.getElementById(id);if(el){let rel=document.getElementById('relogio-tv');let relHtml=(id==='topo-tv'&&rel)?rel.outerHTML:'';el.innerHTML=`${e}<h1>${NOME_CAMPEONATO} - ${NOME_CLUBE} (${NOME_BANCO})</h1>${d}${relHtml}`;}}montarTopo('topo-tv');montarTopo('topo-operador');
 document.documentElement.style.setProperty('--escala-placar', ESCALA_PLACAR);
 const urlParams=new URLSearchParams(window.location.search);const modo=(urlParams.get('modo')||'').toLowerCase();
 if(modo==='celular'){document.documentElement.classList.add('modo-celular');document.body.classList.add('modo-celular');}
 else if(modo==='anuncios' || modo==='adm'){document.documentElement.classList.add('modo-adm-scroll');document.body.classList.add('modo-adm-scroll');}
-else {document.documentElement.classList.add('modo-tv');document.body.classList.add('modo-tv');}
+else if(modo==='tv'){document.documentElement.classList.add('modo-tv');document.body.classList.add('modo-tv');}
 let indiceRodape=0;function rotacionarRodape(){const r=document.getElementById('rodape-conteudo');if(!r||!PATROCINADORES_RODAPE.length) return;r.style.opacity=0;setTimeout(()=>{let p=PATROCINADORES_RODAPE[indiceRodape];if(p){r.innerHTML=`<div class="rodape-prop">${p.prop}</div><div class="rodape-contato">${p.contato}</div>`;}r.style.opacity=1;indiceRodape=(indiceRodape+1)%PATROCINADORES_RODAPE.length;},300);}
 let mostrando=false;let timerFullInterval=null;
 function getFullsAtivos(){return PATROCINADORES_FULL.filter(f=>f.ativo!==false);}
