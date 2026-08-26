@@ -1,11 +1,9 @@
-<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>DESAFIO MinuT&Ra V11 FINAL</title><script>
+<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>V12 FINAL</title><script>
 const NOME_BANCO="FTERJ";const NOME_CLUBE="FTERJ";const NOME_CAMPEONATO="3x7 MinuT&Ra";const QTD_LOGOS=2;const LOGOS=["logo1.png","logo2.png"];const FULL_ATIVO=true;
 let FULL_TEMPO_ESPERA_SEG=60;let FULL_TEMPO_EXIBICAO_SEG=7;let RODAPE_TEMPO_EXIBICAO_SEG=5;let FULL_ESCALA=1;
-let PATROCINADORES_RODAPE=[];let PATROCINADORES_FULL=[];
-const LISTA_TESTE=["THIAGO BORGES","RUAM CAMPOS","MARCOS SILVA"];
-let SENHA_MESTRA=null;const CHAVE_SENHA_FIREBASE='CONFIG_SENHA_OPERADOR_'+NOME_BANCO;
-const CHAVE_RODAPE='CONFIG_RODAPE_GLOBAL';const CHAVE_FULL='CONFIG_FULL_GLOBAL';const CHAVE_TEMPOS='CONFIG_TEMPOS_GLOBAL';
-const MOSTRAR_VOLTAMOS_EM=false;const ESCALA_PLACAR=1.30;
+let PATROCINADORES_RODAPE=[];let PATROCINADORES_FULL=[];let SENHA_MESTRA=null;
+const CHAVE_SENHA_FIREBASE='CONFIG_SENHA_OPERADOR_'+NOME_BANCO;const CHAVE_RODAPE='CONFIG_RODAPE_GLOBAL';const CHAVE_FULL='CONFIG_FULL_GLOBAL';const CHAVE_TEMPOS='CONFIG_TEMPOS_GLOBAL';
+const MOSTRAR_VOLTAMOS_EM=false;const ESCALA_PLACAR=1.30;const LISTA_TESTE=["THIAGO BORGES","RUAM CAMPOS"];
 </script><style>
 html,body{background:#000;color:#fff;font-family:'Arial Black',Arial;margin:0;text-align:center}
 button{font-size:13px;padding:6px 10px;margin:3px 2px;border-radius:6px;border:none;cursor:pointer;font-weight:bold}
@@ -37,56 +35,34 @@ button{font-size:13px;padding:6px 10px;margin:3px 2px;border-radius:6px;border:n
 .full-escala-wrap{width:100vw;height:100vh;display:flex;align-items:center;justify-content:center;transform:scale(var(--full-scale,1))}
 #contato-gigante{position:absolute;bottom:18px;left:50%;transform:translateX(-50%);font-size:14px;color:#fff;background:rgba(0,0,0,0.7);padding:5px 15px;border-radius:20px}
 
-/* ===== V11 FINAL COM ESPAÇO CORRETO ===== */
+/* ===== V12 - TUDO COM ESPAÇO CORRETO ===== */
 html.modo-tv, body.modo-tv{height:100vh!important;overflow:hidden!important;background:#000!important;margin:0!important}
 body.modo-tv #tela-placar{position:fixed!important;top:0!important;left:0!important;width:100vw!important;height:100vh!important;display:flex!important;flex-direction:column!important}
-
 body.modo-tv.topo{height:115px!important;min-height:115px!important;background:#FF8C00!important;border-bottom:6px solid #FFD700!important;display:flex!important;align-items:center!important;flex-shrink:0!important;padding:0 15px!important}
-body.modo-tv.topo h1{font-size:30px!important;color:#000!important;font-weight:900!important;text-shadow:none!important;flex:1!important}
+body.modo-tv.topo h1{font-size:30px!important;color:#000!important;font-weight:900!important;text-shadow:none!important;flex:1!important;text-align:center!important}
 body.modo-tv.topo img{height:95px!important;width:95px!important;min-width:95px!important;max-width:95px!important;background:#fff!important;padding:6px!important;border-radius:10px!important;object-fit:contain!important;display:block!important}
 body.modo-tv.logos-lado{display:flex!important;gap:12px!important}
 body.modo-tv.relogio{display:none!important}
-
 body.modo-tv #lista{flex:1!important;padding:8px!important;gap:6px!important;display:flex!important;flex-direction:column!important;justify-content:space-around!important}
-
-body.modo-tv.placar{flex:1!important;padding:0 12px!important;margin:0!important;display:flex!important;align-items:center!important;border-radius:8px!important;background:#1e1e1e!important}
+body.modo-tv.placar{flex:1!important;padding:0 12px!important;margin:0!important;display:flex!important;align-items:center!important;border-radius:8px!important}
 body.modo-tv.placar.p1{background:#FFD700!important;border-left:8px solid #000!important}
 body.modo-tv.placar.p2{background:#E8E8E8!important;border-left:8px solid #000!important}
 body.modo-tv.placar.p3{background:#FF8C00!important;border-left:8px solid #000!important}
-
-/* AQUI ESTAVA O ERRO - AGORA COM ESPAÇO */
-body.modo-tv.placar.p1.pos,
-body.modo-tv.placar.p1.nome,
-body.modo-tv.placar.p1.prova,
-body.modo-tv.placar.p1.total,
-body.modo-tv.placar.p1.detalhe,
-body.modo-tv.placar.p2.pos,
-body.modo-tv.placar.p2.nome,
-body.modo-tv.placar.p2.prova,
-body.modo-tv.placar.p2.total,
-body.modo-tv.placar.p2.detalhe,
-body.modo-tv.placar.p3.pos,
-body.modo-tv.placar.p3.nome,
-body.modo-tv.placar.p3.prova,
-body.modo-tv.placar.p3.total,
-body.modo-tv.placar.p3.detalhe{
-  color:#000!important;
-  font-weight:900!important;
-  text-shadow:none!important;
-  font-size:22px!important;
+/* TOP 3 TUDO PRETO - COM ESPAÇO */
+body.modo-tv.placar.p1.pos, body.modo-tv.placar.p1.nome, body.modo-tv.placar.p1.prova, body.modo-tv.placar.p1.total, body.modo-tv.placar.p1.detalhe,
+body.modo-tv.placar.p2.pos, body.modo-tv.placar.p2.nome, body.modo-tv.placar.p2.prova, body.modo-tv.placar.p2.total, body.modo-tv.placar.p2.detalhe,
+body.modo-tv.placar.p3.pos, body.modo-tv.placar.p3.nome, body.modo-tv.placar.p3.prova, body.modo-tv.placar.p3.total, body.modo-tv.placar.p3.detalhe{
+  color:#000!important;font-weight:900!important;text-shadow:none!important;font-size:22px!important;
 }
-
 body.modo-tv.pos{width:5%!important;font-size:22px!important;font-weight:900!important}
 body.modo-tv.nome{width:26%!important;font-size:22px!important;font-weight:900!important}
 body.modo-tv.prova{width:10%!important;font-size:22px!important;font-weight:900!important;background:none!important}
 body.modo-tv.total{width:12%!important;font-size:22px!important;font-weight:900!important}
 body.modo-tv.detalhe{width:47%!important;font-size:22px!important;font-weight:900!important;text-align:right!important;letter-spacing:0.5px!important}
 body.modo-tv.reorg{background:#fff!important;color:#000!important;border:2px solid #000!important}
-
 body.modo-tv.rodape{height:95px!important;min-height:95px!important;background:linear-gradient(90deg,#FF8C00,#FF4500)!important;border-top:6px solid #FFD700!important;display:flex!important;align-items:center!important;justify-content:center!important;flex-shrink:0!important}
 body.modo-tv.rodape-prop{font-size:30px!important;color:#000!important;font-weight:900!important;text-shadow:none!important}
 body.modo-tv.rodape-contato{font-size:24px!important;padding:8px 22px!important;background:#000!important;color:#FFD700!important;border-radius:25px!important}
-
 body.modo-celular #lista{height:auto!important;overflow:visible!important;justify-content:flex-start!important;padding-bottom:100px}
 body.modo-celular.rodape{position:fixed;bottom:0;left:0;display:flex!important}
 .container-operador{display:flex;gap:8px;padding:8px;height:calc(100vh - 62px);background:#0f0f0f;box-sizing:border-box}
