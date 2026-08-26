@@ -1,106 +1,124 @@
-<!DOCTYPE html>
-<html><head><meta charset="UTF-8"><title>TV FTERJ V18 - 3x7 Oficial</title>
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>TV FTERJ V19.1 - FINAL COM CONTROLES</title>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-body{background:#000;color:#fff;font-family:Arial, sans-serif;overflow:hidden;height:100vh;display:flex;flex-direction:column}
-#header{height:10vh;background:linear-gradient(90deg,#FF8C00,#FF6A00);display:flex;align-items:center;justify-content:space-between;padding:0 1.5vw;border-bottom:4px solid #000}
-#header h1{font-size:4vh;color:#000;font-weight:900;flex:1;text-align:center}
-#header img{height:7vh;background:#fff;border-radius:8px;padding:3px}
-#ranking{flex:1;overflow:hidden;padding:0.5vh 0.8vw;display:flex;flex-direction:column;gap:0.6vh}
-.linha{display:flex;align-items:center;background:#1a1a1a;border-radius:12px;padding:0.8vh 1vw;font-weight:bold;min-height:7.5vh}
-.linha.ouro{background:linear-gradient(90deg,#FFD700,#FFC400);color:#000}
-.linha.prata{background:linear-gradient(90deg,#C0C0C0,#A8A8A8);color:#000}
-.linha.bronze{background:linear-gradient(90deg,#CD7F32,#B87333);color:#000}
-.pos{width:4vw;text-align:center;font-size:3vh}
-.nome{flex:1;font-size:2.8vh;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-transform:uppercase}
-.prova{width:8vw;text-align:center;color:#00E5FF;font-size:2.6vh}
-.linha.ouro.prova,.linha.prata.prova,.linha.bronze.prova{color:#0044FF}
-.total{width:10vw;text-align:center;color:#FFD700;font-size:3.2vh}
-.linha.ouro.total,.linha.prata.total,.linha.bronze.total{color:#000}
-.detalhe{width:18vw;text-align:right;font-size:2vh;opacity:0.9}
-#datahora{text-align:center;padding:0.5vh;font-size:2vh}
-#datahora span{border:1px solid #FF8C00;border-radius:20px;padding:4px 15px;color:#FFD700}
-#rodape{height:6vh;background:linear-gradient(90deg,#000,#111);border-top:3px solid #FF8C00;display:flex;align-items:center;overflow:hidden;white-space:nowrap}
-#textoRodape{animation:marquee 35s linear infinite;display:inline-block;padding-left:100%;color:#FFD700;font-weight:900}
+:root{
+ --header-h:9vh; --linha-h:7.2vh; --rodape-h:7vh;
+ --font-pos:2.8vh; --font-nome:2.6vh; --font-prova:2.4vh; --font-total:3vh; --font-detalhe:1.9vh;
+ --velocidade:35s;
+}
+body{background:#000;color:#fff;font-family:Arial;height:100vh;overflow:hidden;display:flex;flex-direction:column}
+#header{height:var(--header-h);background:linear-gradient(90deg,#FF8C00,#FF6A00);display:flex;align-items:center;justify-content:center;position:relative}
+#header h1{font-size:3.5vh;color:#000;font-weight:900}
+.logo{position:absolute;top:50%;transform:translateY(-50%);height:6.5vh;background:#fff;border-radius:8px;padding:4px}
+#logoEsq{left:1vw} #logoDir{right:1vw}
+#ranking{flex:1;padding:0.5vh 0.8vw;display:flex;flex-direction:column;gap:0.5vh;overflow:hidden}
+.linha{display:flex;align-items:center;background:#1a1a1a;border-radius:10px;padding:0 1vw;height:var(--linha-h);min-height:var(--linha-h)}
+.linha.ouro{background:#FFD700;color:#000} .linha.prata{background:#C0C0C0;color:#000} .linha.bronze{background:#CD7F32;color:#000}
+.pos{width:4vw;font-size:var(--font-pos);font-weight:900;text-align:center}
+.nome{flex:1;font-size:var(--font-nome);font-weight:800;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.prova{width:8vw;text-align:center;color:#00E5FF;font-size:var(--font-prova);font-weight:900}
+.linha.ouro .prova,.linha.prata .prova,.linha.bronze .prova{color:#000}
+.total{width:11vw;text-align:center;color:#FFD700;font-size:var(--font-total);font-weight:900}
+.linha.ouro .total,.linha.prata .total,.linha.bronze .total{color:#000}
+.detalhe{width:18vw;text-align:right;font-size:var(--font-detalhe);font-weight:700}
+#datahora{text-align:center;padding:0.3vh}
+#datahora span{border:1px solid #FF8C00;border-radius:20px;padding:3px 15px;color:#FFD700;font-size:1.8vh}
+#rodape{height:var(--rodape-h);background:#000;border-top:3px solid #FF8C00;display:flex;align-items:center;overflow:hidden;white-space:nowrap}
+#textoRodape{display:inline-block;padding-left:100%;animation:marquee var(--velocidade) linear infinite;color:#FFD700;font-weight:900}
 @keyframes marquee{0%{transform:translateX(0)}100%{transform:translateX(-100%)}}
-#full{position:fixed;inset:0;background:rgba(0,0,0,0.95);display:none;align-items:center;justify-content:center;z-index:9999;flex-direction:column}
-#full img{max-width:85%;max-height:75%;border:6px solid gold;border-radius:20px}
+#full{position:fixed;inset:0;background:rgba(0,0,0,0.96);display:none;align-items:center;justify-content:center;z-index:9999;flex-direction:column}
+#full img{max-width:85%;max-height:70%;border:6px solid gold;border-radius:20px}
 </style>
 </head><body>
 <div id="header">
-<img src="https://minutera.com.br/assets/logo-minutera.png" onerror="this.style.display='none'">
+<div id="logoEsq" class="logo" style="display:flex;align-items:center;font-weight:900;color:#000;font-size:1.5vh">MinuT&Ra</div>
 <h1>3x7 MinuT&Ra - FTERJ</h1>
-<img src="https://minutera.com.br/assets/logo-fterj.png" onerror="this.style.display='none'">
+<div id="logoDir" class="logo" style="display:flex;align-items:center;font-weight:900;color:#000;font-size:1.5vh">FTERJ</div>
 </div>
-<div id="ranking">CARREGANDO RANKING FTERJ...</div>
-<div id="datahora"><span id="dh">26/08/2026 | 11:03:19</span></div>
-<div id="rodape"><div id="textoRodape">ADIQUIRA JA A SUA MinuT&Ra 🔥 Thiago (28) 99944-9010 | Ruam (22) 99834-3139</div></div>
-<div id="full" onclick="this.style.display='none'"><img id="imgFull"><div id="txtFull" style="color:gold;margin-top:15px;font-size:3vh"></div></div>
+<div id="ranking">CARREGANDO...</div>
+<div id="datahora"><span id="dh">--/--/---- | --:--:--</span></div>
+<div id="rodape"><div id="textoRodape">Carregando patrocinadores...</div></div>
+<div id="full" onclick="this.style.display='none'"><img id="imgFull"><div id="txtFull" style="color:gold;margin-top:15px;font-size:3vh;font-weight:bold;text-align:center"></div></div>
 <script>
 const firebaseConfig={apiKey:"AIzaSyCTEXeRjxq0_3doBNyWm5AkQ0kmBXmjlSk",authDomain:"placar-minutera.firebaseapp.com",databaseURL:"https://placar-minutera-default-rtdb.firebaseio.com",projectId:"placar-minutera"};
 firebase.initializeApp(firebaseConfig); const db=firebase.database();
-function toArr(d){ if(!d) return []; if(Array.isArray(d)) return d.filter(x=>x); if(typeof d==='object') return Object.values(d).filter(x=>x&&typeof x==='object'); return []; }
-let RODAPES=[], FULL=[], CFG={propPx:32,contPx:22,escala:100}, idxR=0, idxF=0;
+function toArr(d){ if(!d) return []; if(Array.isArray(d)) return d.filter(x=>x); return Object.values(d).filter(x=>x); }
+let RODAPES=[], FULL=[], idxR=0, idxF=0;
+let CFG={propPx:32,contPx:22,escala:100,velocidade:35,headerH:9,linhaH:7.2,rodapeH:7,fontNome:2.6,fontTotal:3};
 
-function renderRodape(){
- let base = RODAPES.length>0? RODAPES.map(r=>`🔥 ${r.prop||r.propaganda||''} 🔥 ${r.contato||''}`).join(' | ') : '🔥 ADIQUIRA JA A SUA MinuT&Ra 🔥 Thiago (28) 99944-9010 | Ruam (22) 99834-3139';
- let pSize=Math.round((CFG.propPx||32)*(CFG.escala||100)/100);
- let cSize=Math.round((CFG.contPx||22)*(CFG.escala||100)/100);
- document.getElementById('textoRodape').innerHTML=`<span style="font-size:${pSize}px">${base}</span>`;
- document.getElementById('textoRodape').style.fontSize=pSize+'px';
- idxR++;
+function applyConfig(){
+ document.documentElement.style.setProperty('--header-h', (CFG.headerH||9)+'vh');
+ document.documentElement.style.setProperty('--linha-h', (CFG.linhaH||7.2)+'vh');
+ document.documentElement.style.setProperty('--rodape-h', (CFG.rodapeH||7)+'vh');
+ document.documentElement.style.setProperty('--font-nome', (CFG.fontNome||2.6)+'vh');
+ document.documentElement.style.setProperty('--font-total', (CFG.fontTotal||3)+'vh');
+ document.documentElement.style.setProperty('--velocidade', (CFG.velocidade||35)+'s');
+ renderRodape();
 }
-db.ref("PATROCINADORES_RODAPE_FTERJ").on('value',s=>{ let a=toArr(s.val()); if(a.length>0){RODAPES=a; renderRodape();} });
-db.ref("PATROCINADORES_FULL_FTERJ").on('value',s=>{ FULL=toArr(s.val()); });
-db.ref("CONFIG_ANUNCIOS_FTERJ").on('value',s=>{ if(s.val()&&typeof s.val()==='object'&&!Array.isArray(s.val())){ CFG={...CFG,...s.val()}; renderRodape(); }});
+function renderRodape(){
+ if(RODAPES.length==0){ document.getElementById('textoRodape').innerText='🔥 ADIQUIRA JA A SUA MinuT&Ra 🔥 Thiago (28) 99944-9010 | Ruam (22) 99834-3139'; return; }
+ let txt=RODAPES.map(r=>`🔥 ${r.prop||r.propaganda||r.nome||''} | 📞 ${r.contato||''}`).join('   ★   ');
+ // repete para preencher
+ let pSize=Math.round((CFG.propPx||32)*(CFG.escala||100)/100);
+ document.getElementById('textoRodape').innerHTML=`<span style="font-size:${pSize}px">${txt}   ★   ${txt}</span>`;
+}
 
-// RANKING FTERJ - lê de FTERJ/serie_*
-db.ref("FTERJ").on('value', snap=>{
-  let data=snap.val(); if(!data){ document.getElementById('ranking').innerHTML="SEM DADOS FTERJ"; return; }
-  let lista=[];
-  Object.keys(data).forEach(k=>{
-    if(k.startsWith("serie_")){
-      let s=data[k];
-      // calcula X, 10, 9 da contagem
-      let c=s.contagem||{};
-      let x = c["x10"]||c["x10_"]||c["X"]||0;
-      let dez = c["10"]||c["10_"]||0;
-      let nove = c["9"]||c["9_"]||0;
-      // Se não tem contagem, conta pelos tiros
-      if(!c || Object.keys(c).length<3){
-        let tiros=s.tiros||[];
-        x = tiros.filter(t=>t.toString().toLowerCase()=='x').length;
-        dez = tiros.filter(t=>t=='10').length;
-        nove = tiros.filter(t=>t=='9').length;
-      }
-      lista.push({
-        nome: s.nome||'TESTE',
-        prova: s.prova||'C',
-        pontos: s.pontos||s.total||0,
-        x, dez, nove
-      });
-    }
-  });
-  lista.sort((a,b)=> (parseFloat(b.pontos)||0) - (parseFloat(a.pontos)||0));
-  let html="";
-  lista.slice(0,12).forEach((at,i)=>{
-    let cls = i==0?'ouro':i==1?'prata':i==2?'bronze':'';
-    let pos = i+1;
-    html+=`<div class="linha ${cls}">
-      <div class="pos">${pos}º</div>
-      <div class="nome">${at.nome}</div>
-      <div class="prova">P:${at.prova}</div>
-      <div class="total">${at.pontos}</div>
-      <div class="detalhe">X:${at.x} | 10:${at.dez} | 9:${at.nove}</div>
-    </div>`;
-  });
-  document.getElementById('ranking').innerHTML=html||"NENHUM ATIRADOR";
+db.ref("PATROCINADORES_RODAPE_FTERJ").on('value',s=>{ let a=toArr(s.val()); if(a.length>0){RODAPES=a; renderRodape();} });
+db.ref("PATROCINADORES_FULL_FTERJ").on('value',snap=>{
+ let data=snap.val(); let arr=toArr(data);
+ // SE for array direto de URLs ou objetos mistos
+ FULL=arr.map(item=>{
+   if(typeof item==='string') return {arte:item,nome:'',prop:'',tempo:7};
+   return item;
+ }).filter(f=>f.arte||f.url||f.imagem);
+ console.log("FULL carregados:",FULL.length, FULL);
+});
+db.ref("CONFIG_ANUNCIOS_FTERJ").on('value',s=>{
+ let v=s.val(); if(v && typeof v==='object' && !Array.isArray(v)){ CFG={...CFG,...v}; applyConfig(); }
+});
+
+db.ref("FTERJ").on('value',snap=>{
+ let data=snap.val(); if(!data) return;
+ let lista=[];
+ Object.keys(data).forEach(k=>{
+  if(k.startsWith("serie_")){
+   let s=data[k];
+   let c=s.contagem||{}; let tiros=s.tiros||[];
+   let x = c["x10"]||0; let dez = c["10"]||0; let nove = c["9"]||0;
+   if(Object.keys(c).length<3){
+     x = tiros.filter(t=>String(t).toLowerCase()=='x').length;
+     dez = tiros.filter(t=>String(t)=='10').length;
+     nove = tiros.filter(t=>String(t)=='9').length;
+   }
+   lista.push({nome:s.nome||'TESTE',prova:s.prova||'R2',pontos:parseFloat(s.pontos||0),x,dez,nove});
+  }
+ });
+ lista.sort((a,b)=>b.pontos-a.pontos);
+ let html="";
+ lista.slice(0,12).forEach((at,i)=>{
+  let cls=i==0?'ouro':i==1?'prata':i==2?'bronze':'';
+  html+=`<div class="linha ${cls}"><div class="pos">${i+1}º</div><div class="nome">${at.nome}</div><div class="prova">P:${at.prova}</div><div class="total">${at.pontos.toFixed(2)}</div><div class="detalhe">X:${at.x} | 10:${at.dez} | 9:${at.nove}</div></div>`;
+ });
+ document.getElementById('ranking').innerHTML=html;
 });
 
 setInterval(()=>{ document.getElementById('dh').innerText=new Date().toLocaleDateString('pt-BR')+" | "+new Date().toLocaleTimeString('pt-BR'); },1000);
-setInterval(renderRodape,5000);
-setInterval(()=>{ if(FULL.length>0){ let f=FULL[idxF%FULL.length]; if(f.arte){ imgFull.src=f.arte; txtFull.innerText=`${f.nome||''} - ${f.prop||''}`; full.style.display='flex'; setTimeout(()=>full.style.display='none',(f.tempo||7)*1000); idxF++; } } }, 60000);
-renderRodape();
+setInterval(renderRodape,6000);
+// FULL rotativo - CORRIGIDO
+setInterval(()=>{
+ if(FULL.length>0){
+  let f=FULL[idxF%FULL.length];
+  let url=f.arte||f.url||f.imagem||'';
+  if(url){
+    document.getElementById('imgFull').src=url;
+    document.getElementById('txtFull').innerText=`${f.nome||''} ${f.prop||f.propaganda||''} ${f.contato||''}`;
+    document.getElementById('full').style.display='flex';
+    setTimeout(()=>document.getElementById('full').style.display='none',(f.tempo||7)*1000);
+    idxF++;
+  }
+ }
+}, 15000);
+applyConfig();
 </script></body></html>
