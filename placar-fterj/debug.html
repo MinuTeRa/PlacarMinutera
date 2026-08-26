@@ -1,0 +1,29 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>DEBUG FTERJ</title>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+<style>body{background:#000;color:#0f0;font-family:monospace;padding:15px;font-size:12px;white-space:pre-wrap}</style>
+</head><body><h2>DEBUG - LISTANDO BANCO FTERJ</h2><div id="out">Conectando...</div>
+<script>
+const firebaseConfig={apiKey:"AIzaSyCTEXeRjxq0_3doBNyWm5AkQ0kmBXmjlSk",authDomain:"placar-minutera.firebaseapp.com",databaseURL:"https://placar-minutera-default-rtdb.firebaseio.com",projectId:"placar-minutera"};
+firebase.initializeApp(firebaseConfig); const db=firebase.database();
+let html="";
+function add(t){ html+=t+"\n"; out.innerText=html; }
+db.ref().once('value').then(s=>{
+  let data=s.val();
+  let keys=Object.keys(data).filter(k=>k.includes("FTERJ") || k.includes("PLACAR") || k.includes("COMPETICAO") || k.includes("LANCAMENTO") || k.includes("ATIRADOR"));
+  add("=== CHAVES FTERJ ENCONTRADAS ===");
+  keys.forEach(k=>{
+    let val=data[k];
+    let tipo=Array.isArray(val)?`Array[${val.length}]`:typeof val;
+    let preview=JSON.stringify(val).substring(0,400);
+    add(`\n🔑 ${k} : ${tipo}\n${preview}\n`);
+  });
+  add("\n=== TENTANDO CHAVES DE PLACAR ===");
+  ["PLACAR_FTERJ","COMPETICAO_ATIVA_FTERJ","COMPETICAO_FTERJ","LANCAMENTOS_FTERJ","ATIRADORES_FTERJ","PLACAR","COMPETICAO_ATIVA"].forEach(k=>{
+    db.ref(k).once('value').then(ss=>{
+      if(ss.val()) add(`\n✅ ${k} TEM DADOS: ${JSON.stringify(ss.val()).substring(0,500)}`);
+      else add(`❌ ${k} vazio`);
+    });
+  });
+});
+</script></body></html>
