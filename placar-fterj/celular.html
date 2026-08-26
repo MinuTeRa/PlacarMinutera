@@ -8,28 +8,25 @@
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-body{background:#000;color:#fff;font-family:Arial, sans-serif}
-.header{background:linear-gradient(90deg,#FF8C00,#FF6A00);padding:10px;text-align:center;color:#000;font-weight:900;font-size:14px;line-height:12px}
-.header span{font-size:9px;font-weight:700}
-.linha{display:flex;flex-direction:column;background:#1a1a1a;border-radius:8px;padding:8px 10px;margin:4px 6px;min-height:52px;border:1px solid #222}
+body{background:#000;color:#fff;font-family:Arial,sans-serif}
+.header{background:linear-gradient(90deg,#FF8C00,#FF6A00);padding:10px;text-align:center;color:#000;font-weight:900;font-size:14px}
+.header span{font-size:9px;display:block}
+.linha{display:flex;flex-direction:column;background:#1a1a1a;border-radius:8px;padding:8px 10px;margin:4px 6px;border:1px solid #222}
 .top{display:flex;width:100%;align-items:center;gap:4px}
-.pos{width:36px;font-weight:900;text-align:center;font-size:12px}
-.nome{flex:1;font-size:11px;font-weight:800;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pos{width:36px;font-weight:900;text-align:center;font-size:12px;color:#fff}
+.nome{flex:1;font-size:11px;font-weight:800;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#fff}
 .prova{width:45px;text-align:center;font-size:11px;font-weight:900;color:#00E5FF}
 .total{width:65px;text-align:right;font-size:12px;font-weight:900;color:#FFD700}
-.detalhe{width:100%;font-size:9px;margin-top:4px;text-align:right;opacity:0.9}
+.detalhe{width:100%;font-size:9px;margin-top:4px;text-align:right;opacity:0.9;color:#ccc}
 
-/* PÓDIO COM LETRA PRETA - FIX DEFINITIVO */
-.linha.ouro{background:#FFD700!important; border-color:#FFD700}
-.linha.prata{background:#C0C0C0!important; border-color:#C0C0C0}
-.linha.bronze{background:#CD7F32!important; border-color:#CD7F32}
-
-.linha.ouro.pos,.linha.ouro.nome,.linha.ouro.total,.linha.ouro.detalhe,.linha.ouro.top,
-.linha.prata.pos,.linha.prata.nome,.linha.prata.total,.linha.prata.detalhe,.linha.prata.top,
-.linha.bronze.pos,.linha.bronze.nome,.linha.bronze.total,.linha.bronze.detalhe,.linha.bronze.top {
-  color:#000!important;
-}
-.linha.ouro.prova,.linha.prata.prova,.linha.bronze.prova { color:#000!important; }
+/* === FIX DEFINITIVO PODIO LETRA PRETA === */
+.linha.ouro{background:#FFD700!important; border-color:#FFD700!important}
+.linha.prata{background:#C0C0C0!important; border-color:#C0C0C0!important}
+.linha.bronze{background:#CD7F32!important; border-color:#CD7F32!important}
+.linha.ouro.pos,.linha.ouro.nome,.linha.ouro.total,.linha.ouro.detalhe{color:#000!important}
+.linha.prata.pos,.linha.prata.nome,.linha.prata.total,.linha.prata.detalhe{color:#000!important}
+.linha.bronze.pos,.linha.bronze.nome,.linha.bronze.total,.linha.bronze.detalhe{color:#000!important}
+.linha.ouro.prova,.linha.prata.prova,.linha.bronze.prova{color:#000!important}
 
 #footer{position:sticky;bottom:0;background:#000;padding:8px;text-align:center;color:#FFD700;font-size:10px;border-top:1px solid #333;z-index:10}
 .full-bar{position:fixed;bottom:34px;left:0;right:0;background:#000;border-top:2px solid #FFD700;padding:8px;display:none;justify-content:center;align-items:center;gap:12px;z-index:20}
@@ -37,37 +34,32 @@ body{background:#000;color:#fff;font-family:Arial, sans-serif}
 </style>
 </head>
 <body>
-<div class="header">3x7 MinuT&Ra - FTERJ<br><span>RANKING GERAL - TODOS</span></div>
+<div class="header">3x7 MinuT&Ra - FTERJ<span>RANKING GERAL - TODOS</span></div>
 <div id="ranking">CARREGANDO...</div>
 <div id="footer">0 atiradores | TOTAL: 0 ATIVOS: 0</div>
 <div id="fullBar" class="full-bar"><img id="fullImg"><div id="fullNome" style="color:#FFD700;font-size:12px;font-weight:900"></div></div>
-
 <script>
 const firebaseConfig={apiKey:"AIzaSyCTEXeRjxq0_3doBNyWm5AkQ0kmBXmjlSk",authDomain:"placar-minutera.firebaseapp.com",databaseURL:"https://placar-minutera-default-rtdb.firebaseio.com",projectId:"placar-minutera"};
 firebase.initializeApp(firebaseConfig);
 const db=firebase.database();
-
 function toArr(d){ if(!d) return []; return Object.keys(d).map(k=>({key:k,...(typeof d[k]==='string'?{arte:d[k], nome:'Patrocinador', tempo:7, ativo:true}:d[k])})); }
-
 db.ref("FTERJ").on('value',snap=>{
  let data=snap.val(); let lista=[];
  if(data) Object.keys(data).forEach(k=>{ if(k.startsWith("serie_")){ let s=data[k]; lista.push({nome:s.nome||'SEM NOME', prova:s.prova||'R2', pontos:parseFloat(s.pontos||0), detalhe:(s.tiros||[]).join(' | ') }); }});
  lista.sort((a,b)=>b.pontos-a.pontos);
  let html=""; lista.forEach((at,i)=>{ let cls=i==0?'ouro':i==1?'prata':i==2?'bronze':''; html+=`<div class="linha ${cls}"><div class="top"><div class="pos">${i+1}º</div><div class="nome">${at.nome}</div><div class="prova">P:${at.prova}</div><div class="total">${at.pontos.toFixed(2)}</div></div><div class="detalhe">${at.detalhe}</div></div>`; });
- document.getElementById('ranking').innerHTML=html||"VAZIO - AGUARDANDO LANÇAMENTO";
+ document.getElementById('ranking').innerHTML=html||"VAZIO";
  document.getElementById('footer').innerText=lista.length+" atiradores | "+(document.getElementById('footer').innerText.split("|")[1]||" TOTAL:0 ATIVOS:0");
 });
-
 let fullLista=[], idx=0;
 db.ref("PATROCINADORES_FULL_FTERJ").on('value',snap=>{
  let arr=toArr(snap.val());
  let ativos=arr.filter(it=>!(it.ativo===false || it.ativo==="false" || it.ativo===0 || it.ativo==="0"));
  console.log(`TOTAL: ${arr.length} ATIVOS: ${ativos.length}`);
- let footerBase=document.getElementById('footer').innerText.split("|")[0];
- document.getElementById('footer').innerText=footerBase+" | TOTAL: "+arr.length+" ATIVOS: "+ativos.length;
+ let base=document.getElementById('footer').innerText.split("|")[0];
+ document.getElementById('footer').innerText=base+" | TOTAL: "+arr.length+" ATIVOS: "+ativos.length;
  fullLista=ativos;
 });
-
 setInterval(()=>{
  if(!fullLista.length){ document.getElementById('fullBar').style.display='none'; return; }
  let it=fullLista[idx % fullLista.length];
