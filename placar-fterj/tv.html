@@ -18,7 +18,7 @@ html,body{background:#000;color:#fff;font-family:'Arial Black',Arial;margin:0;te
 </style></head><body>
 <div id="tela-placar"><div class="topo" id="topo-tv"><div class="relogio" id="relogio-tv"></div></div><div id="lista">AGUARDANDO...</div><div id="insercao-full"><div id="prop-gigante"></div></div><div class="rodape" id="rodape-tv"><div class="rodape-conteudo" id="rodape-conteudo"></div></div></div>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script><script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-<script src="firebase-config.js"></script>
+<script src="./firebase-config.js?v=17"></script>
 <script>
 let ranking=[],PATROCINADORES_RODAPE=[],PATROCINADORES_FULL=[],indiceRodape=0,RODAPE_FONTE_PROP=52,RODAPE_FONTE_CONTATO=36,RODAPE_TEMPO_EXIBICAO_SEG=5;
 function montarTopo(id){let e='<div class="logos-lado">',d='<div class="logos-lado">';if(QTD_LOGOS>=1) e+=`<img src="${LOGOS[0]}">`;if(QTD_LOGOS>=2) d+=`<img src="${LOGOS[1]}">`;e+='</div>';d+='</div>';document.getElementById(id).innerHTML=`${e}<h1>${NOME_CAMPEONATO} - ${NOME_CLUBE}</h1>${d}<div class="relogio" id="relogio-tv"></div>`;}montarTopo('topo-tv');
