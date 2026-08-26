@@ -37,21 +37,24 @@ button{font-size:13px;padding:6px 10px;margin:3px 2px;border-radius:6px;border:n
 .full-escala-wrap{width:100vw;height:100vh;display:flex;align-items:center;justify-content:center;transform:scale(var(--full-scale,1))}
 #contato-gigante{position:absolute;bottom:18px;left:50%;transform:translateX(-50%);font-size:14px;color:#fff;background:rgba(0,0,0,0.7);padding:5px 15px;border-radius:20px}
 
-/* ===== MODO TV V7 - TUDO PRETO NO TOP3 + TIROS GRANDE + RODAPÉ GIGANTE ===== */
+/* ===== MODO TV V8 FINAL - TUDO COM ESPAÇO CORRETO ===== */
 html.modo-tv, body.modo-tv{height:100vh!important;overflow:hidden!important;background:#000!important;margin:0!important;padding:0!important}
 body.modo-tv #tela-placar{position:fixed!important;top:0!important;left:0!important;width:100vw!important;height:100vh!important;background:#000!important;display:flex!important;flex-direction:column!important}
-body.modo-tv.topo{height:95px!important;min-height:95px!important;padding:0 12px!important;background:linear-gradient(90deg,#FF8C00,#FF6A00)!important;border-bottom:5px solid #FFD700!important;display:flex!important;align-items:center!important;flex-shrink:0!important}
-body.modo-tv.topo h1{font-size:26px!important;color:#000!important;font-weight:900!important;flex:1!important;text-align:center!important;margin:0 10px!important;text-shadow:none!important}
-body.modo-tv.topo img{height:72px!important;width:72px!important;min-width:72px!important;background:#fff!important;padding:4px!important;border-radius:8px!important;object-fit:contain!important;display:block!important}
-body.modo-tv.logos-lado{display:flex!important;gap:10px!important}
+
+body.modo-tv.topo{height:110px!important;min-height:110px!important;max-height:110px!important;padding:0 15px!important;background:linear-gradient(90deg,#FF8C00,#FF6A00)!important;border-bottom:6px solid #FFD700!important;display:flex!important;align-items:center!important;justify-content:space-between!important;flex-shrink:0!important;box-sizing:border-box!important}
+body.modo-tv.topo h1{font-size:28px!important;line-height:1!important;color:#000!important;font-weight:900!important;flex:1!important;text-align:center!important;margin:0 15px!important;text-shadow:none!important}
+body.modo-tv.topo img{height:90px!important;width:90px!important;min-width:90px!important;max-width:90px!important;background:#fff!important;padding:6px!important;border-radius:10px!important;object-fit:contain!important;display:block!important}
+body.modo-tv.logos-lado{display:flex!important;gap:12px!important;align-items:center!important}
 body.modo-tv.relogio{display:none!important}
-body.modo-tv #lista{flex:1!important;padding:6px 8px!important;gap:5px!important;display:flex!important;flex-direction:column!important;justify-content:space-around!important}
-body.modo-tv.placar{flex:1!important;padding:0 10px!important;margin:0!important;border-radius:6px!important;background:#1e1e1e!important;border-left:6px solid #333!important;display:flex!important;align-items:center!important}
+
+body.modo-tv #lista{flex:1!important;height:auto!important;padding:8px!important;gap:6px!important;display:flex!important;flex-direction:column!important;justify-content:space-around!important;overflow:hidden!important}
+
+body.modo-tv.placar{flex:1!important;min-height:0!important;padding:0 12px!important;margin:0!important;border-radius:8px!important;display:flex!important;align-items:center!important;box-sizing:border-box!important;background:#1e1e1e!important;border-left:6px solid #333!important}
 body.modo-tv.placar.p1{background:#FFD700!important;border-left:8px solid #000!important}
 body.modo-tv.placar.p2{background:#E8E8E8!important;border-left:8px solid #000!important}
 body.modo-tv.placar.p3{background:#FF8C00!important;border-left:8px solid #000!important}
 
-/* FORÇA TUDO PRETO NOS 3 PRIMEIROS */
+/* AQUI ESTAVA O ERRO - AGORA TUDO PRETO DE VERDADE */
 body.modo-tv.placar.p1.pos, body.modo-tv.placar.p1.nome, body.modo-tv.placar.p1.prova, body.modo-tv.placar.p1.total, body.modo-tv.placar.p1.detalhe,
 body.modo-tv.placar.p2.pos, body.modo-tv.placar.p2.nome, body.modo-tv.placar.p2.prova, body.modo-tv.placar.p2.total, body.modo-tv.placar.p2.detalhe,
 body.modo-tv.placar.p3.pos, body.modo-tv.placar.p3.nome, body.modo-tv.placar.p3.prova, body.modo-tv.placar.p3.total, body.modo-tv.placar.p3.detalhe{
@@ -60,20 +63,18 @@ body.modo-tv.placar.p3.pos, body.modo-tv.placar.p3.nome, body.modo-tv.placar.p3.
   text-shadow:none!important;
 }
 
-body.modo-tv.pos{width:5%!important;text-align:center!important;font-size:18px!important}
-body.modo-tv.nome{width:26%!important;text-align:left!important;font-size:18px!important;font-weight:900!important}
-body.modo-tv.prova{width:10%!important;text-align:center!important;font-size:18px!important}
-body.modo-tv.total{width:12%!important;text-align:center!important;font-size:18px!important;font-weight:900!important}
-body.modo-tv.detalhe{width:47%!important;text-align:right!important;font-family:monospace!important;font-size:18px!important;font-weight:900!important;letter-spacing:0.5px!important}
-body.modo-tv.reorg{font-size:9px!important;color:#000!important;background:#fff!important;border:1px solid #000!important}
+body.modo-tv.pos{width:5%!important;text-align:center!important;font-size:20px!important;font-weight:900!important}
+body.modo-tv.nome{width:26%!important;text-align:left!important;font-size:20px!important;font-weight:900!important;overflow:hidden!important;text-overflow:ellipsis!important;white-space:nowrap!important}
+body.modo-tv.prova{width:10%!important;text-align:center!important;font-size:20px!important;font-weight:900!important;background:none!important}
+body.modo-tv.total{width:12%!important;text-align:center!important;font-size:20px!important;font-weight:900!important}
+body.modo-tv.detalhe{width:47%!important;text-align:right!important;font-family:monospace!important;font-size:20px!important;font-weight:900!important;letter-spacing:0.5px!important}
+body.modo-tv.reorg{background:#fff!important;color:#000!important;border:2px solid #000!important;font-size:10px!important;padding:2px 6px!important}
 
-/* RODAPÉ GIGANTE - ANUNCIO MAIOR */
-body.modo-tv.rodape{height:90px!important;min-height:90px!important;background:linear-gradient(90deg,#FF8C00,#FF4500)!important;border-top:5px solid #FFD700!important;flex-shrink:0!important;display:flex!important;align-items:center!important;justify-content:center!important;padding:0 10px!important}
-body.modo-tv.rodape-conteudo{gap:25px!important;width:100%!important;justify-content:center!important}
-body.modo-tv.rodape-prop{font-size:26px!important;color:#000!important;font-weight:900!important;white-space:nowrap!important;text-shadow:none!important}
-body.modo-tv.rodape-contato{font-size:20px!important;padding:8px 20px!important;background:#000!important;color:#FFD700!important;border-radius:25px!important;white-space:nowrap!important}
+body.modo-tv.rodape{height:95px!important;min-height:95px!important;max-height:95px!important;background:linear-gradient(90deg,#FF8C00,#FF4500)!important;border-top:6px solid #FFD700!important;flex-shrink:0!important;display:flex!important;align-items:center!important;justify-content:center!important;padding:0 12px!important;box-sizing:border-box!important;width:100vw!important}
+body.modo-tv.rodape-conteudo{gap:30px!important;width:100%!important;justify-content:center!important;flex-wrap:nowrap!important;opacity:1!important}
+body.modo-tv.rodape-prop{font-size:28px!important;color:#000!important;font-weight:900!important;white-space:nowrap!important;text-shadow:none!important}
+body.modo-tv.rodape-contato{font-size:22px!important;padding:8px 22px!important;background:#000!important;color:#FFD700!important;border-radius:25px!important;white-space:nowrap!important}
 
-/* CELULAR E OUTROS */
 body.modo-celular #lista{height:auto!important;overflow:visible!important;justify-content:flex-start!important;padding-bottom:100px}
 body.modo-celular.rodape{position:fixed;bottom:0;left:0;display:flex!important}
 .container-operador{display:flex;gap:8px;padding:8px;height:calc(100vh - 62px);background:#0f0f0f;box-sizing:border-box}
