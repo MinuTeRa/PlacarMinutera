@@ -37,33 +37,33 @@ button{font-size:13px;padding:6px 10px;margin:3px 2px;border-radius:6px;border:n
 .full-escala-wrap{width:100vw;height:100vh;display:flex;align-items:center;justify-content:center;transform:scale(var(--full-scale,1))}
 #contato-gigante{position:absolute;bottom:18px;left:50%;transform:translateX(-50%);font-size:14px;color:#fff;background:rgba(0,0,0,0.7);padding:5px 15px;border-radius:20px}
 
-/* ===== 1. MODO TV - V5 GIGANTÃO 30% ===== */
-html.modo-tv, body.modo-tv{height:100vh!important;overflow:hidden!important;background:#000!important}
-body.modo-tv #tela-placar{position:fixed!important;top:0;left:0;width:100vw;height:100vh;background:#000!important;overflow:hidden!important}
-body.modo-tv.topo{height:160px!important;padding:0 20px!important;background:linear-gradient(90deg,#FF8C00,#FF6A00)!important;border-bottom:8px solid #FFD700!important;display:flex!important;align-items:center!important;box-sizing:border-box}
-body.modo-tv.topo h1{font-size:42px!important;color:#000!important;text-shadow:none!important;font-weight:900!important;flex:1!important;text-align:center!important;line-height:1.1!important}
-body.modo-tv.topo img{height:120px!important;width:120px!important;min-width:120px!important;background:#fff!important;padding:6px!important;border-radius:14px!important;object-fit:contain!important}
-body.modo-tv.logos-lado{gap:16px!important;align-items:center!important}
-body.modo-tv.relogio{top:6px!important;right:6px!important;font-size:11px!important;padding:3px 8px!important}
-body.modo-tv #lista{height:calc(100vh - 320px)!important;padding:12px!important;gap:8px!important;display:flex!important;flex-direction:column!important;justify-content:space-between!important;overflow:hidden!important;box-sizing:border-box}
-body.modo-tv.placar{height:calc((100vh - 320px - 72px)/10)!important;min-height:70px!important;font-size:29px!important;padding:0 14px!important;margin:0!important;border-radius:10px!important;background:#1e1e1e!important;border-left:8px solid #333!important;display:flex!important;align-items:center!important;box-sizing:border-box}
-body.modo-tv.placar.p1{background:#FFD700!important;color:#000!important;border-left:8px solid #000!important}
-body.modo-tv.placar.p2{background:#E5E5E5!important;color:#000!important;border-left:8px solid #666!important}
-body.modo-tv.placar.p3{background:#FF8C00!important;color:#000!important;border-left:8px solid #000!important}
-body.modo-tv.pos, body.modo-tv.nome, body.modo-tv.prova, body.modo-tv.total, body.modo-tv.detalhe{font-size:29px!important;font-weight:900!important;color:inherit!important}
-body.modo-tv.pos{width:6%!important;text-align:center!important}
-body.modo-tv.nome{width:28%!important;text-align:left!important;overflow:hidden!important;text-overflow:ellipsis!important;white-space:nowrap!important}
+/* ===== 1. MODO TV - V6 CORRIGIDO - SEM ESPAÇO E LOGO LEGIVEL ===== */
+html.modo-tv, body.modo-tv{height:100vh!important;overflow:hidden!important;background:#000!important;margin:0!important;padding:0!important}
+body.modo-tv #tela-placar{position:fixed!important;top:0!important;left:0!important;width:100vw!important;height:100vh!important;background:#000!important;overflow:hidden!important;display:flex!important;flex-direction:column!important}
+body.modo-tv.topo{height:95px!important;min-height:95px!important;max-height:95px!important;padding:0 12px!important;background:linear-gradient(90deg,#FF8C00,#FF6A00)!important;border-bottom:5px solid #FFD700!important;display:flex!important;align-items:center!important;justify-content:space-between!important;flex-shrink:0!important;box-sizing:border-box!important}
+body.modo-tv.topo h1{font-size:26px!important;line-height:1!important;color:#000!important;font-weight:900!important;flex:1!important;text-align:center!important;margin:0 10px!important;text-shadow:none!important}
+body.modo-tv.topo img{height:72px!important;width:72px!important;min-width:72px!important;max-width:72px!important;background:#fff!important;padding:4px!important;border-radius:8px!important;object-fit:contain!important;display:block!important}
+body.modo-tv.logos-lado{display:flex!important;gap:10px!important;align-items:center!important}
+body.modo-tv.relogio{display:none!important}
+body.modo-tv #lista{flex:1!important;height:auto!important;padding:6px 8px!important;gap:5px!important;display:flex!important;flex-direction:column!important;justify-content:space-around!important;overflow:hidden!important;box-sizing:border-box!important}
+body.modo-tv.placar{flex:1!important;height:auto!important;min-height:0!important;font-size:19px!important;padding:0 10px!important;margin:0!important;border-radius:6px!important;background:#1e1e1e!important;border-left:6px solid #333!important;display:flex!important;align-items:center!important;box-sizing:border-box!important}
+body.modo-tv.placar.p1{background:#FFD700!important;color:#000!important;border-left:6px solid #000!important}
+body.modo-tv.placar.p2{background:#E8E8E8!important;color:#000!important;border-left:6px solid #666!important}
+body.modo-tv.placar.p3{background:#FF8C00!important;color:#000!important;border-left:6px solid #000!important}
+body.modo-tv.pos, body.modo-tv.nome, body.modo-tv.prova, body.modo-tv.total, body.modo-tv.detalhe{font-size:18px!important;font-weight:800!important;color:inherit!important}
+body.modo-tv.pos{width:5%!important;text-align:center!important}
+body.modo-tv.nome{width:26%!important;text-align:left!important;overflow:hidden!important;text-overflow:ellipsis!important;white-space:nowrap!important;font-size:16px!important}
 body.modo-tv.prova{width:10%!important;text-align:center!important;background:none!important;padding:0!important}
-body.modo-tv.total{width:11%!important;text-align:center!important}
-body.modo-tv.detalhe{width:45%!important;text-align:right!important;font-family:monospace!important;font-size:24px!important;letter-spacing:1px!important}
-body.modo-tv.reorg{font-size:11px!important;padding:2px 6px!important}
-body.modo-tv.rodape{height:160px!important;background:linear-gradient(90deg,#FF8C00,#FF4500)!important;border-top:8px solid #FFD700!important;position:fixed!important;bottom:0!important;left:0!important;width:100vw!important;display:flex!important;align-items:center!important;justify-content:center!important;z-index:100!important;box-sizing:border-box}
-body.modo-tv.rodape-conteudo{gap:40px!important;width:100%!important;justify-content:center!important;flex-wrap:nowrap!important}
-body.modo-tv.rodape-prop{font-size:44px!important;color:#000!important;font-weight:900!important;text-shadow:none!important;white-space:nowrap!important}
-body.modo-tv.rodape-contato{font-size:36px!important;padding:10px 28px!important;background:#000!important;color:#FFD700!important;border-radius:30px!important;white-space:nowrap!important}
+body.modo-tv.total{width:12%!important;text-align:center!important;font-weight:900!important}
+body.modo-tv.detalhe{width:47%!important;text-align:right!important;font-family:monospace!important;font-size:14px!important;letter-spacing:0.5px!important}
+body.modo-tv.reorg{font-size:9px!important;padding:1px 5px!important;margin-left:5px!important}
+body.modo-tv.rodape{height:75px!important;min-height:75px!important;max-height:75px!important;background:linear-gradient(90deg,#FF8C00,#FF4500)!important;border-top:5px solid #FFD700!important;flex-shrink:0!important;display:flex!important;align-items:center!important;justify-content:center!important;position:relative!important;width:100vw!important;margin:0!important;padding:0 10px!important;box-sizing:border-box!important}
+body.modo-tv.rodape-conteudo{gap:20px!important;flex-wrap:nowrap!important;justify-content:center!important;width:100%!important;opacity:1!important}
+body.modo-tv.rodape-prop{font-size:22px!important;color:#000!important;font-weight:900!important;white-space:nowrap!important;text-shadow:none!important}
+body.modo-tv.rodape-contato{font-size:16px!important;padding:6px 16px!important;background:#000!important;color:#FFD700!important;border-radius:20px!important;white-space:nowrap!important}
 body.modo-tv #prop-gigante img{object-fit:contain!important}
 
-/* ===== 2. CELULAR CONGELADO ===== */
+/* ===== 2. CELULAR ===== */
 body.modo-celular #lista{height:auto!important;overflow:visible!important;justify-content:flex-start!important;padding-bottom:100px}
 body.modo-celular.rodape{position:fixed;bottom:0;left:0;display:flex!important}
 
@@ -81,8 +81,6 @@ body.modo-celular.rodape{position:fixed;bottom:0;left:0;display:flex!important}
 #parcial{font-size:16px;color:#4FC3F7;margin:5px 0}
 .item-admin{background:#222;margin:5px 0;padding:8px 10px;border-radius:8px;border-left:4px solid #FF8C00;text-align:left}
 .linha-principal{display:flex;justify-content:space-between;align-items:center;font-size:12px;gap:5px}
-
-/* ADM / ANUNCIOS */
 html.modo-adm-scroll, body.modo-adm-scroll{height:auto!important;min-height:100vh!important;overflow-y:auto!important}
 .tela-adm,.tela-anuncios{background:#111;min-height:100vh;padding:20px;box-sizing:border-box;position:relative!important;width:100%!important;height:auto!important;overflow:visible!important;display:block;padding-bottom:120px!important}
 .card-adm{background:#1e1e1e;border:1px solid #333;border-radius:12px;padding:20px;margin:15px auto;max-width:900px;text-align:left}
