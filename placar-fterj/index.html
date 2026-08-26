@@ -1,137 +1,198 @@
-<!DOCTYPE html><html><head><meta charset="UTF-8"><title>3x7 MinuT&Ra - FTERJ - V25 FIX</title>
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>3x7 MinuT&Ra - FTERJ V26 FIX</title>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 <style>
-*{margin:0;padding:0;box-sizing:border-box}body{background:#121212;color:#fff;font-family:Arial}
-#topo{background:linear-gradient(90deg,#FF8C00,#FF6A00);padding:10px;display:flex;align-items:center;justify-content:space-between}
-#topo h1{color:#000;font-weight:900;font-size:22px}
-#logosTop{display:flex;gap:10px;align-items:center}
-#logosTop img{height:40px;background:#fff;border-radius:6px;padding:2px 6px}
-#main{display:flex;gap:10px;padding:10px}
-#esq{width:32%;background:#1e1e1e;padding:12px;border-radius:8px}
-#dir{flex:1;background:#1e1e1e;padding:12px;border-radius:8px;max-height:85vh;overflow:auto}
-input,select{width:100%;padding:8px;background:#000;color:#fff;border:1px solid #444;border-radius:4px;margin-top:4px}
-.linha-tiro{display:flex;gap:8px;align-items:center;margin-top:6px}
-.linha-tiro b{width:30px}
-.btn{padding:8px 12px;border:none;border-radius:6px;font-weight:900;cursor:pointer;margin-top:8px}
-.btn-laranja{background:#FF8C00;color:#000}.btn-cinza{background:#444;color:#fff}
-.item-lanc{display:flex;justify-content:space-between;align-items:center;background:#2a2a2a;padding:8px;border-radius:6px;margin-top:6px;border-left:3px solid #FF8C00}
-.badge-prova{background:#FF8C00;color:#000;padding:2px 6px;border-radius:4px;font-weight:900;font-size:11px;margin-right:4px}
-.btn-editar{background:#FFD700;color:#000;padding:4px 8px;border:none;border-radius:4px;font-weight:900;cursor:pointer;font-size:11px}
-.btn-excluir{background:#ff4444;color:#fff;padding:4px 8px;border:none;border-radius:4px;font-weight:900;cursor:pointer;font-size:11px;margin-left:4px}
-</style></head><body>
-<div id="topo">
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#121212;color:#fff;font-family:Arial,Helvetica,sans-serif;overflow:hidden}
+#header{background:linear-gradient(90deg,#FF8C00,#FF6A00);padding:8px 12px;display:flex;align-items:center;justify-content:space-between}
+#header h1{color:#000;font-weight:900;font-size:22px;letter-spacing:0.5px}
+#header-logos{display:flex;gap:10px;align-items:center}
+#header-logos img{height:38px;background:#fff;border-radius:6px;padding:3px 6px;object-fit:contain}
+#header-links a{color:#000;font-weight:900;text-decoration:none;font-size:12px;margin-left:8px}
+#main{display:flex;height:calc(100vh - 54px)}
+#left{width:34%;background:#1e1e1e;margin:8px;padding:12px;border-radius:10px;display:flex;flex-direction:column}
+#right{flex:1;background:#1e1e1e;margin:8px 8px 8px 0;padding:8px;border-radius:10px;overflow-y:auto}
+.label-top{font-size:11px;color:#FF8C00;font-weight:900;margin-bottom:6px;display:flex;justify-content:space-between}
+#nomeAtleta{text-transform:uppercase}
+input,select{width:100%;padding:9px;background:#000;color:#fff;border:1px solid #444;border-radius:6px;font-size:14px}
+.row{display:flex;gap:6px;margin-bottom:8px}
+.tiro-head{display:flex;justify-content:space-between;color:#FF8C00;font-weight:900;font-size:12px;padding:6px 2px;border-bottom:1px solid #333}
+.linha-tiro{display:flex;gap:8px;align-items:center;margin-top:5px}
+.linha-tiro b{width:30px;text-align:center;color:#aaa;font-size:13px}
+.total{color:#00BFFF;font-weight:900;text-align:center;margin:12px 0 6px;font-size:18px}
+.btns{display:flex;gap:8px}
+.btn{flex:1;padding:10px;border:none;border-radius:6px;font-weight:900;cursor:pointer}
+.btn-salvar{background:#FF8C00;color:#000}.btn-nova{background:#FF8C00;color:#000;opacity:0.8}
+.item{background:#2a2a2a;border-left:4px solid #FF8C00;padding:7px 8px;margin-bottom:5px;border-radius:6px;display:flex;justify-content:space-between;align-items:center}
+.item.prova-C{border-left-color:#00E5FF}
+.item-info{font-size:12px;line-height:1.2;flex:1}
+.item-info b{font-size:12px}
+.contagem{font-size:10px;color:#aaa;margin-left:6px}
+.btns-item{display:flex;gap:4px}
+.btn-editar{background:#FFD700;color:#000;padding:4px 8px;border:none;border-radius:4px;font-weight:900;font-size:10px;cursor:pointer}
+.btn-excluir{background:#ff2e2e;color:#fff;padding:4px 8px;border:none;border-radius:4px;font-weight:900;font-size:10px;cursor:pointer}
+.status-on{color:#00ff88;font-size:11px}
+</style>
+</head>
+<body>
+<div id="header">
 <h1>3x7 MinuT&Ra - FTERJ</h1>
-<div id="logosTop">
-<img id="logoMinuTop" src="" style="display:none">
-<img id="logoClubeTop" src="" style="display:none">
-<div><a href="adm.html" style="color:#000;font-weight:900;text-decoration:none">ADM</a> | <a href="tv.html" style="color:#000;font-weight:900;text-decoration:none">TV</a></div>
+<div id="header-logos">
+<img id="logoMinuTop" style="display:none">
+<img id="logoClubeTop" style="display:none">
+<div id="header-links"><a href="adm.html">ADM</a><a href="tv.html">TV</a><a href="anuncios.html">ANÚNCIOS</a></div>
 </div>
 </div>
 
 <div id="main">
-<div id="esq">
-<label>CLUBE: FTERJ | <span id="statusConexao">...</span></label>
-<div style="display:flex;gap:6px">
-<input id="nomeAtleta" list="listaNomes" placeholder="MAURI" autocomplete="off" style="text-transform:uppercase">
+<div id="left">
+<div class="label-top"><span>X=12.01 | F2 Salvar | F3 Nova | <a href="adm.html" style="color:#FFD700">ADM</a></span><span id="statusConexao" class="status-on">Online</span></div>
+<div class="row">
+<input id="nomeAtleta" list="listaNomes" placeholder="NOME - digite 2 letras" autocomplete="off">
 <datalist id="listaNomes"></datalist>
-<select id="provaSelect" style="width:90px">
-<option value="C">C</option>
+<select id="provaSelect" style="width:95px">
 <option value="R1">R1</option>
 <option value="R2">R2</option>
 <option value="R3">R3</option>
 <option value="R4">R4</option>
 <option value="R5">R5</option>
-<option value="C/R">C/R</option>
+<option value="C">C</option>
+<option value="C/R" selected>C/R</option>
 </select>
 </div>
+<div style="font-size:11px;color:#00ff88;margin:4px 0"><span id="qtdAtletas">0 atletas</span> | Digite 2 letras para autocomplete</div>
 
-<div style="display:flex;justify-content:space-between;margin-top:10px;font-weight:900;color:#FF8C00"><span>TIRO</span><span>VALOR</span></div>
+<div class="tiro-head"><span>TIRO</span><span>VALOR</span></div>
 <div id="tirosContainer"></div>
-<div style="margin-top:10px;color:#00BFFF;font-weight:900">TOTAL: <span id="totalPontos">0.00</span></div>
-<button class="btn btn-laranja" onclick="salvarLancamento()">SALVAR [F2]</button>
-<button class="btn btn-cinza" onclick="novoLancamento()">NOVA [F3]</button>
+
+<div class="total">TOTAL: <span id="totalPontos">0.00</span></div>
+<div class="btns">
+<button class="btn btn-salvar" onclick="salvarLancamento()">SALVAR [F2]</button>
+<button class="btn btn-nova" onclick="novoLancamento()">NOVA [F3]</button>
+</div>
 </div>
 
-<div id="dir">
-<div id="listaLancamentos">Carregando...</div>
+<div id="right">
+<div id="listaLancamentos">Carregando lançamentos...</div>
 </div>
 </div>
 
 <script>
-const firebaseConfig={apiKey:"AIzaSyCTEXeRjxq0_3doBNyWm5AkQ0kmBXmjlSk",authDomain:"placar-minutera.firebaseapp.com",databaseURL:"https://placar-minutera-default-rtdb.firebaseio.com",projectId:"placar-minutera"};
-firebase.initializeApp(firebaseConfig); const db=firebase.database();
+const firebaseConfig={apiKey:"AIzaSyCTEXeRjxq0_3doBNyWm5AkQ0kmBXmjlSk",authDomain:"placar-minutera.firebaseapp.com",databaseURL:"https://placar-minutera-default-rtdb.firebaseio.com",projectId:"placar-minutera",storageBucket:"placar-minutera.appspot.com"};
+firebase.initializeApp(firebaseConfig);
+const db=firebase.database();
 let editKey=null;
+
+// LOGOS
+db.ref("CONFIG_ANUNCIOS_FTERJ").on('value',s=>{
+ let v=s.val()||{};
+ if(v.logoMinu){let el=document.getElementById('logoMinuTop');el.src=v.logoMinu;el.style.display='block';}
+ if(v.logoClube){let el=document.getElementById('logoClubeTop');el.src=v.logoClube;el.style.display='block';}
+});
 
 function toArr(o){ if(!o) return []; return Object.keys(o).map(k=>({key:k,...o[k]})); }
 
-// 1. LOGOS - CORRIGIDO
-db.ref("CONFIG_ANUNCIOS_FTERJ").on('value',s=>{
- let v=s.val()||{};
- if(v.logoMinu){ document.getElementById('logoMinuTop').src=v.logoMinu; document.getElementById('logoMinuTop').style.display='block'; }
- if(v.logoClube){ document.getElementById('logoClubeTop').src=v.logoClube; document.getElementById('logoClubeTop').style.display='block'; }
-});
-
-// 2. AUTOCOMPLETE - CORRIGIDO
-let todosNomes = new Set();
-db.ref("FTERJ").on('value',snap=>{
- let data=snap.val()||{};
- let lista=toArr(data).filter(x=>x.key.startsWith('serie_'));
- let datalist=document.getElementById('listaNomes');
- let nomesHtml="";
- lista.forEach(s=>{
-   if(s.nome) todosNomes.add(s.nome.toUpperCase().trim());
- });
- datalist.innerHTML = Array.from(todosNomes).map(n=>`<option value="${n}">`).join('');
- document.getElementById('statusConexao').innerText = lista.length+" lançamentos";
- renderLista(lista);
-});
-
-// 3. TIROS
-function criarCamposTiros(){
+function criarCampos(){
  let c=document.getElementById('tirosContainer'); c.innerHTML="";
  for(let i=1;i<=10;i++){
-   c.innerHTML+=`<div class="linha-tiro"><b>${i}°</b><input id="t${i}" list="valoresTiro" placeholder="" oninput="calcTotal()" autocomplete="off"></div>`;
+  c.innerHTML+=`<div class="linha-tiro"><b>${i}°</b><input id="t${i}" list="valoresTiro" autocomplete="off" oninput="calcTotal()" placeholder=""></div>`;
  }
  c.innerHTML+=`<datalist id="valoresTiro"><option value="X"><option value="10"><option value="9"><option value="8"><option value="7"><option value="6"><option value="5"><option value="4"><option value="3"><option value="2"><option value="1"><option value="0"></datalist>`;
 }
-criarCamposTiros();
+criarCampos();
 
+// REGRA X = 12.01
 function valorTiro(v){
  v=String(v).trim().toUpperCase();
- if(v=='X' || v=='10') return 10;
- if(v=='' ) return 0;
- let n=parseFloat(v); return isNaN(n)?0:n;
+ if(v=='X') return 12;
+ if(v=='' || v=='-') return 0;
+ let n=parseFloat(v);
+ return isNaN(n)?0:n;
 }
 function calcTotal(){
- let tot=0;
- for(let i=1;i<=10;i++){ tot+=valorTiro(document.getElementById('t'+i).value); }
- document.getElementById('totalPontos').innerText=tot.toFixed(2);
- return tot;
+ let soma=0, xCount=0;
+ for(let i=1;i<=10;i++){
+   let raw=document.getElementById('t'+i).value.trim().toUpperCase();
+   if(raw=='X') xCount++;
+   soma+=valorTiro(raw);
+ }
+ let total=soma + (xCount*0.01);
+ document.getElementById('totalPontos').innerText=total.toFixed(2);
+ return total;
 }
 
-// 4. SALVAR COM C/R - CORRIGIDO
+// AUTOCOMPLETE + LISTA
+let todosNomesSet=new Set();
+db.ref("FTERJ").on('value',snap=>{
+ let data=snap.val()||{};
+ let lista=[];
+ Object.keys(data).forEach(k=>{
+   if(k.startsWith('serie_')){
+     let obj=data[k];
+     lista.push({key:k,...obj});
+     if(obj.nome) todosNomesSet.add(obj.nome.toUpperCase().trim());
+   }
+ });
+ // datalist
+ let dl=document.getElementById('listaNomes');
+ dl.innerHTML=Array.from(todosNomesSet).sort().map(n=>`<option value="${n}">`).join('');
+ document.getElementById('qtdAtletas').innerText=lista.length+" atletas";
+ document.getElementById('statusConexao').innerText="Online: "+new Date().toLocaleTimeString('pt-BR').slice(0,5);
+ renderLista(lista);
+});
+
+function renderLista(lista){
+ lista.sort((a,b)=>(b.data||0)-(a.data||0));
+ let html="";
+ lista.forEach(item=>{
+   let nome=item.nome||"SEM NOME";
+   let prova=item.prova||"R2";
+   let tiros=item.tiros||[];
+   let pontos=parseFloat(item.pontos||0).toFixed(2);
+   // contagem X:10:9:8...
+   let c=item.contagem||{};
+   let x=c["x10"]||0; if(x==0) x=tiros.filter(t=>String(t).toUpperCase()=='X').length;
+   let c10=c["10"]||tiros.filter(t=>String(t)=='10').length;
+   let c9=c["9"]||tiros.filter(t=>String(t)=='9').length;
+   let c8=tiros.filter(t=>String(t)=='8').length;
+   let c7=tiros.filter(t=>String(t)=='7').length;
+   let c6=tiros.filter(t=>String(t)=='6').length;
+   let c5=tiros.filter(t=>String(t)=='5').length;
+   let c4=tiros.filter(t=>String(t)=='4').length;
+   let c3=tiros.filter(t=>String(t)=='3').length;
+   let c2=tiros.filter(t=>String(t)=='2').length;
+   let c1=tiros.filter(t=>String(t)=='1').length;
+   let c0=tiros.filter(t=>String(t)=='0').length;
+   let contStr=`X:${x} | 10:${c10} | 9:${c9} | 8:${c8} | 7:${c7} | 6:${c6} | 5:${c5} | 4:${c4} | 3:${c3} | 2:${c2} | 1:${c1} | 0:${c0}`;
+   html+=`<div class="item prova-${prova.split('/')[0]}">
+     <div class="item-info"><b style="color:${prova=='C'?'#00E5FF':'#FF8C00'}">${prova}</b> - <b>${nome}</b> <span style="color:#FFD700">${pontos}</span> <span class="contagem">${contStr}</span></div>
+     <div class="btns-item"><button class="btn-editar" onclick="editarLanc('${item.key}')">EDITAR</button><button class="btn-excluir" onclick="excluirLanc('${item.key}')">EXCLUIR</button></div>
+   </div>`;
+ });
+ document.getElementById('listaLancamentos').innerHTML=html||"Nenhum lançamento";
+}
+
 function salvarLancamento(){
  let nome=document.getElementById('nomeAtleta').value.toUpperCase().trim();
  let prova=document.getElementById('provaSelect').value;
- if(!nome) return alert("Digite nome");
+ if(!nome) return alert("Digite o nome");
  let tiros=[];
- for(let i=1;i<=10;i++) tiros.push(document.getElementById('t'+i).value.toUpperCase().trim()||"0");
- let pontos=calcTotal();
- // Calcula X,10,9 para contagem
+ for(let i=1;i<=10;i++) tiros.push((document.getElementById('t'+i).value||"0").toUpperCase().trim());
  let x=tiros.filter(t=>t=='X').length;
  let dez=tiros.filter(t=>t=='10').length;
  let nove=tiros.filter(t=>t=='9').length;
-
- let obj={nome, prova, tiros, pontos, contagem:{x10:x,"10":dez,"9":nove}, data:Date.now()};
-
+ let soma=tiros.reduce((s,t)=>s+valorTiro(t),0);
+ let pontosFinal=parseFloat((soma + x*0.01).toFixed(2));
+ let obj={nome, prova, tiros, pontos:pontosFinal, contagem:{x10:x,"10":dez,"9":nove}, data:Date.now()};
  if(editKey){
-   db.ref("FTERJ/"+editKey).update(obj).then(()=>{ alert("Atualizado!"); editKey=null; novoLancamento(); });
+   db.ref("FTERJ/"+editKey).set(obj).then(()=>{editKey=null; novoLancamento();});
  } else {
-   db.ref("FTERJ").push({["serie_"+Date.now()]:obj}).once('value').then(()=>{});
-   // Compatível com seu banco antigo que usa serie_ direto
-   db.ref("FTERJ/serie_"+Date.now()).set(obj);
-   novoLancamento();
+   db.ref("FTERJ/serie_"+Date.now()).set(obj).then(()=>novoLancamento());
  }
 }
 
@@ -143,67 +204,42 @@ function novoLancamento(){
  document.getElementById('nomeAtleta').focus();
 }
 
-// 5. LISTA + BOTAO EXCLUIR CORRIGIDO + REGISTRO C/R CORRIGIDO
-function renderLista(lista){
- lista.sort((a,b)=>(b.data||0)-(a.data||0));
- let html="";
- lista.forEach(item=>{
-   // Seu banco tem objeto dentro de serie_
-   let dados=item;
-   if(item.key && item.key.startsWith('serie_') && Object.keys(item).length==1) { dados = item[Object.keys(item)[0]] || item; }
-   // Se veio direto como serie_XXX
-   let real = dados.nome? dados : (dados[Object.keys(dados).find(k=>k.nome)] || dados);
-   // fallback: se item já é o objeto serie
-   let nome = dados.nome || item.nome || "SEM NOME";
-   let prova = dados.prova || item.prova || "R2";
-   let pontos = parseFloat(dados.pontos || item.pontos || 0).toFixed(2);
-   let tirosStr = (dados.tiros||item.tiros||[]).join(' | ');
-   let key = item.key;
-
-   // CORREÇÃO C/R - mostra badge correto
-   let badgeClass = prova=="C/R"? "background:#00E5FF;color:#000" : "";
-   html+=`<div class="item-lanc">
-     <div><span class="badge-prova" style="${badgeClass}">${prova}</span><b>${nome}</b> <span style="color:#FFD700">${pontos}</span> <span style="font-size:10px;color:#aaa">${tirosStr}</span></div>
-     <div><button class="btn-editar" onclick="editarLanc('${key}')">EDITAR</button><button class="btn-excluir" onclick="excluirLanc('${key}')">X</button></div>
-   </div>`;
- });
- document.getElementById('listaLancamentos').innerHTML=html||"Nenhum lançamento";
-}
-
 function editarLanc(key){
  db.ref("FTERJ/"+key).once('value',s=>{
   let v=s.val(); if(!v) return;
-  // Se v tem sub-chave
-  if(v.nome==undefined){ let k=Object.keys(v)[0]; v=v[k]; }
   document.getElementById('nomeAtleta').value=v.nome||"";
   document.getElementById('provaSelect').value=v.prova||"R2";
-  (v.tiros||[]).forEach((t,i)=>{ if(document.getElementById('t'+(i+1))) document.getElementById('t'+(i+1)).value=t; });
+  (v.tiros||[]).forEach((t,i)=>{let el=document.getElementById('t'+(i+1)); if(el) el.value=t;});
   calcTotal();
   editKey=key;
  });
 }
 
-// EXCLUIR - CORRIGIDO - AGORA FUNCIONA
 function excluirLanc(key){
- if(!confirm("Excluir lançamento "+key+"?")) return;
- db.ref("FTERJ/"+key).remove().then(()=>{ alert("Excluído!"); }).catch(e=>alert("Erro: "+e.message));
+ if(!confirm("Excluir lançamento?")) return;
+ db.ref("FTERJ/"+key).remove().then(()=>console.log("excluído")).catch(e=>alert(e.message));
 }
 
-// F2 SALVAR F3 NOVO
-document.addEventListener('keydown',e=>{ if(e.key=='F2'){e.preventDefault(); salvarLancamento();} if(e.key=='F3'){e.preventDefault(); novoLancamento();} });
+document.addEventListener('keydown',e=>{
+ if(e.key=='F2'){e.preventDefault(); salvarLancamento();}
+ if(e.key=='F3'){e.preventDefault(); novoLancamento();}
+});
 
-// AUTOCOMPLETE ao digitar nome -> preenche prova se já existir
-document.getElementById('nomeAtleta').addEventListener('change',()=>{
+// autocomplete ao selecionar nome já existente preenche prova
+document.getElementById('nomeAtleta').addEventListener('input',()=>{
  let nome=document.getElementById('nomeAtleta').value.toUpperCase().trim();
+ if(nome.length<2) return;
  db.ref("FTERJ").once('value',snap=>{
-   let data=snap.val()||{};
-   Object.values(data).forEach(serie=>{
-     let s=serie;
-     if(serie.nome==undefined && typeof serie=='object'){ let k=Object.keys(serie)[0]; if(serie[k] && serie[k].nome) s=serie[k]; }
-     if(s.nome && s.nome.toUpperCase().trim()==nome){
-       document.getElementById('provaSelect').value=s.prova||"R2";
-     }
-   });
+  let data=snap.val()||{};
+  for(let k in data){
+   let s=data[k];
+   if(s.nome && s.nome.toUpperCase().trim()==nome){
+     document.getElementById('provaSelect').value=s.prova||"R2";
+     break;
+   }
+  }
  });
 });
-</script></body></html>
+</script>
+</body>
+</html>
