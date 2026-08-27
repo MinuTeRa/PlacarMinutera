@@ -2,75 +2,100 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>CELULAR FINAL</title>
+<title>CELULAR FTERJ - TOP5 UNICO</title>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 <style>
-*{margin:0;padding:0;box-sizing:border-box}body{background:#000;color:#fff;font-family:Arial Black,Arial;height:100vh;overflow:hidden}
-.header{height:56px;background:#0a0a0a;border-bottom:3px solid #FF8C00;display:flex;align-items:center;padding:0 10px;gap:8px}
-.header img{height:28px}.header b{font-size:9px;color:#FFD700;display:block;font-family:Arial}.header span{font-size:13px;text-transform:uppercase}
-.placar{height:calc(100vh - 56px);overflow:auto;padding:6px}
-.row{display:flex;justify-content:space-between;align-items:center;background:#111;border-left:6px solid #333;padding:12px;margin-bottom:6px;border-radius:6px}
-.row.top1{border-color:#FFD700;background:#1a1500}.row.top2{border-left-color:#C0C0C0}.row.top3{border-left-color:#CD7F32}.row.top4,.row.top5{border-left-color:#FF8C00}
-.pos{font-size:24px;min-width:40px;color:#555}.top1.pos{color:#FFD700}.pts{color:#fff;font-size:22px;font-weight:900}.pts small{font-size:10px}
-.det{font-size:10px;color:#888;font-family:Arial;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-#full{position:fixed;inset:0;background:#000;z-index:999;display:none;justify-content:center;align-items:center}
-#full img{width:100%;height:100%;object-fit:contain}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#000;color:#fff;font-family:Arial Black,Arial;height:100vh;overflow:hidden}
+.header{height:56px;background:#000;border-bottom:4px solid #FF8C00;display:flex;align-items:center;padding:0 12px;gap:8px}
+.header img{height:28px}
+.header.box b{font-size:8px;color:#FFD700;display:block;font-family:Arial;letter-spacing:1px}
+.header.box span{font-size:13px;text-transform:uppercase;white-space:nowrap}
+.placar{height:calc(100vh - 56px);overflow:auto;padding:6px;background:#000}
+.linha{display:flex;align-items:center;justify-content:space-between;background:#111;border:2px solid #222;border-left:6px solid #333;padding:12px;margin-bottom:6px;border-radius:4px}
+.linha.pos1{border-color:#FFD700;border-left-color:#FFD700;background:linear-gradient(90deg,#1a1500,#111)}
+.linha.pos2{border-left-color:#C0C0C0}.linha.pos3{border-left-color:#CD7F32}
+.linha.pos4,.linha.pos5{border-left-color:#FF8C00;background:linear-gradient(90deg,#1a0f00,#111)}
+.pos{font-size:26px;min-width:44px;text-align:center;color:#333;font-weight:900}
+.pos1.pos{color:#FFD700}.pos2.pos{color:#C0C0C0}.pos3.pos{color:#CD7F32}.pos4.pos,.pos5.pos{color:#FF8C00}
+.info{flex:1;margin-left:6px;overflow:hidden}
+.info b{display:block;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-transform:uppercase}
+.info.det{font-size:10px;color:#888;font-family:Arial;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pts{font-size:24px;color:#fff;font-weight:900;text-align:right;min-width:90px}
+.pts small{font-size:11px}
+#full{position:fixed;inset:0;background:#000;z-index:9999;display:none;justify-content:center;align-items:center}
+#full img{width:100vw;height:100vh;object-fit:contain}
 </style>
 </head>
 <body>
 <div class="header">
   <img id="logoMinu" src="" style="display:none">
-  <div><b>MinuT&Ra</b><span id="marcaMinu">MinuT&Ra</span></div>
-  <div style="width:2px;height:20px;background:#333;margin:0 6px"></div>
+  <div class="box"><b>MinuT&Ra</b><span>MinuT&Ra</span></div>
+  <div style="width:2px;height:22px;background:#333"></div>
   <img id="logoClube" src="" style="display:none">
-  <div><b id="labelClube">CLUBE</b><span id="nomeClube">CARREGANDO...</span></div>
+  <div class="box"><b>CLUBE</b><span id="txtClube">FTERJ</span></div>
+  <div style="margin-left:auto;color:#FF8C00;font-size:9px;font-family:Arial;letter-spacing:1px">PLACAR AO VIVO</div>
 </div>
-<div class="placar" id="lista"></div>
+<div class="placar" id="lista">CARREGANDO...</div>
 <div id="full" onclick="this.style.display='none'"><img id="fullImg"></div>
+
 <script>
 const firebaseConfig={apiKey:"AIzaSyCTEXeRjxq0_3doBNyWm5AkQ0kmBXmjlSk",authDomain:"placar-minutera.firebaseapp.com",databaseURL:"https://placar-minutera-default-rtdb.firebaseio.com",projectId:"placar-minutera"};
 firebase.initializeApp(firebaseConfig);const db=firebase.database();
-let fulls=[],fIdx=0;
+let fulls=[],fIdx=0,tempoFull=10,intervaloFull=20;
 
 db.ref("CONFIG_ANUNCIOS_FTERJ").on('value',s=>{
-  let c=s.val()||{};
+  let c=s.val()||{}; tempoFull=c.tempoFull||10; intervaloFull=c.intervaloFull||20;
   if(c.logoClube){logoClube.src=c.logoClube;logoClube.style.display='block';}
   if(c.logoMinu){logoMinu.src=c.logoMinu;logoMinu.style.display='block';}
-  // AQUI PEGA O NOME DO CLUBE JUNTO DO BANCO
-  let raw = c.nomeClube || c.clube || c.banco || c.nomeBanco || "FTERJ";
-  let nome = String(raw).split(" - ").pop().split("-").pop().split("_").pop().trim().toUpperCase();
-  if(nome) document.getElementById('nomeClube').innerText = nome;
+  let raw=c.nomeClube||c.clube||c.banco||c.nomeBanco||"";
+  if(raw){let nome=String(raw).split(" - ").pop().split("-").pop().split("_").pop().trim().toUpperCase(); if(nome) txtClube.innerText=nome;}
 });
-db.ref("FTERJ").on('value',s=>{render(s.val()||{});});
+db.ref("FTERJ").on('value',s=>{let d=s.val()||{}; if(d.nomeClube||d.clube) txtClube.innerText=(d.nomeClube||d.clube).toUpperCase(); render(d);});
 db.ref("PATROCINADORES_FULL_FTERJ").on('value',s=>{fulls=Object.values(s.val()||{}).filter(x=>x.ativo!==false);});
+
+function fmt(p){return (Math.round((parseFloat(p)||0)*100)/100).toFixed(2)}
 
 function render(dados){
   let ks=Object.keys(dados).filter(k=>k.startsWith("serie_"));
-  let mapa={};
-  ks.forEach(k=>{
+  ks.sort((a,b)=>(parseFloat(dados[b].pontos)||0)-(parseFloat(dados[a].pontos)||0));
+
+  // REGRA FINAL: TOP 5 COM ATLETA UNICO, RESTO DESCE
+  let top5=[], usadosNome=new Set(), usadosKey=new Set();
+
+  for(let k of ks){
+    if(top5.length>=5) break;
+    let nomeKey=(dados[k].nome||'').trim().toUpperCase();
+    if(!nomeKey) continue;
+    if(!usadosNome.has(nomeKey)){
+      usadosNome.add(nomeKey);
+      usadosKey.add(k);
+      top5.push(k);
+    }
+  }
+  // Resto: tudo que não entrou no Top 5 (inclui segunda prova do THIAGO e do TESTE)
+  let resto=ks.filter(k=>!usadosKey.has(k));
+
+  let listaFinal=[...top5,...resto];
+
+  let h="";
+  listaFinal.forEach((k,i)=>{
     let at=dados[k]; if(!at.nome) return;
-    let key=at.nome.trim().toUpperCase();
-    let pts=parseFloat(at.pontos)||0;
-    if(!mapa[key] || pts > mapa[key].pts) mapa[key]={at:at,pts:pts};
+    let pts=fmt(at.pontos); let tiros=(at.tiros||[]).join('/').toUpperCase()||'-';
+    let cls=i==0?'pos1':i==1?'pos2':i==2?'pos3':i==3?'pos4':i==4?'pos5':'';
+    h+=`<div class="linha ${cls}"><div class="pos ${cls}">${i+1}º</div><div class="info"><b>${at.nome}</b><div class="det">${at.prova||''} • ${tiros}</div></div><div class="pts">${pts} <small>pts</small></div></div>`;
   });
-  let final=Object.values(mapa).sort((a,b)=>b.pts-a.pts);
-  let html="";
-  final.forEach((item,i)=>{
-    let at=item.at; let pts=(Math.round(item.pts*100)/100).toFixed(2);
-    let tiros=(at.tiros||[]).join('/').toUpperCase();
-    let topClass=i==0?'top1':i==1?'top2':i==2?'top3':i==3?'top4':i==4?'top5':'';
-    html+=`<div class="row ${topClass}"><div class="pos">${i+1}º</div><div style="flex:1;overflow:hidden"><b style="font-size:13px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${at.nome}</b><div class="det">${at.prova||''} • ${tiros}</div></div><div class="pts">${pts} <small>pts</small></div></div>`;
-  });
-  document.getElementById('lista').innerHTML=html||"AGUARDANDO...";
+  document.getElementById('lista').innerHTML=h||"AGUARDANDO...";
 }
+
 function loopFull(){
-  if(fulls.length==0){setTimeout(loopFull,20000);return;}
-  if(fIdx>=fulls.length){fIdx=0;setTimeout(loopFull,20000);return;}
+  if(fulls.length==0){setTimeout(loopFull,intervaloFull*1000);return;}
+  if(fIdx>=fulls.length){fIdx=0;setTimeout(loopFull,intervaloFull*1000);return;}
   fullImg.src=fulls[fIdx].arte; full.style.display='flex';
-  setTimeout(()=>{full.style.display='none';fIdx++;loopFull();},10000);
+  setTimeout(()=>{full.style.display='none';fIdx++;loopFull();},tempoFull*1000);
 }
-setTimeout(loopFull,4000);
+setTimeout(loopFull,5000);
 </script>
 </body>
 </html>
