@@ -1,86 +1,105 @@
 <!DOCTYPE html>
-<html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>CONTROLE FTERJ - V24 FINAL</title>
+<html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>CONTROLE FTERJ - V26 UNIFICADO</title>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}body{background:#f5f5f7;font-family:Inter,Arial;color:#1d1d1f}
-#login{position:fixed;top:0;left:0;width:100%;height:100%;background:#000;z-index:9999;display:flex;justify-content:center;align-items:center;flex-direction:column}
+#login{position:fixed;inset:0;background:#000;z-index:9999;display:flex;justify-content:center;align-items:center;flex-direction:column}
 #login input{width:280px;padding:14px;margin:10px;border-radius:10px;border:1px solid #FF8C00;background:#111;color:#fff;text-align:center}
 #login button{width:280px;padding:12px;background:#FF8C00;color:#000;font-weight:900;border:none;border-radius:10px;cursor:pointer}
-.header{background:#000;color:#FF8C00;padding:14px;text-align:center;font-weight:900;letter-spacing:1px}
-.tabs{display:flex;background:#fff;border-bottom:1px solid #ddd;position:sticky;top:0;z-index:10}
-.tab{flex:1;padding:14px;text-align:center;font-weight:700;cursor:pointer;border-bottom:3px solid transparent;color:#888;font-size:13px}
+.header{background:#000;color:#FF8C00;padding:14px;text-align:center;font-weight:900}
+.tabs{display:flex;background:#fff;border-bottom:1px solid #ddd;position:sticky;top:0;z-index:10;overflow-x:auto}
+.tab{flex:1;padding:14px;text-align:center;font-weight:700;cursor:pointer;border-bottom:3px solid transparent;color:#888;font-size:12px;white-space:nowrap}
 .tab.active{color:#000;border-bottom-color:#FF8C00}
-.painel{display:none;padding:16px;max-width:600px;margin:0 auto}.painel.active{display:block}
+.painel{display:none;padding:16px;max-width:800px;margin:0 auto}.painel.active{display:block}
 .card{background:#fff;border-radius:16px;padding:16px;margin-bottom:16px;box-shadow:0 2px 10px rgba(0,0,0,0.06)}
 .card h3{font-size:14px;margin-bottom:12px;color:#FF6A00}
 label{font-size:11px;font-weight:700;color:#666;margin-top:10px;display:block}
 input{width:100%;padding:12px;background:#f5f5f7;border:1px solid #e5e5e5;border-radius:10px;margin-top:4px;font-size:14px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .btn{width:100%;padding:12px;border:none;border-radius:10px;font-weight:900;cursor:pointer;margin-top:8px;font-size:14px}
 .btn-laranja{background:#FF8C00;color:#000}.btn-preto{background:#000;color:#fff}.btn-vermelho{background:#ff3b30;color:#fff}
 .item{display:flex;align-items:center;gap:10px;background:#f9f9fb;padding:10px;border-radius:12px;margin-top:8px;border:1px solid #eee}
 .item img{width:48px;height:32px;object-fit:cover;border-radius:6px;background:#ddd}
-.item-info{flex:1;font-size:12px}.item-info b{font-size:13px;display:block}
-.badge{font-size:10px;padding:3px 6px;border-radius:20px;font-weight:800}.badge.on{background:#d4f8d4;color:#0a7a0a}.badge.off{background:#ffd6d6;color:#a00}
+.item-info{flex:1;font-size:12px}.badge{font-size:10px;padding:3px 6px;border-radius:20px;font-weight:800}.badge.on{background:#d4f8d4;color:#0a7a0a}.badge.off{background:#ffd6d6;color:#a00}
 .icon-btn{width:32px;height:32px;border-radius:8px;border:none;font-weight:900;cursor:pointer}.ativar{background:#000;color:#fff}.apagar{background:#ff3b30;color:#fff}
-.upload-area{border:2px dashed #FF8C00;border-radius:12px;padding:20px;text-align:center;background:#fff8f0;margin-top:8px;cursor:pointer}
-.progress{height:6px;background:#eee;border-radius:10px;margin-top:8px;display:none;overflow:hidden}.progress i{display:block;height:100%;background:#FF8C00;width:0%}
-.box{background:#f5f5f7;border:1px solid #e5e5e5;border-radius:10px;padding:10px;max-height:220px;overflow:auto;font-size:11px;white-space:pre-wrap;margin-top:8px}
+.link-item{display:flex;justify-content:space-between;align-items:center;background:#f9f9fb;padding:10px 12px;margin:8px 0;border-radius:10px;border:1px solid #eee;gap:8px}
+.link-item a{font-size:12px;word-break:break-all;text-decoration:none;font-weight:600;color:#000}
+.btn-copiar{background:#FF8C00;border:none;padding:8px 12px;border-radius:8px;font-weight:900;cursor:pointer;font-size:11px}
 </style></head><body>
-<div id="login"><h2 style="color:#FF8C00">🔒 CONTROLE FTERJ</h2><p style="font-size:11px;color:#888;margin:6px">Senha: CONFIG_SENHA_OPERADOR_FTERJ</p><input id="senhaInput" type="password" placeholder="Senha"><button onclick="checarSenha()">ENTRAR</button><div id="senhaErro" style="color:#f44;font-size:11px;margin-top:8px;display:none"></div><div id="senhaOk" style="color:#0a0;font-size:10px;margin-top:8px">Conectando...</div></div>
-<div class="header">MinuT&Ra - FTERJ V24 - CONTROLE</div>
+<div id="login"><h2 style="color:#FF8C00">🔒 CONTROLE FTERJ</h2><p style="font-size:11px;color:#888">Senha do lançamento</p><input id="senhaInput" type="password" placeholder="Senha" onkeydown="if(event.key==='Enter')checarSenha()"><button onclick="checarSenha()">ENTRAR</button><div id="senhaErro" style="color:#f44;font-size:11px;margin-top:8px;display:none"></div></div>
+<div class="header">MinuT&Ra - FTERJ V26 - CONTROLE UNIFICADO</div>
 <div class="tabs">
-<div class="tab active" onclick="aba('full')">🖥️ TELA CHEIA</div>
+<div class="tab active" onclick="aba('full')">🖥️ FULL</div>
 <div class="tab" onclick="aba('rodape')">🔥 RODAPÉ</div>
-<div class="tab" onclick="aba('controle')">🎮 CONTROLE</div>
+<div class="tab" onclick="aba('controle')">🎮 PROVA</div>
+<div class="tab" onclick="aba('admintv')">⚙️ TV</div>
+<div class="tab" onclick="aba('links')">🔗 LINKS</div>
 </div>
-
 <div id="painel-full" class="painel active">
-<div class="card"><h3>Novo Anúncio Tela Cheia - TEMPO GLOBAL</h3><label>Nome patrocinador</label><input id="fullNome" placeholder="Ex: Loja X"><label class="upload-area" for="fullFile">📁 CLIQUE PARA IMAGEM<input type="file" id="fullFile" accept="image/*" hidden onchange="previewFile()"></label><div id="preview" style="display:none;margin-top:10px"><img id="imgPrev" style="width:100%;border-radius:10px;max-height:180px;object-fit:contain"></div><div class="progress" id="progFull"><i id="progBar"></i></div><label>Ou URL</label><input id="fullUrl" placeholder="https://..."><button class="btn btn-preto" onclick="addFull()">+ ADICIONAR</button></div>
-<div class="card"><h3>Anúncios Ativos - Todos com mesmo tempo</h3><div id="listaFull">Carregando...</div></div>
-<div class="card"><h3>Tempos - FULL</h3><label>Intervalo entre blocos FULL (seg)</label><input id="cfgIntervalo" type="number" value="20"><label>Duração de cada FULL (seg) - GLOBAL</label><input id="cfgTempoFull" type="number" value="10"><button class="btn btn-laranja" onclick="salvarTemposFull()">SALVAR TEMPOS FULL</button></div>
+<div class="card"><h3>Novo Anúncio Tela Cheia</h3><label>Nome</label><input id="fullNome" placeholder="Ex: Loja X"><label style="border:2px dashed #FF8C00;border-radius:12px;padding:16px;text-align:center;background:#fff8f0;margin-top:8px;cursor:pointer" for="fullFile">📁 IMAGEM<input type="file" id="fullFile" accept="image/*" hidden onchange="previewFile()"></label><div id="preview" style="display:none;margin-top:10px"><img id="imgPrev" style="width:100%;border-radius:10px;max-height:180px;object-fit:contain"></div><label>Ou URL</label><input id="fullUrl" placeholder="https://..."><button class="btn btn-preto" onclick="addFull()">+ ADICIONAR</button></div>
+<div class="card"><h3>Anúncios Ativos</h3><div id="listaFull">Carregando...</div></div>
+</div>
+<div id="painel-rodape" class="painel">
+<div class="card"><h3>Novo Rodapé</h3><label>Texto</label><input id="rdProp" placeholder="Ex: Armory"><label>Contato</label><input id="rdCont" placeholder="(28) 99944-9010"><button class="btn btn-laranja" onclick="addRodape()">+ ADICIONAR</button></div>
+<div class="card"><h3>Rodapés Ativos</h3><div id="listaRodape">Carregando...</div></div>
+</div>
+<div id="painel-controle" class="painel">
+<div class="card"><h3>📁 Lista de Atletas</h3><span id="lblCount" style="font-size:12px;color:#666">0 atletas</span><div id="boxAtletas" style="background:#f5f5f7;border:1px solid #e5e5e5;border-radius:10px;padding:10px;max-height:180px;overflow:auto;font-size:11px;white-space:pre-wrap;margin-top:8px">Nenhum</div><div style="display:flex;gap:8px;margin-top:8px"><button class="btn btn-preto" onclick="carregar()" style="flex:1">🔄 RECARREGAR</button><button class="btn btn-vermelho" onclick="apagarLista()" style="flex:1">🗑️ APAGAR</button></div><label style="margin-top:12px">Importar TXT/CSV</label><input type="file" id="fileAtletas" accept=".txt,.csv"></div>
+<div class="card"><h3>🎮 Ações</h3><div style="display:flex;gap:8px"><button class="btn btn-laranja" onclick="zerarCR()" style="flex:1">ZERAR C/R</button><button class="btn btn-vermelho" onclick="apagarPlacar()" style="flex:1">APAGAR PLACAR</button></div><button class="btn btn-vermelho" style="margin-top:12px" onclick="sair()">SAIR / BLOQUEAR</button></div>
+</div>
+<div id="painel-admintv" class="painel">
+<div class="card"><h3>⚙️ TAMANHOS DA TV</h3><div class="grid2">
+<div><label>CABEÇALHO (vh)</label><input type="number" id="headerH" step="0.1"></div>
+<div><label>LINHAS (vh)</label><input type="number" id="linhaH" step="0.1"></div>
+<div><label>LOGO (vh)</label><input type="number" id="logoH" step="0.1"></div>
+<div><label>RODAPÉ (vh)</label><input type="number" id="rodapeH" step="0.1"></div>
+<div><label>NOME (vh)</label><input type="number" id="fontNome" step="0.1"></div>
+<div><label>TOTAL (vh)</label><input type="number" id="fontTotal" step="0.1"></div>
+<div><label>PROVA P: (vh)</label><input type="number" id="fontProva" step="0.1"></div>
+<div><label>DETALHE (vh)</label><input type="number" id="fontDetalhe" step="0.1"></div>
+<div><label>RELÓGIO (vh)</label><input type="number" id="fontRelogio" step="0.1"></div>
+<div><label>ESCALA %</label><input type="number" id="escala" step="5"></div>
+<div><label>PROP RODAPÉ (px)</label><input type="number" id="propPx" step="1"></div>
+<div><label>CONTATO RODAPÉ (px)</label><input type="number" id="contPx" step="1"></div>
+<div><label>TEMPO RODAPÉ (seg)</label><input type="number" id="cfgTempoRodape" step="1"></div>
+<div><label>TEMPO FULL (seg)</label><input type="number" id="cfgTempoFull" step="1"></div>
+</div>
+<label>INTERVALO FULL (seg)</label><input type="number" id="cfgIntervalo" step="1">
+<button class="btn btn-laranja" onclick="salvarTudoTV()">💾 SALVAR TUDO NA TV</button>
+<div id="statusTV" style="text-align:center;color:#0a0;font-weight:900;margin-top:8px"></div>
+</div>
 <div class="card"><h3>Logos da TV</h3><label>URL Logo Clube</label><input id="logoClube" placeholder="https://..."><label>URL Logo MinuT&Ra</label><input id="logoMinu" placeholder="https://..."><button class="btn btn-preto" onclick="salvarLogos()">SALVAR LOGOS</button></div>
 </div>
-
-<div id="painel-rodape" class="painel">
-<div class="card"><h3>Novo Rodapé FADE</h3><label>Texto</label><input id="rdProp" placeholder="Ex: Armory"><label>Contato</label><input id="rdCont" placeholder="(28) 99944-9010"><button class="btn btn-laranja" onclick="addRodape()">+ ADICIONAR RODAPÉ</button></div>
-<div class="card"><h3>Rodapés</h3><div id="listaRodape">Carregando...</div></div>
-<div class="card"><h3>Tempo - RODAPÉ</h3><label>Duração de cada RODAPÉ FADE (seg)</label><input id="cfgTempoRodape" type="number" value="6"><button class="btn btn-laranja" onclick="salvarTempoRodape()">SALVAR TEMPO RODAPÉ</button></div>
+<div id="painel-links" class="painel">
+<div class="card"><h3>🔗 LINKS OFICIAIS</h3>
+<div class="link-item"><a>https://minutera.com.br/placar-fterj/tv.html</a><button class="btn-copiar" onclick="copiar(this)">COPIAR</button></div>
+<div class="link-item"><a>https://minutera.com.br/placar-fterj/celular.html</a><button class="btn-copiar" onclick="copiar(this)">COPIAR</button></div>
+<div class="link-item"><a>https://minutera.com.br/placar-fterj/controle.html</a><button class="btn-copiar" onclick="copiar(this)">COPIAR</button></div>
 </div>
-
-<div id="painel-controle" class="painel">
-<div class="card"><h3>📁 Lista de Atletas</h3><span id="lblCount" style="font-size:12px;color:#666">0 atletas</span><label>Importar TXT/CSV</label><input type="file" id="fileAtletas" accept=".txt,.csv"><div class="box" id="boxAtletas">Nenhum atleta</div><div style="display:flex;gap:8px"><button class="btn btn-preto" onclick="carregar()" style="flex:1">🔄 RECARREGAR</button><button class="btn btn-vermelho" onclick="apagarLista()" style="flex:1">🗑️ APAGAR LISTA</button></div></div>
-<div class="card"><h3>🎮 Ações da Prova</h3><div style="display:flex;gap:8px"><button class="btn btn-laranja" onclick="zerarCR()" style="flex:1">ZERAR C/R</button><button class="btn btn-vermelho" onclick="apagarPlacar()" style="flex:1">APAGAR PLACAR</button></div><div style="margin-top:12px;font-size:11px;background:#f5f5f7;padding:10px;border-radius:10px">⏰ Online: <b id="clock" style="color:#FF6A00"></b><br><br>📺 TV: minutera.com.br/placar-fterj/tv.html<br>📱 CELULAR: minutera.com.br/placar-fterj/celular.html</div></div>
 </div>
-
 <script>
 const firebaseConfig={apiKey:"AIzaSyCTEXeRjxq0_3doBNyWm5AkQ0kmBXmjlSk",authDomain:"placar-minutera.firebaseapp.com",databaseURL:"https://placar-minutera-default-rtdb.firebaseio.com",projectId:"placar-minutera",storageBucket:"placar-minutera.appspot.com"};
 firebase.initializeApp(firebaseConfig);const db=firebase.database();const storage=firebase.storage();
-let senhaFirebase="minutera2025";
-db.ref("CONFIG_SENHA_OPERADOR_FTERJ").on('value',s=>{if(s.val()){senhaFirebase=s.val();senhaOk.innerText="Conectado ✅";}});
-function checarSenha(){if(senhaInput.value===senhaFirebase){login.style.display='none';localStorage.setItem('auth_fterj','ok');carregar();}else{senhaErro.style.display='block';senhaErro.innerText="Senha incorreta. Atual: "+senhaFirebase;}}
-if(localStorage.getItem('auth_fterj')==='ok') login.style.display='none';
+const HASH_SENHA="bWludXRlcmEyMDI1";
+function checarSenha(){let v=document.getElementById('senhaInput').value.trim();if(btoa(v)===HASH_SENHA){document.getElementById('login').style.display='none';localStorage.setItem('auth_fterj','ok');localStorage.setItem('auth_fterj_time',Date.now());carregar();}else{let e=document.getElementById('senhaErro');e.style.display='block';e.innerText='Senha incorreta!';}}
+if(localStorage.getItem('auth_fterj')==='ok'){let t=localStorage.getItem('auth_fterj_time');if(t && (Date.now()-t)<43200000) document.getElementById('login').style.display='none'; else localStorage.removeItem('auth_fterj');}
+function sair(){localStorage.removeItem('auth_fterj');location.reload();}
 function aba(n){document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));document.querySelectorAll('.painel').forEach(p=>p.classList.remove('active'));document.getElementById('painel-'+n).classList.add('active');event.target.classList.add('active');}
-setInterval(()=>{clock.innerText=new Date().toLocaleTimeString();},1000);
-function carregar(){db.ref("FTERJ").once('value').then(s=>{let d=s.val()||{};let ks=Object.keys(d).filter(k=>k.startsWith("serie_"));lblCount.innerText=ks.length+" atletas";boxAtletas.innerText=ks.map(k=>d[k].nome).join("\n")||"VAZIO";});}
-function apagarLista(){if(confirm("Apagar TODA lista de atletas?"))db.ref("FTERJ").remove().then(carregar);}
-function zerarCR(){if(!confirm("ZERAR todos C/R?"))return;db.ref("FTERJ").once('value').then(s=>{let d=s.val()||{};Object.keys(d).forEach(k=>{if(k.startsWith("serie_"))db.ref("FTERJ/"+k).update({pontos:0,tiros:[]});});alert("C/R zerado ✅");});}
-function apagarPlacar(){if(confirm("APAGAR PLACAR e lista?"))db.ref("FTERJ").remove().then(carregar);}
-fileAtletas.addEventListener('change',e=>{let f=e.target.files[0];if(!f)return;let r=new FileReader();r.onload=ev=>{let ls=ev.target.result.split('\n').map(l=>l.trim()).filter(l=>l);let b={};ls.forEach((n,i)=>{b["serie_"+String(Date.now()+i).slice(-6)]={nome:n.toUpperCase(),prova:"R2",pontos:0,tiros:[]};});db.ref("FTERJ").update(b).then(()=>{carregar();alert(ls.length+" importados");});};r.readAsText(f);});
-function previewFile(){let f=fullFile.files[0];if(!f)return;let r=new FileReader();r.onload=e=>{imgPrev.src=e.target.result;preview.style.display='block';};r.readAsDataURL(f);}
-async function addFull(){
- let nome=fullNome.value||"Patrocinador";let url=fullUrl.value;let file=fullFile.files[0];
- if(file){progFull.style.display='block';let ref=storage.ref("anuncios_fterj/"+Date.now()+"_"+file.name);let task=ref.put(file);task.on('state_changed',s=>{progBar.style.width=(s.bytesTransferred/s.totalBytes*100)+"%";},e=>alert(e.message),async()=>{let dl=await task.snapshot.ref.getDownloadURL();db.ref("PATROCINADORES_FULL_FTERJ").push({nome,arte:dl,ativo:true,criado:Date.now()});progFull.style.display='none';fullFile.value="";fullUrl.value="";preview.style.display='none';alert("Enviado ✅ - tempo GLOBAL");});}
- else if(url){db.ref("PATROCINADORES_FULL_FTERJ").push({nome,arte:url,ativo:true,criado:Date.now()});fullUrl.value="";alert("Adicionado ✅");}
- else alert("Escolha imagem");
-}
-db.ref("PATROCINADORES_FULL_FTERJ").on('value',s=>{let d=s.val()||{};let h="";Object.keys(d).forEach(k=>{let r=d[k];let on=r.ativo!==false;h+=`<div class="item"><img src="${r.arte}"><div class="item-info"><b>${r.nome}</b><span class="badge ${on?'on':'off'}">${on?'ATIVO':'OFF'}</span></div><button class="icon-btn ativar" onclick="db.ref('PATROCINADORES_FULL_FTERJ/${k}').update({ativo:${!on}})">${on?'||':'▶'}</button><button class="icon-btn apagar" onclick="if(confirm('Apagar?'))db.ref('PATROCINADORES_FULL_FTERJ/${k}').remove()">✕</button></div>`});listaFull.innerHTML=h||"Nenhum";});
-function addRodape(){let p=rdProp.value,c=rdCont.value;if(!p)return alert("Texto");db.ref("PATROCINADORES_RODAPE_FTERJ").push({prop:p,contato:c,ativo:true});rdProp.value="";rdCont.value="";}
-db.ref("PATROCINADORES_RODAPE_FTERJ").on('value',s=>{let d=s.val()||{};let h="";Object.keys(d).forEach(k=>{let r=d[k];let on=r.ativo!==false;h+=`<div class="item"><div class="item-info"><b>${r.prop}</b><br>${r.contato||''}<br><span class="badge ${on?'on':'off'}">${on?'ATIVO':'OFF'}</span></div><button class="icon-btn ativar" onclick="db.ref('PATROCINADORES_RODAPE_FTERJ/${k}').update({ativo:${!on}})">${on?'||':'▶'}</button><button class="icon-btn apagar" onclick="db.ref('PATROCINADORES_RODAPE_FTERJ/${k}').remove()">✕</button></div>`});listaRodape.innerHTML=h||"Nenhum";});
-db.ref("CONFIG_ANUNCIOS_FTERJ").on('value',s=>{let v=s.val()||{};if(v.intervaloFull)cfgIntervalo.value=v.intervaloFull;if(v.tempoFull)cfgTempoFull.value=v.tempoFull;if(v.tempoRodape)cfgTempoRodape.value=v.tempoRodape;if(v.logoClube)logoClube.value=v.logoClube;if(v.logoMinu)logoMinu.value=v.logoMinu;});
-function salvarTemposFull(){db.ref("CONFIG_ANUNCIOS_FTERJ").update({intervaloFull:parseInt(cfgIntervalo.value),tempoFull:parseInt(cfgTempoFull.value)});alert("Tempos FULL salvos ✅ - TODOS os anúncios vão usar "+cfgTempoFull.value+"s");}
-function salvarTempoRodape(){db.ref("CONFIG_ANUNCIOS_FTERJ").update({tempoRodape:parseInt(cfgTempoRodape.value)});alert("Tempo RODAPÉ salvo ✅");}
-function salvarLogos(){db.ref("CONFIG_ANUNCIOS_FTERJ").update({logoClube:logoClube.value,logoMinu:logoMinu.value});alert("Logos salvos ✅");}
+function copiar(btn){let l=btn.parentElement.querySelector('a').innerText;navigator.clipboard.writeText(l);btn.innerText='COPIADO!';setTimeout(()=>btn.innerText='COPIAR',1500);}
+function carregar(){db.ref("FTERJ").once('value').then(s=>{let d=s.val()||{};let ks=Object.keys(d).filter(k=>k.startsWith("serie_"));document.getElementById('lblCount').innerText=ks.length+" atletas";document.getElementById('boxAtletas').innerText=ks.map(k=>d[k].nome).join("\n")||"VAZIO";});}
+function apagarLista(){if(confirm("Apagar lista?"))db.ref("FTERJ").remove().then(carregar);}
+function zerarCR(){if(!confirm("ZERAR C/R?"))return;db.ref("FTERJ").once('value').then(s=>{let d=s.val()||{};Object.keys(d).forEach(k=>{if(k.startsWith("serie_"))db.ref("FTERJ/"+k).update({pontos:0,tiros:[]});});alert("Zerado");});}
+function apagarPlacar(){if(confirm("APAGAR PLACAR?"))db.ref("FTERJ").remove().then(carregar);}
+document.getElementById('fileAtletas').addEventListener('change',e=>{let f=e.target.files[0];if(!f)return;let r=new FileReader();r.onload=ev=>{let ls=ev.target.result.split('\n').map(l=>l.trim()).filter(l=>l);let b={};ls.forEach((n,i)=>{b["serie_"+String(Date.now()+i).slice(-6)]={nome:n.toUpperCase(),prova:"R2",pontos:0,tiros:[]};});db.ref("FTERJ").update(b).then(()=>{carregar();alert(ls.length+" importados");});};r.readAsText(f);});
+function previewFile(){let f=document.getElementById('fullFile').files[0];if(!f)return;let r=new FileReader();r.onload=e=>{document.getElementById('imgPrev').src=e.target.result;document.getElementById('preview').style.display='block';};r.readAsDataURL(f);}
+async function addFull(){let nome=document.getElementById('fullNome').value||"Patrocinador";let url=document.getElementById('fullUrl').value;let file=document.getElementById('fullFile').files[0];if(file){let ref=storage.ref("anuncios_fterj/"+Date.now()+"_"+file.name);let task=ref.put(file);task.on('state_changed',()=>{},e=>alert(e.message),async()=>{let dl=await task.snapshot.ref.getDownloadURL();db.ref("PATROCINADORES_FULL_FTERJ").push({nome,arte:dl,ativo:true});alert("Enviado");});}else if(url){db.ref("PATROCINADORES_FULL_FTERJ").push({nome,arte:url,ativo:true});alert("Adicionado");}else alert("Escolha imagem");}
+db.ref("PATROCINADORES_FULL_FTERJ").on('value',s=>{let d=s.val()||{};let h="";Object.keys(d).forEach(k=>{let r=d[k];let on=r.ativo!==false;h+=`<div class="item"><img src="${r.arte}"><div class="item-info"><b>${r.nome}</b><br><span class="badge ${on?'on':'off'}">${on?'ATIVO':'OFF'}</span></div><button class="icon-btn ativar" onclick="db.ref('PATROCINADORES_FULL_FTERJ/${k}').update({ativo:${!on}})">${on?'||':'▶'}</button><button class="icon-btn apagar" onclick="if(confirm('Apagar?'))db.ref('PATROCINADORES_FULL_FTERJ/${k}').remove()">✕</button></div>`});document.getElementById('listaFull').innerHTML=h||"Nenhum";});
+function addRodape(){let p=document.getElementById('rdProp').value,c=document.getElementById('rdCont').value;if(!p)return alert("Texto");db.ref("PATROCINADORES_RODAPE_FTERJ").push({prop:p,contato:c,ativo:true});document.getElementById('rdProp').value="";document.getElementById('rdCont').value="";}
+db.ref("PATROCINADORES_RODAPE_FTERJ").on('value',s=>{let d=s.val()||{};let h="";Object.keys(d).forEach(k=>{let r=d[k];let on=r.ativo!==false;h+=`<div class="item"><div class="item-info"><b>${r.prop}</b><br>${r.contato||''}<br><span class="badge ${on?'on':'off'}">${on?'ATIVO':'OFF'}</span></div><button class="icon-btn ativar" onclick="db.ref('PATROCINADORES_RODAPE_FTERJ/${k}').update({ativo:${!on}})">${on?'||':'▶'}</button><button class="icon-btn apagar" onclick="db.ref('PATROCINADORES_RODAPE_FTERJ/${k}').remove()">✕</button></div>`});document.getElementById('listaRodape').innerHTML=h||"Nenhum";});
+db.ref("CONFIG_ANUNCIOS_FTERJ").on('value',s=>{let v=s.val()||{};if(v.headerH)headerH.value=v.headerH;if(v.linhaH)linhaH.value=v.linhaH;if(v.logoH)logoH.value=v.logoH;if(v.rodapeH)rodapeH.value=v.rodapeH;if(v.fontNome)fontNome.value=v.fontNome;if(v.fontTotal)fontTotal.value=v.fontTotal;if(v.fontProva)fontProva.value=v.fontProva;if(v.fontDetalhe)fontDetalhe.value=v.fontDetalhe;if(v.fontRelogio)fontRelogio.value=v.fontRelogio;if(v.escala)escala.value=v.escala;if(v.propPx)propPx.value=v.propPx;if(v.contPx)contPx.value=v.contPx;if(v.tempoRodape)cfgTempoRodape.value=v.tempoRodape;if(v.tempoFull)cfgTempoFull.value=v.tempoFull;if(v.intervaloFull)cfgIntervalo.value=v.intervaloFull;if(v.logoClube)logoClube.value=v.logoClube;if(v.logoMinu)logoMinu.value=v.logoMinu;});
+function salvarTudoTV(){let novo={headerH:parseFloat(headerH.value),linhaH:parseFloat(linhaH.value),logoH:parseFloat(logoH.value),rodapeH:parseFloat(rodapeH.value),fontNome:parseFloat(fontNome.value),fontTotal:parseFloat(fontTotal.value),fontProva:parseFloat(fontProva.value),fontDetalhe:parseFloat(fontDetalhe.value),fontRelogio:parseFloat(fontRelogio.value),escala:parseInt(escala.value),propPx:parseInt(propPx.value),contPx:parseInt(contPx.value),tempoRodape:parseInt(cfgTempoRodape.value),tempoFull:parseInt(cfgTempoFull.value),intervaloFull:parseInt(cfgIntervalo.value)};db.ref("CONFIG_ANUNCIOS_FTERJ").update(novo).then(()=>{statusTV.innerText="✅ TV ATUALIZADA!";setTimeout(()=>statusTV.innerText="",3000);});}
+function salvarLogos(){db.ref("CONFIG_ANUNCIOS_FTERJ").update({logoClube:logoClube.value,logoMinu:logoMinu.value});alert("Logos salvos");}
 carregar();
 </script></body></html>
