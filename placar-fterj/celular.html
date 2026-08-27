@@ -30,27 +30,36 @@ db.ref(BANCO).on('value', snap=>{
   snap.forEach(c=>{ let v=c.val(); if(v && v.contagem) lista.push(v); });
   lista.sort((a,b)=> b.pontos - a.pontos || b.contagem.x12_01 - a.contagem.x12_01);
 
-  if(provaFiltro) lista = lista.filter(a=>a.prova.toString() == provaFiltro);
+  if(provaFiltro) lista = lista.filter(a=>a.prova.toString().toUpperCase() == provaFiltro.toUpperCase());
 
-  // REGRA DA TV - 1 ATLETA SÓ 1 VEZ, VAI DESCENDO
-  let rankingUnico = [];
-  let nomesVistos = new Set();
-  for(let atirador of lista){
-    let nomeNorm = atirador.nome.trim().toUpperCase();
-    if(!nomesVistos.has(nomeNorm)){
-      rankingUnico.push(atirador);
-      nomesVistos.add(nomeNorm);
+  // 1. MONTA O TOP 5 ÚNICO (sem repetir nome)
+  let top5 = [];
+  let nomesTop5 = new Set();
+  let usadosTop5 = new Set(); // guarda o objeto exato que entrou no top5
+  for(let at of lista){
+    let nomeNorm = at.nome.trim().toUpperCase();
+    if(!nomesTop5.has(nomeNorm)){
+      top5.push(at);
+      nomesTop5.add(nomeNorm);
+      usadosTop5.add(at);
+      if(top5.length === 5) break;
     }
   }
 
-  document.getElementById('topo').innerText = provaFiltro ? `PROVA ${provaFiltro} - ${rankingUnico.length} ATIRADORES` : `GERAL - ${rankingUnico.length} ATIRADORES`;
+  // 2. RESTO = tudo que não entrou no top 5 (inclui as duplicatas do top5)
+  let resto = lista.filter(at => !usadosTop5.has(at));
+  
+  // 3. JUNTA: top 5 único + resto ordenado por pontuação
+  let finalLista = [...top5, ...resto];
+
+  document.getElementById('topo').innerText = provaFiltro ? `PROVA ${provaFiltro} - ${lista.length} LANÇAMENTOS` : `GERAL - ${lista.length} LANÇAMENTOS`;
 
   let html="";
-  rankingUnico.forEach((a,i)=>{
+  finalLista.forEach((a,i)=>{
     let classe = i==0?'p1':i==1?'p2':i==2?'p3':'';
     html+=`<div class="atleta ${classe}"><span>${i+1}º ${a.nome} (P:${a.prova})</span><span>${a.pontos.toFixed(2)} | X:${a.contagem.x12_01}</span></div>`;
   });
-  document.getElementById('lista').innerHTML = html || "Nenhum atirador";
+  document.getElementById('lista').innerHTML = html;
 });
 </script>
 </body>
