@@ -8,17 +8,16 @@
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 <style>
  body{background:#000;color:#fff;font-family:Arial Black;margin:0}
- .topo{background:#FF8C00;color:#000;padding:12px;text-align:center;font-size:5vw;position:sticky;top:0;z-index:10}
- .atleta{display:flex;justify-content:space-between;padding:11px 8px;border-bottom:1px solid #222;font-size:4.1vw}
- .atleta.p1{background:gold;color:#000}
- .atleta.p2{background:silver;color:#000}
+ .topo{background:#FF8C00;color:#000;padding:12px;text-align:center;font-size:5vw;position:sticky;top:0}
+ .atleta{display:flex;justify-content:space-between;padding:11px 8px;border-bottom:1px solid #222;font-size:4vw}
+ .atleta.p1{background:#FFD700;color:#000}
+ .atleta.p2{background:#C0C0C0;color:#000}
  .atleta.p3{background:#CD7F32;color:#000}
 </style>
 </head>
 <body>
 <div class="topo" id="topo">GERAL</div>
-<div id="lista">Carregando...</div>
-
+<div id="lista"></div>
 <script>
 const BANCO = "FTERJ";
 firebase.initializeApp({databaseURL:"https://placar-minutera-default-rtdb.firebaseio.com"});
@@ -26,40 +25,25 @@ const db = firebase.database();
 const provaFiltro = new URLSearchParams(window.location.search).get('prova');
 
 db.ref(BANCO).on('value', snap=>{
-  let lista=[];
-  snap.forEach(c=>{ let v=c.val(); if(v && v.contagem) lista.push(v); });
-  lista.sort((a,b)=> b.pontos - a.pontos || b.contagem.x12_01 - a.contagem.x12_01);
+  let lista=[]; snap.forEach(c=>{let v=c.val(); if(v?.contagem) lista.push(v);});
+  lista.sort((a,b)=> b.pontos - a.pontos);
 
   if(provaFiltro) lista = lista.filter(a=>a.prova.toString().toUpperCase() == provaFiltro.toUpperCase());
 
-  // 1. MONTA O TOP 5 ÚNICO (sem repetir nome)
-  let top5 = [];
-  let nomesTop5 = new Set();
-  let usadosTop5 = new Set(); // guarda o objeto exato que entrou no top5
+  let top5=[], nomes=new Set(), usados=new Set();
   for(let at of lista){
-    let nomeNorm = at.nome.trim().toUpperCase();
-    if(!nomesTop5.has(nomeNorm)){
-      top5.push(at);
-      nomesTop5.add(nomeNorm);
-      usadosTop5.add(at);
-      if(top5.length === 5) break;
-    }
+    let n=at.nome.trim().toUpperCase();
+    if(!nomes.has(n)){ top5.push(at); nomes.add(n); usados.add(at); if(top5.length==5) break; }
   }
+  let finalLista = [...top5, ...lista.filter(x=>!usados.has(x))];
 
-  // 2. RESTO = tudo que não entrou no top 5 (inclui as duplicatas do top5)
-  let resto = lista.filter(at => !usadosTop5.has(at));
-  
-  // 3. JUNTA: top 5 único + resto ordenado por pontuação
-  let finalLista = [...top5, ...resto];
-
-  document.getElementById('topo').innerText = provaFiltro ? `PROVA ${provaFiltro} - ${lista.length} LANÇAMENTOS` : `GERAL - ${lista.length} LANÇAMENTOS`;
-
+  document.getElementById('topo').innerText = `GERAL - ${lista.length} LANÇAMENTOS`;
   let html="";
   finalLista.forEach((a,i)=>{
-    let classe = i==0?'p1':i==1?'p2':i==2?'p3':'';
-    html+=`<div class="atleta ${classe}"><span>${i+1}º ${a.nome} (P:${a.prova})</span><span>${a.pontos.toFixed(2)} | X:${a.contagem.x12_01}</span></div>`;
+    let c=i==0?'p1':i==1?'p2':i==2?'p3':'';
+    html+=`<div class="atleta ${c}"><span>${i+1}º ${a.nome} (P:${a.prova})</span><span>${a.pontos.toFixed(2)} | X:${a.contagem.x12_01}</span></div>`;
   });
-  document.getElementById('lista').innerHTML = html;
+  document.getElementById('lista').innerHTML=html;
 });
 </script>
 </body>
