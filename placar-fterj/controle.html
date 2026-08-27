@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CONTROLE FTERJ</title>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0f0f0f;color:#ddd;font-family:Arial;padding:0}
+#login{position:fixed;top:0;left:0;width:100%;height:100%;background:#000;z-index:9999;display:flex;justify-content:center;align-items:center;flex-direction:column}
+#login input{width:280px;padding:14px;margin:10px;border-radius:8px;border:1px solid #FF8C00;background:#111;color:#fff;text-align:center;font-size:16px}
+#login button{width:280px;padding:12px;background:#FF8C00;color:#000;font-weight:900;border:none;border-radius:8px;cursor:pointer}
+h1{text-align:center;color:#FFD700;padding:12px;font-size:18px}
+.tabs{display:flex;background:#1e1e1e;position:sticky;top:0;z-index:10}
+.tab{flex:1;padding:12px;text-align:center;font-weight:900;cursor:pointer;border-bottom:3px solid transparent;color:#888;font-size:11px}
+.tab.active{color:#000;background:#FF8C00;border-bottom-color:#FFD700}
+.painel{display:none;padding:12px;max-width:800px;margin:0 auto}.painel.active{display:block}
+.card{background:#1e1e1e;border:1px solid #333;border-radius:10px;padding:15px;margin-bottom:12px}
+.card h2{color:#FFD700;font-size:13px;border-bottom:1px solid #333;padding-bottom:6px;margin-bottom:10px}
+.box{background:#000;border:1px solid #333;border-radius:6px;padding:10px;max-height:250px;overflow:auto;font-size:11px;white-space:pre-wrap;color:#ccc}
+button{padding:8px 12px;border:none;border-radius:6px;font-weight:900;font-size:11px;cursor:pointer;margin:4px 4px 0 0}
+.del{background:#5a0000;color:#ffaaaa;border:1px solid #a00}.warn{background:#ff8c00;color:#000}.save{background:#FF8C00;color:#000}
+.item{display:flex;align-items:center;gap:8px;background:#000;padding:8px;border-radius:6px;margin-top:6px;border:1px solid #222}
+.item img{width:60px;height:38px;object-fit:cover;border-radius:4px;background:#222}.info{flex:1;font-size:10px;overflow:hidden}
+input.input{padding:10px;border-radius:6px;border:1px solid #444;background:#000;color:#fff;font-size:12px;width:100%;margin-top:4px}
+.upload-area{border:2px dashed #FF8C00;border-radius:12px;padding:16px;text-align:center;background:#fff8f0;margin-top:8px;cursor:pointer;color:#000}
+.progress{height:6px;background:#333;border-radius:10px;margin-top:8px;display:none;overflow:hidden}.progress i{display:block;height:100%;background:#FF8C00;width:0%}
+</style>
+</head>
+<body>
+<div id="login">
+<h2 style="color:#FFD700;margin-bottom:10px">🔒 CONTROLE FTERJ</h2>
+<p style="font-size:11px;color:#888">Puxando senha do Firebase...</p>
+<input id="senhaInput" type="password" placeholder="Senha">
+<button onclick="checarSenha()">ENTRAR</button>
+<div id="senhaErro" style="color:#f44;font-size:11px;margin-top:8px;display:none">Senha incorreta</div>
+<div id="senhaOk" style="color:#0f0;font-size:10px;margin-top:8px">Senha Firebase: carregando...</div>
+</div>
+
+<h1>⚙️ CONTROLE - FTERJ</h1>
+<div class="tabs">
+<div class="tab active" onclick="aba('atletas')">📁 ATLETAS</div>
+<div class="tab" onclick="aba('full')">🖥️ FULL</div>
+<div class="tab" onclick="aba('rodape')">🔥 RODAPÉ</div>
+<div class="tab" onclick="aba('controle')">🎮 CONTROLE</div>
+</div>
+
+<div id="painel-atletas" class="painel active">
+<div class="card"><h2>📁 ATLETAS</h2><span id="lblCount">Carregando...</span><input type="file" id="fileAtletas" accept=".txt,.csv" class="input"><button class="del" onclick="apagarLista()">🗑️ APAGAR</button><button class="save" onclick="carregar()">🔄 RECARREGAR</button><div class="box" id="boxAtletas"></div></div>
+</div>
+<div id="painel-full" class="painel">
+<div class="card"><h2>🎨 FULL (TV + CELULAR) - PUXA DE PATROCINADORES_FULL_FTERJ</h2>
+<input id="fullNome" class="input" placeholder="Nome patrocinador"><input id="fullTempo" class="input" type="number" value="7" style="width:80px;margin-top:6px">
+<label class="upload-area" for="fullFile">📁 CLIQUE PARA IMAGEM<input type="file" id="fullFile" accept="image/*" hidden onchange="previewFile()"></label>
+<div id="preview" style="display:none;margin-top:8px"><img id="imgPrev" style="width:100%;border-radius:10px;max-height:180px;object-fit:contain"></div>
+<div class="progress" id="progFull"><i id="progBar"></i></div>
+<input id="fullArte" class="input" placeholder="Ou URL https://..."><button class="save" style="width:100%;margin-top:10px;padding:12px" onclick="addFull()">+ ADD FULL</button><div id="listaFull" style="margin-top:10px"></div>
+</div>
+</div>
+<div id="painel-rodape" class="painel">
+<div class="card"><h2>🔥 RODAPÉ</h2><input id="rdProp" class="input" placeholder="Texto"><input id="rdCont" class="input" placeholder="Contato" style="margin-top:6px"><button class="save" onclick="addRodape()" style="width:100%;margin-top:8px">+ ADD RODAPÉ</button><div id="listaRodape" style="margin-top:10px"></div></div>
+</div>
+<div id="painel-controle" class="painel">
+<div class="card"><h2>🔥 CONTROLE</h2><button class="warn" onclick="zerarCR()">ZERAR C/R</button><button class="del" onclick="apagarPlacar()">APAGAR PLACAR</button><div style="margin-top:10px;font-size:11px">Online: <span id="clock" style="color:#00E5FF"></span></div></div>
+</div>
+
+<script>
+const firebaseConfig={apiKey:"AIzaSyCTEXeRjxq0_3doBNyWm5AkQ0kmBXmjlSk",authDomain:"placar-minutera.firebaseapp.com",databaseURL:"https://placar-minutera-default-rtdb.firebaseio.com",projectId:"placar-minutera",storageBucket:"placar-minutera.appspot.com"};
+firebase.initializeApp(firebaseConfig);
+const db=firebase.database(); const storage=firebase.storage();
+
+let senhaFirebase = "minutera2025";
+// PUXA SENHA EXATA DO SEU PRINT
+db.ref("CONFIG_SENHA_OPERADOR_FTERJ").on('value',s=>{
+  if(s.val()){
+    senhaFirebase = s.val();
+    document.getElementById('senhaOk').innerText = "Conectado Firebase ✅";
+  }
+});
+
+function checarSenha(){
+  let d=document.getElementById('senhaInput').value;
+  if(d===senhaFirebase){
+    document.getElementById('login').style.display='none';
+    localStorage.setItem('auth_fterj','ok');
+    carregar();
+  }else{
+    document.getElementById('senhaErro').style.display='block';
+    document.getElementById('senhaErro').innerText = "Senha incorreta. Firebase está com: "+senhaFirebase;
+  }
+}
+if(localStorage.getItem('auth_fterj')==='ok') document.getElementById('login').style.display='none';
+
+function aba(n){document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));document.querySelectorAll('.painel').forEach(p=>p.classList.remove('active'));document.getElementById('painel-'+n).classList.add('active');event.target.classList.add('active');}
+setInterval(()=>document.getElementById('clock').innerText=new Date().toLocaleTimeString(),1000);
+function carregar(){db.ref("FTERJ").once('value').then(s=>{let d=s.val()||{};let keys=Object.keys(d).filter(k=>k.startsWith("serie_"));let nomes=keys.map(k=>d[k].nome||k);document.getElementById('lblCount').innerText=nomes.length+" atletas";document.getElementById('boxAtletas').innerText=nomes.join("\n")||"VAZIO";});}
+function apagarLista(){if(confirm("Apagar lista?"))db.ref("FTERJ").remove().then(carregar);}
+function zerarCR(){if(!confirm("ZERAR C/R?"))return;db.ref("FTERJ").once('value').then(s=>{let d=s.val()||{};Object.keys(d).forEach(k=>{if(k.startsWith("serie_"))db.ref("FTERJ/"+k).update({pontos:0,tiros:[]});});alert("Zerado");});}
+function apagarPlacar(){if(confirm("APAGAR PLACAR?"))db.ref("FTERJ").remove().then(carregar);}
+document.getElementById('fileAtletas').addEventListener('change',function(e){let file=e.target.files[0];if(!file)return;let r=new FileReader();r.onload=function(ev){let linhas=ev.target.result.split('\n').map(l=>l.trim()).filter(l=>l);let batch={};linhas.forEach((nome,i)=>{let key="serie_"+String(Date.now()+i).slice(-6);batch[key]={nome:nome.toUpperCase(),prova:"R2",pontos:0,tiros:[]};});db.ref("FTERJ").update(batch).then(()=>{carregar();alert(linhas.length+" importados");});};r.readAsText(file);});
+function previewFile(){let f=document.getElementById('fullFile').files[0];if(!f)return;let r=new FileReader();r.onload=e=>{document.getElementById('imgPrev').src=e.target.result;document.getElementById('preview').style.display='block';};r.readAsDataURL(f);}
+async function addFull(){
+ let nome=fullNome.value.trim()||"Patrocinador";let tempo=parseInt(fullTempo.value)||7;let url=fullArte.value.trim();let file=fullFile.files[0];
+ if(file){progFull.style.display='block';let ref=storage.ref("anuncios_fterj/"+Date.now()+"_"+file.name);let task=ref.put(file);task.on('state_changed',s=>{progBar.style.width=(s.bytesTransferred/s.totalBytes*100)+"%";},e=>alert(e.message),async()=>{let dl=await task.snapshot.ref.getDownloadURL();db.ref("PATROCINADORES_FULL_FTERJ").push({nome,arte:dl,ativo:true,tempo,criado:Date.now()});progFull.style.display='none';fullFile.value="";fullArte.value="";preview.style.display='none';alert("Enviado ✅");});}
+ else if(url){db.ref("PATROCINADORES_FULL_FTERJ").push({nome,arte:url,ativo:true,tempo,criado:Date.now()});fullArte.value="";alert("Adicionado ✅");} else alert("Escolha imagem");
+}
+db.ref("PATROCINADORES_FULL_FTERJ").on('value',snap=>{
+ let data=snap.val();let div=document.getElementById('listaFull');if(!data){div.innerHTML='NENHUM FULL';return;}
+ let html='';Object.keys(data).forEach(key=>{let it=data[key];let ativo=it.ativo!==false && it.ativo!=="false";html+=`<div class="item"><img src="${it.arte}"><div class="info"><b style="color:#FFD700">${it.nome}</b><br><span style="color:${ativo?'#0f0':'#f00'}">${ativo?'ATIVO':'DESATIVADO'}</span> - ${it.tempo||7}s</div><button class="${ativo?'off':'on'}" onclick="db.ref('PATROCINADORES_FULL_FTERJ/${key}/ativo').set(!${ativo})">${ativo?'DESATIVAR':'ATIVAR'}</button><button class="del" onclick="if(confirm('Apagar?'))db.ref('PATROCINADORES_FULL_FTERJ/${key}').remove()">X</button></div>`;});div.innerHTML=html;
+});
+function addRodape(){let p=rdProp.value,c=rdCont.value;if(!p)return alert("Texto");db.ref("PATROCINADORES_RODAPE_FTERJ").push({prop:p,contato:c,ativo:true});rdProp.value="";rdCont.value="";}
+db.ref("PATROCINADORES_RODAPE_FTERJ").on('value',s=>{let d=s.val()||{};let h="";Object.keys(d).forEach(k=>{let r=d[k];let on=r.ativo!==false;h+=`<div class="item"><div class="info"><b>${r.prop}</b><br>${r.contato||''} <span style="color:${on?'#0f0':'#f00'}">${on?'ATIVO':'OFF'}</span></div><button class="${on?'off':'on'}" onclick="db.ref('PATROCINADORES_RODAPE_FTERJ/${k}').update({ativo:${!on}})">C</button><button class="del" onclick="db.ref('PATROCINADORES_RODAPE_FTERJ/${k}').remove()">X</button></div>`});document.getElementById('listaRodape').innerHTML=h||"Nenhum";});
+</script></body></html>
