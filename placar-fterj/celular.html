@@ -2,110 +2,105 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>CELULAR FTERJ - TEMPO GLOBAL</title>
+<title>CELULAR FTERJ - PLACAR GRANDE TV</title>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-body{background:#000;color:#fff;font-family:Arial;overflow:hidden;height:100vh;width:100vw}
-#placar{padding:8px;height:100vh;display:flex;flex-direction:column}
-.header{display:flex;justify-content:space-between;align-items:center;background:#111;padding:8px 10px;border-radius:8px;border:1px solid #222}
-.header img{height:22px}
-.header b{font-size:11px;color:#FFD700}
-.lista{flex:1;overflow:auto;margin-top:8px;background:#111;border-radius:8px;border:1px solid #222;padding:6px}
-.atleta{display:flex;justify-content:space-between;padding:8px 10px;border-bottom:1px solid #222;font-size:12px}
-.atleta b{color:#fff}.atleta span{color:#FF8C00;font-weight:900}
-#rodape{position:fixed;bottom:0;left:0;width:100%;background:#000;border-top:2px solid #FF8C00;padding:6px 10px;font-size:11px;white-space:nowrap;overflow:hidden;display:none}
-#rodape span{animation:marquee 20s linear infinite;display:inline-block;padding-left:100%}
-@keyframes marquee{0%{transform:translateX(0)}100%{transform:translateX(-100%)}}
-#full{position:fixed;top:0;left:0;width:100vw;height:100vh;background:#000;z-index:9999;display:none;justify-content:center;align-items:center}
-#full img{width:100%;height:100%;object-fit:contain}
-#fullInfo{position:absolute;bottom:20px;left:0;width:100%;text-align:center;background:rgba(0,0,0,0.7);padding:6px;font-size:11px;color:#FFD700}
+body{background:#000;color:#fff;font-family:Arial Black, Arial;overflow:hidden;height:100vh}
+.header{height:60px;background:#000;border-bottom:4px solid #FF8C00;display:flex;justify-content:space-between;align-items:center;padding:0 16px}
+.header img{height:32px}
+.header .titulo{color:#FF8C00;font-size:16px;letter-spacing:2px;text-align:center;line-height:1}
+.header .titulo small{display:block;color:#fff;font-size:10px;letter-spacing:1px;font-family:Arial}
+
+.placar{height:calc(100vh - 60px - 40px);overflow-y:auto;padding:6px;background:radial-gradient(ellipse at top,#1a1a1a 0%,#000 70%)}
+
+.linha{display:flex;align-items:center;justify-content:space-between;background:#0f0f0f;border:2px solid #222;border-left:6px solid #333;padding:14px 12px;margin-bottom:6px;border-radius:4px}
+.linha.pos1{border-left-color:#FFD700;background:linear-gradient(90deg,#1a1500,#0f0f0f);border-color:#FFD700}
+.linha.pos2{border-left-color:#C0C0C0;background:linear-gradient(90deg,#1a1a1a,#0f0f0f)}
+.linha.pos3{border-left-color:#CD7F32;background:linear-gradient(90deg,#1a1000,#0f0f0f)}
+
+.pos{font-size:28px;font-weight:900;color:#333;min-width:48px;text-align:center;line-height:1}
+.pos1 .pos{color:#FFD700}
+.pos2 .pos{color:#C0C0C0}
+.pos3 .pos{color:#CD7F32}
+
+.info{flex:1;margin-left:8px;overflow:hidden}
+.info b{display:block;font-size:16px;color:#fff;letter-spacing:0.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-transform:uppercase}
+.info .det{font-size:11px;color:#888;font-family:Arial;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+.pontos{min-width:90px;text-align:right}
+.pontos .pts{font-size:26px;color:#FF8C00;line-height:1;font-weight:900}
+.pontos .pts small{font-size:12px;color:#FF8C00}
+.pontos .tiros{font-size:11px;color:#aaa;font-family:Arial;font-weight:700;margin-top:2px}
+
+#rodape{position:fixed;bottom:0;left:0;width:100%;height:40px;background:#000;border-top:3px solid #FF8C00;display:flex;align-items:center;padding:0 12px;z-index:50}
+#rodape b{color:#FF8C00;font-size:10px;margin-right:10px;white-space:nowrap}
+#rodape span{font-size:13px;font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:opacity 0.5s}
+
+#full{position:fixed;top:0;left:0;width:100vw;height:100vh;background:#000;z-index:9999;display:none;flex-direction:column;justify-content:center;align-items:center}
+#full img{width:100vw;height:100vh;object-fit:contain;background:#000}
+#fullNome{position:absolute;bottom:50px;background:rgba(0,0,0,0.85);border:2px solid #FF8C00;color:#FFD700;padding:8px 20px;border-radius:30px;font-size:13px;font-weight:900}
+#fullBar{position:absolute;bottom:0;left:0;width:100%;height:6px;background:#222}
+#fullBar i{display:block;height:100%;background:#FF8C00;width:0%}
 </style>
 </head>
 <body>
-<div id="placar">
-<div class="header"><img id="logoClube" src="" style="display:none"><b id="titulo">FTERJ - AO VIVO</b><img id="logoMinu" src="" style="display:none"></div>
-<div class="lista" id="listaAtletas">Carregando atletas...</div>
-</div>
-<div id="rodape"><span id="rodapeTexto">Carregando patrocinadores...</span></div>
-<div id="full" onclick="fecharFull()"><img id="fullImg" src=""><div id="fullInfo">PATROCINADOR - Toque para fechar</div></div>
+<div class="header"><img id="logoClube" src="" style="display:none"><div class="titulo">FTERJ<small>PLACAR AO VIVO</small></div><img id="logoMinu" src="" style="display:none"></div>
+<div class="placar" id="lista">CARREGANDO PLACAR...</div>
+<div id="rodape"><b>PATROCINADOR</b><span id="rdTxt"></span></div>
+<div id="full" onclick="this.style.display='none'"><img id="fullImg"><div id="fullNome"></div><div id="fullBar"><i id="fullProgress"></i></div></div>
 
 <script>
 const firebaseConfig={apiKey:"AIzaSyCTEXeRjxq0_3doBNyWm5AkQ0kmBXmjlSk",authDomain:"placar-minutera.firebaseapp.com",databaseURL:"https://placar-minutera-default-rtdb.firebaseio.com",projectId:"placar-minutera",storageBucket:"placar-minutera.appspot.com"};
 firebase.initializeApp(firebaseConfig);const db=firebase.database();
 
-// CONFIG GLOBAL - PUXA DO CONTROLE
-let tempoGlobalFull = 10; // Duração de cada FULL - GLOBAL
-let intervaloGlobal = 20; // Intervalo entre blocos
-let tempoRodapeGlobal = 6; // Duração RODAPÉ FADE
-let fullAtivos = [];
-let rodapeAtivos = [];
-let fullIndex = 0;
-let rodapeIndex = 0;
+let tempoFull=10, intervaloFull=20, tempoRd=6, fulls=[], rpes=[], fIdx=0, rIdx=0, dados={};
 
-db.ref("CONFIG_ANUNCIOS_FTERJ").on('value', s=>{
-  let cfg = s.val() || {};
-  tempoGlobalFull = parseInt(cfg.tempoFull) || 10;
-  intervaloGlobal = parseInt(cfg.intervaloFull) || 20;
-  tempoRodapeGlobal = parseInt(cfg.tempoRodape) || 6;
-  console.log("CONFIG GLOBAL:", tempoGlobalFull, intervaloGlobal, tempoRodapeGlobal);
-  if(cfg.logoClube){document.getElementById('logoClube').src=cfg.logoClube;document.getElementById('logoClube').style.display='block';}
-  if(cfg.logoMinu){document.getElementById('logoMinu').src=cfg.logoMinu;document.getElementById('logoMinu').style.display='block';}
+db.ref("CONFIG_ANUNCIOS_FTERJ").on('value',s=>{
+  let c=s.val()||{}; tempoFull=parseInt(c.tempoFull)||10; intervaloFull=parseInt(c.intervaloFull)||20; tempoRd=parseInt(c.tempoRodape)||6;
+  if(c.logoClube){logoClube.src=c.logoClube;logoClube.style.display='block';}
+  if(c.logoMinu){logoMinu.src=c.logoMinu;logoMinu.style.display='block';}
 });
+db.ref("PATROCINADORES_FULL_FTERJ").on('value',s=>{fulls=Object.values(s.val()||{}).filter(x=>x.ativo!==false);});
+db.ref("PATROCINADORES_RODAPE_FTERJ").on('value',s=>{rpes=Object.values(s.val()||{}).filter(x=>x.ativo!==false); if(rpes.length>0) rodapeLoop();});
+db.ref("FTERJ").on('value',s=>{dados=s.val()||{};render();});
 
-// FULL - GLOBAL TIME
-db.ref("PATROCINADORES_FULL_FTERJ").on('value', s=>{
-  let d = s.val() || {};
-  fullAtivos = Object.keys(d).map(k=>d[k]).filter(a=>a.ativo!==false);
-});
+function fmt(p){let n=parseFloat(p)||0;let v=(Math.round(n*100)/100).toFixed(2);return v.replace(/\.00$/,'');}
 
-db.ref("PATROCINADORES_RODAPE_FTERJ").on('value', s=>{
-  let d = s.val() || {};
-  rodapeAtivos = Object.keys(d).map(k=>d[k]).filter(a=>a.ativo!==false);
-  if(rodapeAtivos.length>0){rodape.style.display='block'; iniciarRodape();}
-});
-
-// PLACAR
-db.ref("FTERJ").on('value', s=>{
-  let d = s.val() || {};
-  let ks = Object.keys(d).filter(k=>k.startsWith("serie_"));
-  let html = "";
-  ks.sort((a,b)=>(d[b].pontos||0)-(d[a].pontos||0));
-  ks.forEach(k=>{
-    let at = d[k];
-    html+=`<div class="atleta"><b>${at.nome}</b><span>${at.pontos||0} pts - ${at.tiros?at.tiros.join('/'):'-'} </span></div>`;
+function render(){
+  let ks=Object.keys(dados).filter(k=>k.startsWith("serie_"));
+  ks.sort((a,b)=>(parseFloat(dados[b].pontos)||0)-(parseFloat(dados[a].pontos)||0));
+  let h="";
+  ks.forEach((k,i)=>{
+    let at=dados[k];
+    let pts=fmt(at.pontos);
+    let tiros=(at.tiros||[]).join('/').toUpperCase()||'-';
+    let cls=i==0?'pos1':i==1?'pos2':i==2?'pos3':'';
+    h+=`<div class="linha ${cls}"><div class="pos">${i+1}º</div><div class="info"><b>${at.nome}</b><div class="det">${at.prova||'R2'} • ${tiros}</div></div><div class="pontos"><div class="pts">${pts}<small> pts</small></div></div></div>`;
   });
-  listaAtletas.innerHTML = html || "Nenhum atleta";
-});
-
-// RODAPÉ FADE COM TEMPO GLOBAL
-function iniciarRodape(){
-  if(rodapeAtivos.length==0) return;
-  let r = rodapeAtivos[rodapeIndex % rodapeAtivos.length];
-  rodapeTexto.innerText = `${r.prop} - ${r.contato||''}`;
-  rodapeIndex++;
-  setTimeout(iniciarRodape, tempoRodapeGlobal*1000);
+  lista.innerHTML=h||"<div style='padding:40px;text-align:center;color:#444;font-size:18px'>AGUARDANDO ATLETAS</div>";
 }
 
-// FULL COM TEMPO GLOBAL - SEM TEMPO INDIVIDUAL
-function iniciarFullLoop(){
-  if(fullAtivos.length==0){setTimeout(iniciarFullLoop, intervaloGlobal*1000); return;}
-  setTimeout(()=>{
-    let item = fullAtivos[fullIndex % fullAtivos.length];
-    fullImg.src = item.arte;
-    fullInfo.innerText = item.nome;
-    full.style.display='flex';
-    setTimeout(()=>{
-      full.style.display='none';
-      fullIndex++;
-      iniciarFullLoop();
-    }, tempoGlobalFull*1000); // USA TEMPO GLOBAL DO CONTROLE
-  }, intervaloGlobal*1000);
+function rodapeLoop(){
+  if(rpes.length==0) return;
+  let r=rpes[rIdx%rpes.length];
+  let el=document.getElementById('rodape');
+  el.style.opacity=0;
+  setTimeout(()=>{rdTxt.innerText=`${r.prop} - ${r.contato||''}`; el.style.opacity=1;},350);
+  rIdx++; setTimeout(rodapeLoop, tempoRd*1000);
 }
-function fecharFull(){full.style.display='none';}
 
-setTimeout(iniciarFullLoop, 5000);
+function mostrarFull(){
+  if(fulls.length==0){setTimeout(mostrarFull, intervaloFull*1000); return;}
+  if(fIdx>=fulls.length){fIdx=0; setTimeout(mostrarFull, intervaloFull*1000); return;}
+  let it=fulls[fIdx];
+  fullImg.src=it.arte; fullNome.innerText=it.nome; full.style.display='flex';
+  let bar=fullProgress; bar.style.transition='none'; bar.style.width='0%';
+  setTimeout(()=>{bar.style.transition=`width ${tempoFull}s linear`; bar.style.width='100%';},100);
+  setTimeout(()=>{full.style.display='none'; fIdx++; mostrarFull();}, tempoFull*1000);
+}
+setTimeout(mostrarFull, 5000);
 </script>
 </body>
 </html>
