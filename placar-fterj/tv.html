@@ -1,12 +1,9 @@
-<!DOCTYPE html><html><head><meta charset="UTF-8"><title>TV FTERJ V21.6</title>
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>TV FTERJ V21.6 - FULLSCREEN</title>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 <style>
-/* =========================================
-   🔠 ALTERE AQUI O TAMANHO DA LETRA DO CABEÇALHO
-   ========================================= */
 :root{
-  --font-header: 6.5vh; /* << MUDA SÓ AQUI */
+  --font-header: 6.5vh;
 }
 *{margin:0;padding:0;box-sizing:border-box}
 :root{
@@ -24,9 +21,9 @@ body{background:#000;color:#fff;font-family:Arial;display:flex;flex-direction:co
 #ranking{flex:1;display:flex;flex-direction:column;gap:.4vh;padding:.4vh.6vw;overflow:hidden;justify-content:space-between}
 .linha{display:flex;align-items:center;background:#1a1a1a;border-radius:8px;padding:0 0.8vw;height:var(--linha-h)}
 .linha.ouro{background:#FFD700;color:#000}.linha.prata{background:#C0C0C0;color:#000}.linha.bronze{background:#CD7F32;color:#000}
-.linha.ouro .pos,.linha.ouro .nome,.linha.ouro .prova,.linha.ouro .total,.linha.ouro .detalhe{color:#000!important}
-.linha.prata .pos,.linha.prata .nome,.linha.prata .prova,.linha.prata .total,.linha.prata .detalhe{color:#000!important}
-.linha.bronze .pos,.linha.bronze .nome,.linha.bronze .prova,.linha.bronze .total,.linha.bronze .detalhe{color:#000!important}
+.linha.ouro.pos,.linha.ouro.nome,.linha.ouro.prova,.linha.ouro.total,.linha.ouro.detalhe{color:#000!important}
+.linha.prata.pos,.linha.prata.nome,.linha.prata.prova,.linha.prata.total,.linha.prata.detalhe{color:#000!important}
+.linha.bronze.pos,.linha.bronze.nome,.linha.bronze.prova,.linha.bronze.total,.linha.bronze.detalhe{color:#000!important}
 .pos{width:3.5vw;font-weight:900;text-align:center;font-size:var(--font-nome)}
 .nome{flex:1;font-size:var(--font-nome);font-weight:800;text-transform:uppercase;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:flex;align-items:center;gap:.6vw}
 .prova{width:8vw;text-align:center;font-size:var(--font-prova);font-weight:900;color:#00E5FF}
@@ -36,13 +33,18 @@ body{background:#000;color:#fff;font-family:Arial;display:flex;flex-direction:co
 #rodape{height:var(--rodape-h);background:#000;border-top:2px solid #FF8C00;display:flex;align-items:center;justify-content:center;overflow:hidden}
 #textoRodape{color:#FFD700;font-weight:900;text-align:center;opacity:0;transition:opacity.8s;white-space:nowrap;width:100%}
 #textoRodape.show{opacity:1}
-#full{position:fixed;inset:0;background:rgba(0,0,0,.97);display:none;align-items:center;justify-content:center;z-index:9999;flex-direction:column}
-#full img{max-width:80%;max-height:65%;border:5px solid gold;border-radius:16px}
+
+/* ===== FULLSCREEN CORRIGIDO ===== */
+#full{position:fixed;inset:0;background:#000;display:none;align-items:center;justify-content:center;z-index:9999;}
+#full img{width:100vw;height:100vh;object-fit:contain;background:#000;border:none!important;border-radius:0!important;}
 </style></head><body>
 <div id="header"><div id="logoEsq" class="logo"><img src="logo-minha.png" onerror="this.parentElement.innerHTML='MinuT&Ra'"></div><h1>3x7 MinuT&Ra - FTERJ</h1><div id="relogioTopo"><span id="dhTopo">--:--:--</span></div><div id="logoDir" class="logo"><img src="logo-clube.png" onerror="this.parentElement.innerHTML='FTERJ'"></div></div>
 <div id="ranking">CARREGANDO...</div>
 <div id="rodape"><div id="textoRodape"></div></div>
-<div id="full"><img id="imgFull"><div id="txtFull" style="color:gold;margin-top:12px;font-size:2.8vh;font-weight:bold"></div><div id="fullCount" style="color:#fff;margin-top:8px"></div></div>
+
+<!-- AGORA SÓ A IMAGEM, SEM NOME E SEM 2/4 -->
+<div id="full"><img id="imgFull"></div>
+
 <script>
 const firebaseConfig={apiKey:"AIzaSyCTEXeRjxq0_3doBNyWm5AkQ0kmBXmjlSk",authDomain:"placar-minutera.firebaseapp.com",databaseURL:"https://placar-minutera-default-rtdb.firebaseio.com",projectId:"placar-minutera"};
 firebase.initializeApp(firebaseConfig);const db=firebase.database();
@@ -51,7 +53,6 @@ let RODAPES=[],FULL=[];
 let CFG={propPx:28,contPx:20,escala:100,headerH:11,linhaH:6.1,rodapeH:5.5,fontNome:2.3,fontTotal:3,fontProva:2.8,fontDetalhe:2.05,fontRelogio:2.1,logoH:6.5,intervaloFull:120,tempoFull:7};
 function applyConfig(){
   document.body.style.zoom=(CFG.escala||100)/100;
-  // AGORA VOLTA A FUNCIONAR SEU 15
   document.documentElement.style.setProperty('--header-h',(CFG.headerH||11)+'vh');
   document.documentElement.style.setProperty('--linha-h',(CFG.linhaH||6.1)+'vh');
   document.documentElement.style.setProperty('--rodape-h',(CFG.rodapeH||5.5)+'vh');
@@ -61,7 +62,6 @@ function applyConfig(){
   document.documentElement.style.setProperty('--font-detalhe',(CFG.fontDetalhe||2.05)+'vh');
   document.documentElement.style.setProperty('--font-relogio',(CFG.fontRelogio||2.1)+'vh');
   document.documentElement.style.setProperty('--logo-h',(CFG.logoH||6.5)+'vh');
-  // --font-header fica de fora de propósito
   renderRodape();
 }
 let rodapeIndex=0,rodapeTimer=null;
@@ -89,7 +89,18 @@ let html="";listaFinal.slice(0,10).forEach((at,i)=>{let cls=i==0?'ouro':i==1?'pr
 document.getElementById('ranking').innerHTML=html;
 });
 setInterval(()=>{let txt=new Date().toLocaleString('pt-BR');let el=document.getElementById('dhTopo');if(el)el.innerText=txt},1000);
-let emBloco=false;async function mostraBlocoFull(){if(FULL.length==0||emBloco)return;emBloco=true;for(let i=0;i<FULL.length;i++){let f=FULL[i];let url=f.arte||f.url||f.imagem||'';if(!url)continue;document.getElementById('imgFull').src=url;document.getElementById('txtFull').innerText=`${f.nome||''} ${f.prop||''} ${f.contato||''}`;document.getElementById('fullCount').innerText=`${i+1}/${FULL.length}`;document.getElementById('full').style.display='flex';await new Promise(r=>setTimeout(r,(f.tempo||7)*1000))}document.getElementById('full').style.display='none';emBloco=false}
+let emBloco=false;async function mostraBlocoFull(){
+  if(FULL.length==0||emBloco)return;
+  emBloco=true;
+  for(let i=0;i<FULL.length;i++){
+    let f=FULL[i];let url=f.arte||f.url||f.imagem||'';if(!url)continue;
+    document.getElementById('imgFull').src=url;
+    // REMOVIDO NOME E CONTADOR
+    document.getElementById('full').style.display='flex';
+    await new Promise(r=>setTimeout(r,(f.tempo||CFG.tempoFull||7)*1000))
+  }
+  document.getElementById('full').style.display='none';emBloco=false
+}
 setInterval(mostraBlocoFull,120*1000);setTimeout(mostraBlocoFull,15000);
 applyConfig();
 </script></body></html>
