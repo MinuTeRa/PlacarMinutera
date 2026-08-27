@@ -1,4 +1,4 @@
-<!DOCTYPE html><html><head><meta charset="UTF-8"><title>V35.1 SEQUENCIAL</title>
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>V35.2 SEQUENCIAL</title>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 <style>
@@ -12,7 +12,7 @@ input,select{width:100%;padding:8px;background:#000;color:#fff;border:1px solid 
 #sugestoes{position:absolute;top:36px;left:0;background:#000;border:1px solid #FF8C00;max-height:200px;overflow:auto;width:100%;z-index:100;display:none;border-radius:5px}#sugestoes div{padding:10px 8px;font-size:13px;cursor:pointer;border-bottom:1px solid #222;font-weight:700}#sugestoes div:hover{background:#FF8C00;color:#000}
 </style></head><body>
 <div id="telaSenha"><div style="background:#1e1e1e;padding:24px;border-radius:12px;text-align:center;border:2px solid #FF8C00"><h2 style="color:#FF8C00">3x7 FTERJ</h2><input id="inputSenha" type="password" placeholder="Senha" style="text-align:center;margin-top:10px"><button onclick="checarSenha()" style="width:100%;margin-top:10px;padding:10px;background:#FF8C00;color:#000;border:none;border-radius:6px;font-weight:900">ENTRAR</button><p id="erroSenha" style="color:#f44;display:none"></p></div></div>
-<div id="header"><span>FTERJ | V35.1 SEQUENCIAL INFINITO</span><span>C>R1>R2>...R1000</span></div>
+<div id="header"><span>FTERJ | V35.2 SEQUENCIAL INFINITO</span><span>ULTIMO NO TOPO</span></div>
 <div id="main"><div id="left"><div class="row"><div style="flex:1;position:relative"><input id="nomeAtleta" placeholder="NOME" style="text-transform:uppercase" autocomplete="off" oninput="buscarNome(this.value)" onfocus="buscarNome(this.value)"><div id="sugestoes"></div></div><select id="provaSelect" style="width:90px"><option>C</option><option>R1</option><option>R2</option><option>R3</option><option>R4</option><option>R5</option><option>C/R</option></select></div><div id="tirosContainer"></div><div class="total">TOTAL: <span id="totalPontos">0.00</span></div><div style="display:flex;gap:6px"><button class="btn btn-salvar" onclick="salvarLancamento()">SALVAR [F2]</button><button class="btn btn-nova" onclick="novoLancamento()">NOVA [F3]</button></div></div><div id="right"><div id="listaLancamentos"></div></div></div>
 <script>
 const firebaseConfig={apiKey:"AIzaSyCTEXeRjxq0_3doBNyWm5AkQ0kmBXmjlSk",authDomain:"placar-minutera.firebaseapp.com",databaseURL:"https://placar-minutera-default-rtdb.firebaseio.com",projectId:"placar-minutera"};firebase.initializeApp(firebaseConfig);const db=firebase.database();
@@ -61,10 +61,12 @@ db.ref("FTERJ").on('value',s=>{
  let lista=Object.keys(cache).filter(k=>k.startsWith('serie_')).map(k=>({key:k,...cache[k]}));
  let crescente=[...lista].sort((a,b)=>(a.data||0)-(b.data||0));
  let mapaOrdem={};crescente.forEach((it,i)=>mapaOrdem[it.key]=i+1);
- let html='';lista.sort((a,b)=>(b.data||0)-(a.data||0)).forEach(it=>{
+ let html='';
+ [...crescente].reverse().forEach(it=>{
   let ord=mapaOrdem[it.key];
   html+=`<div class="item"><div>${String(ord).padStart(3,'0')}</div><div><b>${it.prova}</b></div><div>${it.nome}</div><div>${parseFloat(it.pontos||0).toFixed(2)}</div><div style="color:#aaa;font-size:13px">${(it.tiros||[]).join(' | ')}</div><div style="text-align:right"><button class="btn-editar" onclick="editar('${it.key}')">EDITAR</button><button class="btn-excluir" onclick="excluir('${it.key}')">EXCLUIR</button></div></div>`;
- });document.getElementById('listaLancamentos').innerHTML=html;
+ });
+ document.getElementById('listaLancamentos').innerHTML=html;
 });
 function salvarLancamento(){let nome=document.getElementById('nomeAtleta').value.toUpperCase().trim();if(!nome) return alert("NOME");let prova=document.getElementById('provaSelect').value;let tiros=[];for(let i=1;i<=10;i++){let el=document.getElementById('t'+i);let v=el.value.trim();if(!v){alert("Tiro "+i+" branco");return;}v=v.toUpperCase();if(!PERMITIDOS.includes(v)) return alert("Inválido");tiros.push(v);}if(!editKey){if(Object.values(cache).some(s=>s.nome && s.nome.toUpperCase().trim()==nome && s.prova==prova)) return alert("Já existe "+prova+" pra "+nome);}let x=tiros.filter(t=>t=='X').length;let total=parseFloat((tiros.reduce((a,b)=>a+valorTiro(b),0)+x*0.01).toFixed(2));let obj={nome,prova,tiros,pontos:total,data:Date.now()};if(editKey) db.ref("FTERJ/"+editKey).set(obj).then(()=>{editKey=null;novoLancamento();});else db.ref("FTERJ/serie_"+Date.now()).set(obj).then(()=>novoLancamento());}
 function novoLancamento(){editKey=null;document.getElementById('nomeAtleta').value='';for(let i=1;i<=10;i++) document.getElementById('t'+i).value='';document.getElementById('totalPontos').innerText='0.00';document.getElementById('provaSelect').value='C';document.getElementById('sugestoes').style.display='none';document.getElementById('nomeAtleta').focus();}
