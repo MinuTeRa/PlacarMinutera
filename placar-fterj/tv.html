@@ -1,4 +1,4 @@
-<!DOCTYPE html><html><head><meta charset="UTF-8"><title>TV FTERJ V20 - TOP10 X-0</title>
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>TV FTERJ V20.1 - TOP10 X-0 FIX COR</title>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 <style>
@@ -14,12 +14,17 @@ body{background:#000;color:#fff;font-family:Arial;display:flex;flex-direction:co
 #ranking{flex:1;display:flex;flex-direction:column;gap:0.4vh;padding:0.4vh 0.6vw;overflow:hidden;justify-content:space-between}
 .linha{display:flex;align-items:center;background:#1a1a1a;border-radius:8px;padding:0 0.8vw;height:var(--linha-h)}
 .linha.ouro{background:#FFD700;color:#000}.linha.prata{background:#C0C0C0;color:#000}.linha.bronze{background:#CD7F32;color:#000}
+/* FIX COR PRETA TOP3 - AGORA COM ESPAÇO CORRETO */
 .linha.ouro.pos,.linha.ouro.nome,.linha.ouro.prova,.linha.ouro.total,.linha.ouro.detalhe{color:#000!important}
 .linha.prata.pos,.linha.prata.nome,.linha.prata.prova,.linha.prata.total,.linha.prata.detalhe{color:#000!important}
 .linha.bronze.pos,.linha.bronze.nome,.linha.bronze.prova,.linha.bronze.total,.linha.bronze.detalhe{color:#000!important}
 .pos{width:3.5vw;font-weight:900;text-align:center;font-size:var(--font-nome)}
 .nome{flex:1;font-size:var(--font-nome);font-weight:800;text-transform:uppercase;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.prova{width:7vw;text-align:center;color:#00E5FF;font-size:2.1vh;font-weight:900}.total{width:9vw;text-align:center;color:#FFD700;font-size:var(--font-total);font-weight:900}.detalhe{width:28vw;text-align:right;font-size:1.45vh;font-weight:700;white-space:nowrap;overflow:hidden}
+.prova{width:7vw;text-align:center;font-size:2.1vh;font-weight:900}
+.prova{color:#00E5FF}.total{width:9vw;text-align:center;font-size:var(--font-total);font-weight:900;color:#FFD700}.detalhe{width:28vw;text-align:right;font-size:1.45vh;font-weight:700;white-space:nowrap;overflow:hidden}
+.linha:not(.ouro):not(.prata):not(.bronze).prova{color:#00E5FF}
+.linha:not(.ouro):not(.prata):not(.bronze).total{color:#FFD700}
+.linha:not(.ouro):not(.prata):not(.bronze).detalhe{color:#fff}
 #datahora{text-align:center;padding:0.2vh}#datahora span{border:1px solid #FF8C00;border-radius:20px;padding:2px 12px;color:#FFD700;font-size:1.6vh}
 #rodape{height:var(--rodape-h);background:#000;border-top:2px solid #FF8C00;display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative}
 #textoRodape{color:#FFD700;font-weight:900;text-align:center;opacity:0;transition:opacity 0.8s ease-in-out;white-space:nowrap;width:100%}
