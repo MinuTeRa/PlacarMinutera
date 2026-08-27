@@ -1,15 +1,10 @@
-<!DOCTYPE html><html><head><meta charset="UTF-8"><title>TV FTERJ V21.6 - FULLSCREEN</title>
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>TV FTERJ V21.7 - SEM EMOJI AUTO</title>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 <style>
-:root{
-  --font-header: 6.5vh;
-}
+:root{ --font-header: 6.5vh; }
 *{margin:0;padding:0;box-sizing:border-box}
-:root{
-  --header-h:11vh; --linha-h:6.1vh; --rodape-h:5.5vh; --font-nome:2.3vh;
-  --font-total:3vh; --font-prova:2.8vh; --font-detalhe:2.05vh; --font-relogio:2.1vh; --logo-h:6.5vh;
-}
+:root{ --header-h:11vh; --linha-h:6.1vh; --rodape-h:5.5vh; --font-nome:2.3vh; --font-total:3vh; --font-prova:2.8vh; --font-detalhe:2.05vh; --font-relogio:2.1vh; --logo-h:6.5vh; }
 html,body{height:100vh;overflow:hidden}
 body{background:#000;color:#fff;font-family:Arial;display:flex;flex-direction:column}
 #header{height:var(--header-h);background:linear-gradient(90deg,#FF8C00,#FF6A00);display:flex;align-items:center;justify-content:center;position:relative}
@@ -21,9 +16,6 @@ body{background:#000;color:#fff;font-family:Arial;display:flex;flex-direction:co
 #ranking{flex:1;display:flex;flex-direction:column;gap:.4vh;padding:.4vh.6vw;overflow:hidden;justify-content:space-between}
 .linha{display:flex;align-items:center;background:#1a1a1a;border-radius:8px;padding:0 0.8vw;height:var(--linha-h)}
 .linha.ouro{background:#FFD700;color:#000}.linha.prata{background:#C0C0C0;color:#000}.linha.bronze{background:#CD7F32;color:#000}
-.linha.ouro .pos,.linha.ouro .nome,.linha.ouro .prova,.linha.ouro .total,.linha.ouro .detalhe{color:#000!important}
-.linha.prata .pos,.linha.prata .nome,.linha.prata .prova,.linha.prata .total,.linha.prata .detalhe{color:#000!important}
-.linha.bronze .pos,.linha.bronze .nome,.linha.bronze .prova,.linha.bronze .total,.linha.bronze .detalhe{color:#000!important}
 .pos{width:3.5vw;font-weight:900;text-align:center;font-size:var(--font-nome)}
 .nome{flex:1;font-size:var(--font-nome);font-weight:800;text-transform:uppercase;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:flex;align-items:center;gap:.6vw}
 .prova{width:8vw;text-align:center;font-size:var(--font-prova);font-weight:900;color:#00E5FF}
@@ -33,18 +25,13 @@ body{background:#000;color:#fff;font-family:Arial;display:flex;flex-direction:co
 #rodape{height:var(--rodape-h);background:#000;border-top:2px solid #FF8C00;display:flex;align-items:center;justify-content:center;overflow:hidden}
 #textoRodape{color:#FFD700;font-weight:900;text-align:center;opacity:0;transition:opacity.8s;white-space:nowrap;width:100%}
 #textoRodape.show{opacity:1}
-
-/* ===== FULLSCREEN CORRIGIDO ===== */
 #full{position:fixed;inset:0;background:#000;display:none;align-items:center;justify-content:center;z-index:9999;}
 #full img{width:100vw;height:100vh;object-fit:contain;background:#000;border:none!important;border-radius:0!important;}
 </style></head><body>
 <div id="header"><div id="logoEsq" class="logo"><img src="logo-minha.png" onerror="this.parentElement.innerHTML='MinuT&Ra'"></div><h1>3x7 MinuT&Ra - FTERJ</h1><div id="relogioTopo"><span id="dhTopo">--:--:--</span></div><div id="logoDir" class="logo"><img src="logo-clube.png" onerror="this.parentElement.innerHTML='FTERJ'"></div></div>
 <div id="ranking">CARREGANDO...</div>
 <div id="rodape"><div id="textoRodape"></div></div>
-
-<!-- AGORA SÓ A IMAGEM, SEM NOME E SEM 2/4 -->
 <div id="full"><img id="imgFull"></div>
-
 <script>
 const firebaseConfig={apiKey:"AIzaSyCTEXeRjxq0_3doBNyWm5AkQ0kmBXmjlSk",authDomain:"placar-minutera.firebaseapp.com",databaseURL:"https://placar-minutera-default-rtdb.firebaseio.com",projectId:"placar-minutera"};
 firebase.initializeApp(firebaseConfig);const db=firebase.database();
@@ -65,7 +52,28 @@ function applyConfig(){
   renderRodape();
 }
 let rodapeIndex=0,rodapeTimer=null;
-function renderRodape(){let el=document.getElementById('textoRodape');if(RODAPES.length==0){el.innerHTML='🔥 ADIQUIRA JA SUA MinuT&Ra 🔥';el.classList.add('show');return}if(rodapeTimer)clearInterval(rodapeTimer);function mostraProximo(){el.classList.remove('show');setTimeout(()=>{let r=RODAPES[rodapeIndex];el.innerHTML=`<span style="font-size:${CFG.propPx}px">🔥 ${r.prop||r.nome||''}</span> <span style="font-size:${CFG.contPx}px;color:#fff"> | 📞 ${r.contato||''}</span>`;el.classList.add('show');rodapeIndex=(rodapeIndex+1)%RODAPES.length},800)}mostraProximo();rodapeTimer=setInterval(mostraProximo,6000)}
+function renderRodape(){
+  let el=document.getElementById('textoRodape');
+  if(RODAPES.length==0){el.innerHTML='ADIQUIRA JA SUA MinuT&Ra';el.classList.add('show');return}
+  if(rodapeTimer)clearInterval(rodapeTimer);
+  function mostraProximo(){
+    el.classList.remove('show');
+    setTimeout(()=>{
+      let r=RODAPES[rodapeIndex];
+      let prop = r.prop||r.nome||'';
+      let cont = r.contato||'';
+      // MOSTRA SÓ O QUE VOCÊ ESCREVEU - ZERO EMOJI AUTOMATICO
+      if(prop && cont){
+        el.innerHTML=`<span style="font-size:${CFG.propPx}px">${prop}</span><span style="font-size:${CFG.contPx}px;color:#fff"> | ${cont}</span>`;
+      }else{
+        el.innerHTML=`<span style="font-size:${CFG.propPx}px">${prop} ${cont}</span>`;
+      }
+      el.classList.add('show');
+      rodapeIndex=(rodapeIndex+1)%RODAPES.length
+    },800)
+  }
+  mostraProximo();rodapeTimer=setInterval(mostraProximo,6000)
+}
 function contaTirosXa0(tiros){let m={X:0,'10':0,'9':0,'8':0,'7':0,'6':0,'5':0,'4':0,'3':0,'2':0,'1':0,'0':0};(tiros||[]).forEach(t=>{let k=String(t).toUpperCase();if(m.hasOwnProperty(k))m[k]++});return `X:${m.X} |10:${m['10']} |9:${m['9']} |8:${m['8']} |7:${m['7']} |6:${m['6']} |5:${m['5']} |4:${m['4']} |3:${m['3']} |2:${m['2']} |1:${m['1']} |0:${m['0']}`}
 function filtraTop5Unico(listaOrdenada){
  let vistosTop5=new Set();let top5=[];let resto=[];
@@ -74,12 +82,7 @@ function filtraTop5Unico(listaOrdenada){
 }
 db.ref("PATROCINADORES_RODAPE_FTERJ").on('value',s=>{RODAPES=toArr(s.val()).filter(r=>{if(r.hasOwnProperty('ativo'))return r.ativo==true||r.ativo=="true";return true});renderRodape()});
 db.ref("PATROCINADORES_FULL_FTERJ").on('value',s=>{FULL=toArr(s.val()).filter(r=>{if(r.hasOwnProperty('ativo'))return r.ativo==true||r.ativo=="true";return true}).map(i=>typeof i==='string'?{arte:i}:i).filter(f=>f.arte||f.url||f.imagem)});
-db.ref("CONFIG_ANUNCIOS_FTERJ").on('value',s=>{
-  let v=s.val();if(!v)return;
-  for(let k in v){if(typeof v[k]==='string') v[k]=parseFloat(v[k].replace(',','.'));}
-  CFG={...CFG,...v};
-  applyConfig();
-});
+db.ref("CONFIG_ANUNCIOS_FTERJ").on('value',s=>{let v=s.val();if(!v)return;for(let k in v){if(typeof v[k]==='string') v[k]=parseFloat(v[k].replace(',','.'));}CFG={...CFG,...v};applyConfig();});
 db.ref("FTERJ").on('value',snap=>{
 let data=snap.val();if(!data)return;let lista=[];
 Object.keys(data).forEach(k=>{if(k.startsWith("serie_")){let s=data[k];let tiros=s.tiros||[];lista.push({nome:s.nome||'TESTE',prova:s.prova||'R2',pontos:parseFloat(s.pontos||0),tiros:tiros})}});
@@ -90,12 +93,10 @@ document.getElementById('ranking').innerHTML=html;
 });
 setInterval(()=>{let txt=new Date().toLocaleString('pt-BR');let el=document.getElementById('dhTopo');if(el)el.innerText=txt},1000);
 let emBloco=false;async function mostraBlocoFull(){
-  if(FULL.length==0||emBloco)return;
-  emBloco=true;
+  if(FULL.length==0||emBloco)return;emBloco=true;
   for(let i=0;i<FULL.length;i++){
     let f=FULL[i];let url=f.arte||f.url||f.imagem||'';if(!url)continue;
     document.getElementById('imgFull').src=url;
-    // REMOVIDO NOME E CONTADOR
     document.getElementById('full').style.display='flex';
     await new Promise(r=>setTimeout(r,(f.tempo||CFG.tempoFull||7)*1000))
   }
