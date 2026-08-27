@@ -1,28 +1,46 @@
-<!DOCTYPE html><html><head><meta charset="UTF-8"><title>V35.3 FTERJ</title>
+<!DOCTYPE html>
+<html><head><meta charset="UTF-8"><title>V35.4 FTERJ - SEGURO</title>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}body{background:#121212;color:#fff;font-family:Arial}
-#header{background:linear-gradient(90deg,#FF8C00,#FF6A00);padding:12px 16px;display:flex;justify-content:center;color:#000;font-weight:900;font-size:18px;letter-spacing:0.5px}
+#header{background:linear-gradient(90deg,#FF8C00,#FF6A00);padding:12px 16px;display:flex;justify-content:space-between;align-items:center;color:#000;font-weight:900;font-size:18px;letter-spacing:0.5px}
 #main{display:flex;height:calc(100vh - 48px)}#left{width:350px;background:#1e1e1e;margin:8px;padding:10px;border-radius:8px;overflow:auto}#right{flex:1;background:#1e1e1e;margin:8px 8px 8px 0;padding:8px;border-radius:8px;overflow:auto}
 input,select{width:100%;padding:8px;background:#000;color:#fff;border:1px solid #444;border-radius:5px}.row{display:flex;gap:6px;margin-top:6px;position:relative}.linha-tiro{display:flex;gap:6px;align-items:center;margin-top:4px}.linha-tiro b{width:24px;color:#aaa;font-size:11px}
 .item{display:grid;grid-template-columns:55px 55px 1fr 75px 260px 140px;gap:12px;align-items:center;background:#2a2a2a;padding:8px 12px;margin-bottom:5px;border-radius:6px;border-left:5px solid #FF8C00;font-size:15px;height:48px;white-space:nowrap}
 .btn{flex:1;padding:9px;border:none;border-radius:5px;font-weight:900;cursor:pointer;margin-top:6px}.btn-salvar{background:#FF8C00;color:#000}.btn-nova{background:#444;color:#fff}.btn-editar{background:#FFD700;color:#000;padding:4px 9px;border:none;border-radius:3px;font-size:10px}.btn-excluir{background:#ff2e2e;color:#fff;padding:4px 9px;border:none;border-radius:3px;font-size:10px;margin-left:4px}
-.total{color:#00BFFF;text-align:center;font-weight:900;margin:8px 0}#telaSenha{position:fixed;inset:0;background:rgba(0,0,0,0.97);z-index:9999;display:flex;align-items:center;justify-content:center}
+.total{color:#00BFFF;text-align:center;font-weight:900;margin:8px 0}
+#telaLogin{position:fixed;inset:0;background:rgba(0,0,0,0.97);z-index:9999;display:flex;align-items:center;justify-content:center}
 #sugestoes{position:absolute;top:36px;left:0;background:#000;border:1px solid #FF8C00;max-height:200px;overflow:auto;width:100%;z-index:100;display:none;border-radius:5px}#sugestoes div{padding:10px 8px;font-size:13px;cursor:pointer;border-bottom:1px solid #222;font-weight:700}#sugestoes div:hover{background:#FF8C00;color:#000}
 </style></head><body>
-<div id="telaSenha"><div style="background:#1e1e1e;padding:24px;border-radius:12px;text-align:center;border:2px solid #FF8C00"><h2 style="color:#FF8C00">3x7 FTERJ</h2><input id="inputSenha" type="password" placeholder="Senha" style="text-align:center;margin-top:10px"><button onclick="checarSenha()" style="width:100%;margin-top:10px;padding:10px;background:#FF8C00;color:#000;border:none;border-radius:6px;font-weight:900">ENTRAR</button><p id="erroSenha" style="color:#f44;display:none"></p></div></div>
-<div id="header">MÓDULO DE LANÇAMENTO | FTERJ | V35.3 | X=12.01</div>
+<div id="telaLogin"><div style="background:#1e1e1e;padding:24px;border-radius:12px;text-align:center;border:2px solid #FF8C00;min-width:320px"><h2 style="color:#FF8C00">FTERJ - LOGIN SEGURO</h2><p style="font-size:12px;color:#aaa;margin-top:6px">Use seu e-mail do Firebase</p><input id="emailLogin" type="email" placeholder="E-mail" style="text-align:center;margin-top:12px"><input id="senhaLogin" type="password" placeholder="Senha" style="text-align:center;margin-top:10px"><button onclick="fazerLogin()" style="width:100%;margin-top:12px;padding:10px;background:#FF8C00;color:#000;border:none;border-radius:6px;font-weight:900">ENTRAR</button><p id="erroLogin" style="color:#f44;display:none;margin-top:10px;font-size:13px"></p></div></div>
+<div id="header"><span>MÓDULO DE LANÇAMENTO | FTERJ | V35.4 SEGURO | X=12.01</span><span style="font-size:12px"><span id="userEmail" style="margin-right:10px"></span><button onclick="firebase.auth().signOut()" style="background:#000;color:#fff;border:1px solid #444;padding:4px 8px;border-radius:4px;cursor:pointer">SAIR</button></span></div>
 <div id="main"><div id="left"><div class="row"><div style="flex:1;position:relative"><input id="nomeAtleta" placeholder="NOME" style="text-transform:uppercase" autocomplete="off" oninput="buscarNome(this.value)" onfocus="buscarNome(this.value)"><div id="sugestoes"></div></div><select id="provaSelect" style="width:90px"><option>C</option><option>R1</option><option>R2</option><option>R3</option><option>R4</option><option>R5</option><option>C/R</option></select></div><div id="tirosContainer"></div><div class="total">TOTAL: <span id="totalPontos">0.00</span></div><div style="display:flex;gap:6px"><button class="btn btn-salvar" onclick="salvarLancamento()">SALVAR [F2]</button><button class="btn btn-nova" onclick="novoLancamento()">NOVA [F3]</button></div></div><div id="right"><div id="listaLancamentos"></div></div></div>
 <script>
 const firebaseConfig={apiKey:"AIzaSyCTEXeRjxq0_3doBNyWm5AkQ0kmBXmjlSk",authDomain:"placar-minutera.firebaseapp.com",databaseURL:"https://placar-minutera-default-rtdb.firebaseio.com",projectId:"placar-minutera"};firebase.initializeApp(firebaseConfig);const db=firebase.database();
-let SENHA_BANCO="minutera2025",editKey=null,cache={};const PERMITIDOS=['X','10','9','8','7','6','5','4','3','2','1','0'];
-db.ref("CONFIG_SENHA_OPERADOR_FTERJ").on('value',s=>{if(s.val()) SENHA_BANCO=String(s.val());});
-function checarSenha(){let s=document.getElementById('inputSenha').value.trim();if(s===SENHA_BANCO){document.getElementById('telaSenha').style.display='none';}else{document.getElementById('erroSenha').style.display='block';document.getElementById('erroSenha').innerText="Senha incorreta!";}}
-document.getElementById('inputSenha').addEventListener('keydown',e=>{if(e.key==='Enter') checarSenha();});document.getElementById('telaSenha').style.display='flex';
+let editKey=null,cache={};const PERMITIDOS=['X','10','9','8','7','6','5','4','3','2','1','0'];
+function fazerLogin(){
+  let e=document.getElementById('emailLogin').value.trim();
+  let s=document.getElementById('senhaLogin').value.trim();
+  document.getElementById('erroLogin').style.display='none';
+  firebase.auth().signInWithEmailAndPassword(e,s).catch(err=>{
+    document.getElementById('erroLogin').style.display='block';
+    document.getElementById('erroLogin').innerText=err.message;
+  });
+}
+firebase.auth().onAuthStateChanged(user=>{
+  if(user){
+    document.getElementById('telaLogin').style.display='none';
+    document.getElementById('userEmail').innerText=user.email;
+    iniciarApp();
+  } else {
+    document.getElementById('telaLogin').style.display='flex';
+  }
+});
 function valorTiro(v){v=String(v).trim().toUpperCase();if(v=='X') return 12;let n=parseFloat(v);return isNaN(n)?0:n;}
 function calcTotal(){let s=0,x=0;for(let i=1;i<=10;i++){let v=document.getElementById('t'+i).value.toUpperCase();if(v=='X') x++;s+=valorTiro(v);}document.getElementById('totalPontos').innerText=(s+x*0.01).toFixed(2);}
-function criar(){let c=document.getElementById('tirosContainer');c.innerHTML='';for(let i=1;i<=10;i++) c.innerHTML+=`<div class="linha-tiro"><b>${i}°</b><input id="t${i}" list="vals" oninput="calcTotal()" onblur="valida(this)"></div>`;c.innerHTML+=`<datalist id="vals"><option value="X"><option value="10"><option value="9"><option value="8"><option value="7"><option value="6"><option value="5"><option value="4"><option value="3"><option value="2"><option value="1"><option value="0"></datalist>`;}criar();
+function criar(){let c=document.getElementById('tirosContainer');c.innerHTML='';for(let i=1;i<=10;i++) c.innerHTML+=`<div class="linha-tiro"><b>${i}°</b><input id="t${i}" list="vals" oninput="calcTotal()" onblur="valida(this)"></div>`;c.innerHTML+=`<datalist id="vals"><option value="X"><option value="10"><option value="9"><option value="8"><option value="7"><option value="6"><option value="5"><option value="4"><option value="3"><option value="2"><option value="1"><option value="0"></datalist>`;}
 function valida(el){let v=el.value.trim().toUpperCase();if(!v) return true;if(!PERMITIDOS.includes(v)){alert("Inválido");el.value='';return false;}el.value=v;return true;}
 function proximoRdisponivel(nome){
  nome=nome.toUpperCase().trim(); if(!nome) return 'C';
@@ -56,18 +74,21 @@ function selecionarNome(nome){
  document.getElementById('t1').focus();
 }
 document.addEventListener('click',(e)=>{if(!e.target.closest('#nomeAtleta') &&!e.target.closest('#sugestoes')) document.getElementById('sugestoes').style.display='none';});
-db.ref("FTERJ").on('value',s=>{
- cache=s.val()||{};
- let lista=Object.keys(cache).filter(k=>k.startsWith('serie_')).map(k=>({key:k,...cache[k]}));
- let crescente=[...lista].sort((a,b)=>(a.data||0)-(b.data||0));
- let mapaOrdem={};crescente.forEach((it,i)=>mapaOrdem[it.key]=i+1);
- let html='';
- [...crescente].reverse().forEach(it=>{
-  let ord=mapaOrdem[it.key];
-  html+=`<div class="item"><div>${String(ord).padStart(3,'0')}</div><div><b>${it.prova}</b></div><div>${it.nome}</div><div>${parseFloat(it.pontos||0).toFixed(2)}</div><div style="color:#aaa;font-size:13px">${(it.tiros||[]).join(' | ')}</div><div style="text-align:right"><button class="btn-editar" onclick="editar('${it.key}')">EDITAR</button><button class="btn-excluir" onclick="excluir('${it.key}')">EXCLUIR</button></div></div>`;
+function iniciarApp(){
+ criar();
+ db.ref("FTERJ").on('value',s=>{
+  cache=s.val()||{};
+  let lista=Object.keys(cache).filter(k=>k.startsWith('serie_')).map(k=>({key:k,...cache[k]}));
+  let crescente=[...lista].sort((a,b)=>(a.data||0)-(b.data||0));
+  let mapaOrdem={};crescente.forEach((it,i)=>mapaOrdem[it.key]=i+1);
+  let html='';
+  [...crescente].reverse().forEach(it=>{
+   let ord=mapaOrdem[it.key];
+   html+=`<div class="item"><div>${String(ord).padStart(3,'0')}</div><div><b>${it.prova}</b></div><div>${it.nome}</div><div>${parseFloat(it.pontos||0).toFixed(2)}</div><div style="color:#aaa;font-size:13px">${(it.tiros||[]).join(' | ')}</div><div style="text-align:right"><button class="btn-editar" onclick="editar('${it.key}')">EDITAR</button><button class="btn-excluir" onclick="excluir('${it.key}')">EXCLUIR</button></div></div>`;
+  });
+  document.getElementById('listaLancamentos').innerHTML=html;
  });
- document.getElementById('listaLancamentos').innerHTML=html;
-});
+}
 function salvarLancamento(){let nome=document.getElementById('nomeAtleta').value.toUpperCase().trim();if(!nome) return alert("NOME");let prova=document.getElementById('provaSelect').value;let tiros=[];for(let i=1;i<=10;i++){let el=document.getElementById('t'+i);let v=el.value.trim();if(!v){alert("Tiro "+i+" branco");return;}v=v.toUpperCase();if(!PERMITIDOS.includes(v)) return alert("Inválido");tiros.push(v);}if(!editKey){if(Object.values(cache).some(s=>s.nome && s.nome.toUpperCase().trim()==nome && s.prova==prova)) return alert("Já existe "+prova+" pra "+nome);}let x=tiros.filter(t=>t=='X').length;let total=parseFloat((tiros.reduce((a,b)=>a+valorTiro(b),0)+x*0.01).toFixed(2));let obj={nome,prova,tiros,pontos:total,data:Date.now()};if(editKey) db.ref("FTERJ/"+editKey).set(obj).then(()=>{editKey=null;novoLancamento();});else db.ref("FTERJ/serie_"+Date.now()).set(obj).then(()=>novoLancamento());}
 function novoLancamento(){editKey=null;document.getElementById('nomeAtleta').value='';for(let i=1;i<=10;i++) document.getElementById('t'+i).value='';document.getElementById('totalPontos').innerText='0.00';document.getElementById('provaSelect').value='C';document.getElementById('sugestoes').style.display='none';document.getElementById('nomeAtleta').focus();}
 function editar(k){db.ref("FTERJ/"+k).once('value',s=>{let v=s.val();document.getElementById('nomeAtleta').value=v.nome;garantirOpcao(v.prova);document.getElementById('provaSelect').value=v.prova;(v.tiros||[]).forEach((t,i)=>{document.getElementById('t'+(i+1)).value=t;});calcTotal();editKey=k;});}
