@@ -1,4 +1,4 @@
-<!DOCTYPE html><html><head><meta charset="UTF-8"><title>TV FTERJ V21.4</title>
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>TV FTERJ V21.6</title>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 <style>
@@ -8,18 +8,11 @@
 :root{
   --font-header: 6.5vh; /* << MUDA SÓ AQUI */
 }
-:root{
-  --header-h:11vh;
-  --linha-h:6.1vh;
-  --rodape-h:5.5vh;
-  --font-nome:2.3vh;
-  --font-total:3vh;
-  --font-prova:2.8vh;
-  --font-detalhe:2.05vh;
-  --font-relogio:2.1vh;
-  --logo-h:6.5vh;
-}
 *{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --header-h:11vh; --linha-h:6.1vh; --rodape-h:5.5vh; --font-nome:2.3vh;
+  --font-total:3vh; --font-prova:2.8vh; --font-detalhe:2.05vh; --font-relogio:2.1vh; --logo-h:6.5vh;
+}
 html,body{height:100vh;overflow:hidden}
 body{background:#000;color:#fff;font-family:Arial;display:flex;flex-direction:column}
 #header{height:var(--header-h);background:linear-gradient(90deg,#FF8C00,#FF6A00);display:flex;align-items:center;justify-content:center;position:relative}
@@ -30,9 +23,7 @@ body{background:#000;color:#fff;font-family:Arial;display:flex;flex-direction:co
 #relogioTopo{position:absolute;right:15.5vw;top:50%;transform:translateY(-50%);background:#000;border-radius:20px;padding:4px 16px;color:#FFD700;font-size:var(--font-relogio);font-weight:900}
 #ranking{flex:1;display:flex;flex-direction:column;gap:.4vh;padding:.4vh.6vw;overflow:hidden;justify-content:space-between}
 .linha{display:flex;align-items:center;background:#1a1a1a;border-radius:8px;padding:0 0.8vw;height:var(--linha-h)}
-.linha.ouro{background:#FFD700;color:#000}
-.linha.prata{background:#C0C0C0;color:#000}
-.linha.bronze{background:#CD7F32;color:#000}
+.linha.ouro{background:#FFD700;color:#000}.linha.prata{background:#C0C0C0;color:#000}.linha.bronze{background:#CD7F32;color:#000}
 .linha.ouro .pos,.linha.ouro .nome,.linha.ouro .prova,.linha.ouro .total,.linha.ouro .detalhe{color:#000!important}
 .linha.prata .pos,.linha.prata .nome,.linha.prata .prova,.linha.prata .total,.linha.prata .detalhe{color:#000!important}
 .linha.bronze .pos,.linha.bronze .nome,.linha.bronze .prova,.linha.bronze .total,.linha.bronze .detalhe{color:#000!important}
@@ -58,10 +49,10 @@ firebase.initializeApp(firebaseConfig);const db=firebase.database();
 function toArr(d){if(!d)return[];if(Array.isArray(d))return d.filter(x=>x);return Object.values(d).filter(x=>x)}
 let RODAPES=[],FULL=[];
 let CFG={propPx:28,contPx:20,escala:100,headerH:11,linhaH:6.1,rodapeH:5.5,fontNome:2.3,fontTotal:3,fontProva:2.8,fontDetalhe:2.05,fontRelogio:2.1,logoH:6.5,intervaloFull:120,tempoFull:7};
-
 function applyConfig(){
   document.body.style.zoom=(CFG.escala||100)/100;
-  // NAO sobrescreve o cabeçalho - fica só no :root la em cima
+  // AGORA VOLTA A FUNCIONAR SEU 15
+  document.documentElement.style.setProperty('--header-h',(CFG.headerH||11)+'vh');
   document.documentElement.style.setProperty('--linha-h',(CFG.linhaH||6.1)+'vh');
   document.documentElement.style.setProperty('--rodape-h',(CFG.rodapeH||5.5)+'vh');
   document.documentElement.style.setProperty('--font-nome',(CFG.fontNome||2.3)+'vh');
@@ -70,7 +61,7 @@ function applyConfig(){
   document.documentElement.style.setProperty('--font-detalhe',(CFG.fontDetalhe||2.05)+'vh');
   document.documentElement.style.setProperty('--font-relogio',(CFG.fontRelogio||2.1)+'vh');
   document.documentElement.style.setProperty('--logo-h',(CFG.logoH||6.5)+'vh');
-  // cabeçalho e altura do cabeçalho NÃO vem do admin
+  // --font-header fica de fora de propósito
   renderRodape();
 }
 let rodapeIndex=0,rodapeTimer=null;
@@ -83,7 +74,12 @@ function filtraTop5Unico(listaOrdenada){
 }
 db.ref("PATROCINADORES_RODAPE_FTERJ").on('value',s=>{RODAPES=toArr(s.val()).filter(r=>{if(r.hasOwnProperty('ativo'))return r.ativo==true||r.ativo=="true";return true});renderRodape()});
 db.ref("PATROCINADORES_FULL_FTERJ").on('value',s=>{FULL=toArr(s.val()).filter(r=>{if(r.hasOwnProperty('ativo'))return r.ativo==true||r.ativo=="true";return true}).map(i=>typeof i==='string'?{arte:i}:i).filter(f=>f.arte||f.url||f.imagem)});
-db.ref("CONFIG_ANUNCIOS_FTERJ").on('value',s=>{let v=s.val();if(v){CFG={...CFG,...v};applyConfig()}});
+db.ref("CONFIG_ANUNCIOS_FTERJ").on('value',s=>{
+  let v=s.val();if(!v)return;
+  for(let k in v){if(typeof v[k]==='string') v[k]=parseFloat(v[k].replace(',','.'));}
+  CFG={...CFG,...v};
+  applyConfig();
+});
 db.ref("FTERJ").on('value',snap=>{
 let data=snap.val();if(!data)return;let lista=[];
 Object.keys(data).forEach(k=>{if(k.startsWith("serie_")){let s=data[k];let tiros=s.tiros||[];lista.push({nome:s.nome||'TESTE',prova:s.prova||'R2',pontos:parseFloat(s.pontos||0),tiros:tiros})}});
