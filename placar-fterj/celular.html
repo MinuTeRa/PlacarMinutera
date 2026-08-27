@@ -1,93 +1,19 @@
 <!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MinuT&Ra Mobile</title>
+<html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-<style>
- body{background:#000;color:#fff;font-family:Arial Black;margin:0}
- .topo{background:#FF8C00;color:#000;padding:12px;text-align:center;font-size:5vw;position:sticky;top:0;z-index:5}
- .atleta{display:flex;justify-content:space-between;padding:11px 8px;border-bottom:1px solid #222;font-size:4vw}
- .atleta.p1{background:#FFD700;color:#000} .atleta.p2{background:#C0C0C0;color:#000} .atleta.p3{background:#CD7F32;color:#000}
- #telaCheia{position:fixed;top:0;left:0;width:100vw;height:100vh;background:#000;z-index:99999;display:none;justify-content:center;align-items:center}
- #telaCheia img{width:100%;height:100%;object-fit:contain;background:#000}
-</style>
-</head>
-<body>
-<div class="topo" id="topo">GERAL</div>
-<div id="lista">Carregando...</div>
-<div id="telaCheia"><img id="imgTelaCheia" src=""></div>
-
+<style>body{background:#000;color:#fff;font-family:Arial Black;margin:0}.topo{background:orange;color:#000;padding:12px;text-align:center;position:sticky;top:0}.atleta{display:flex;justify-content:space-between;padding:10px;border-bottom:1px solid #222}.p1{background:gold;color:#000}.p2{background:silver;color:#000}.p3{background:#CD7F32}
+#full{position:fixed;top:0;left:0;width:100%;height:100%;background:#000;z-index:9999;display:none;justify-content:center;align-items:center}#full img{width:100%;height:100%;object-fit:contain}</style>
+</head><body>
+<div class="topo" id="topo">GERAL</div><div id="lista"></div>
+<div id="full"><img id="imgFull"></div>
 <script>
-const BANCO = "FTERJ";
 firebase.initializeApp({databaseURL:"https://placar-minutera-default-rtdb.firebaseio.com"});
-const db = firebase.database();
-const provaFiltro = new URLSearchParams(window.location.search).get('prova');
+const db=firebase.database();
+db.ref("FTERJ").on('value',s=>{let l=[];s.forEach(c=>{let v=c.val();if(v?.contagem)l.push(v)});l.sort((a,b)=>b.pontos-a.pontos);let t=[],n=new Set(),u=new Set();for(let a of l){let no=a.nome.trim().toUpperCase();if(!n.has(no)){t.push(a);n.add(no);u.add(a);if(t.length==5)break}}let f=[...t,...l.filter(x=>!u.has(x))];let h="";f.forEach((a,i)=>{let cl=i==0?'p1':i==1?'p2':i==2?'p3':'';h+=`<div class="atleta ${cl}"><span>${i+1}º ${a.nome}</span><span>${a.pontos.toFixed(2)}</span></div>`});document.getElementById('lista').innerHTML=h});
 
-// --- PLACAR COM REGRA DA TV (TOP 5 ÚNICO, RESTO TUDO) ---
-db.ref(BANCO).on('value', snap=>{
-  let lista=[]; snap.forEach(c=>{let v=c.val(); if(v?.contagem) lista.push(v);});
-  lista.sort((a,b)=> b.pontos - a.pontos);
-  if(provaFiltro) lista = lista.filter(a=>a.prova.toString().toUpperCase() == provaFiltro.toUpperCase());
-  let top5=[], nomes=new Set(), usados=new Set();
-  for(let at of lista){
-    let n=at.nome.trim().toUpperCase();
-    if(!nomes.has(n)){ top5.push(at); nomes.add(n); usados.add(at); if(top5.length==5) break; }
-  }
-  let finalLista = [...top5, ...lista.filter(x=>!usados.has(x))];
-  document.getElementById('topo').innerText = `GERAL - ${lista.length} LANÇAMENTOS`;
-  let html=""; finalLista.forEach((a,i)=>{
-    let c=i==0?'p1':i==1?'p2':i==2?'p3':'';
-    html+=`<div class="atleta ${c}"><span>${i+1}º ${a.nome} (P:${a.prova})</span><span>${a.pontos.toFixed(2)}</span></div>`;
-  });
-  document.getElementById('lista').innerHTML=html;
-});
-
-// --- ANÚNCIOS TELA CHEIA MESMA REGRA DA TV ---
-// Lê do mesmo lugar que sua página anuncios.html grava
-let anunciosTelaCheia = [];
-let indiceAnuncio = 0;
-
-function ouvirAnuncios(caminho){
-  db.ref(caminho).on('value', s=>{
-    if(!s.exists()) return;
-    let arr=[]; s.forEach(c=>{
-      let v=c.val();
-      // só pega ATIVO igual na foto
-      if(v.ativo===true || v.status==="ATIVO" || v.ativo==="ATIVO" || v.ativo==undefined){
-        arr.push(v);
-      }
-    });
-    if(arr.length>0) anunciosTelaCheia = arr;
-  });
-}
-
-// Tenta os 2 caminhos possíveis que sua TV usa
-ouvirAnuncios("FTERJ_TELA_CHEIA");
-ouvirAnuncios("FTERJ_CONFIG_TELA_CHEIA");
-ouvirAnuncios("FTERJ/ANUNCIOS_TELA_CHEIA");
-ouvirAnuncios("ANUNCIOS_TELA_CHEIA");
-
-function rodarAnuncio(){
-  if(anunciosTelaCheia.length===0) return;
-  let ad = anunciosTelaCheia[indiceAnuncio % anunciosTelaCheia.length];
-  let img = ad.imagem || ad.url || ad.src;
-  let tempo = (ad.tempo || ad.segundos || 7) * 1000;
-  
-  document.getElementById('imgTelaCheia').src = img;
-  document.getElementById('telaCheia').style.display='flex';
-  
-  setTimeout(()=>{
-    document.getElementById('telaCheia').style.display='none';
-    indiceAnuncio++;
-  }, tempo);
-}
-
-// Roda a cada 30s igual TV (placar fica 30s, anúncio 7s)
-setInterval(rodarAnuncio, 30000);
-setTimeout(rodarAnuncio, 5000); // primeiro já com 5s
-</script>
-</body>
-</html>
+let ads=[],i=0;
+db.ref("FTERJ_TELA_CHEIA").on('value',s=>{ads=[];s.forEach(c=>{let v=c.val();if(v.ativo)ads.push(v)})});
+function mostra(){if(!ads.length)return;let ad=ads[i%ads.length];document.getElementById('imgFull').src=ad.imagem;document.getElementById('full').style.display='flex';setTimeout(()=>{document.getElementById('full').style.display='none';i++;},(ad.tempo||7)*1000)}
+setInterval(mostra,30000);setTimeout(mostra,5000);
+</script></body></html>
