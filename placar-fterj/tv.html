@@ -1,4 +1,4 @@
-<!DOCTYPE html><html><head><meta charset="UTF-8"><title>TV FTERJ V21.3</title>
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>TV FTERJ V21.4</title>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 <style>
@@ -6,7 +6,9 @@
    🔠 ALTERE AQUI O TAMANHO DA LETRA DO CABEÇALHO
    ========================================= */
 :root{
-  --font-header: 6.5vh; /* << MUDA AQUI - quanto maior, maior o titulo */
+  --font-header: 6.5vh; /* << MUDA SÓ AQUI */
+}
+:root{
   --header-h:11vh;
   --linha-h:6.1vh;
   --rodape-h:5.5vh;
@@ -54,8 +56,23 @@ body{background:#000;color:#fff;font-family:Arial;display:flex;flex-direction:co
 const firebaseConfig={apiKey:"AIzaSyCTEXeRjxq0_3doBNyWm5AkQ0kmBXmjlSk",authDomain:"placar-minutera.firebaseapp.com",databaseURL:"https://placar-minutera-default-rtdb.firebaseio.com",projectId:"placar-minutera"};
 firebase.initializeApp(firebaseConfig);const db=firebase.database();
 function toArr(d){if(!d)return[];if(Array.isArray(d))return d.filter(x=>x);return Object.values(d).filter(x=>x)}
-let RODAPES=[],FULL=[];let CFG={propPx:28,contPx:20,escala:100,headerH:11,linhaH:6.1,rodapeH:5.5,fontNome:2.3,fontTotal:3,fontProva:2.8,fontDetalhe:2.05,fontHeader:6.5,fontRelogio:2.1,logoH:6.5,intervaloFull:120,tempoFull:7};
-function applyConfig(){document.body.style.zoom=(CFG.escala||100)/100;}
+let RODAPES=[],FULL=[];
+let CFG={propPx:28,contPx:20,escala:100,headerH:11,linhaH:6.1,rodapeH:5.5,fontNome:2.3,fontTotal:3,fontProva:2.8,fontDetalhe:2.05,fontRelogio:2.1,logoH:6.5,intervaloFull:120,tempoFull:7};
+
+function applyConfig(){
+  document.body.style.zoom=(CFG.escala||100)/100;
+  // NAO sobrescreve o cabeçalho - fica só no :root la em cima
+  document.documentElement.style.setProperty('--linha-h',(CFG.linhaH||6.1)+'vh');
+  document.documentElement.style.setProperty('--rodape-h',(CFG.rodapeH||5.5)+'vh');
+  document.documentElement.style.setProperty('--font-nome',(CFG.fontNome||2.3)+'vh');
+  document.documentElement.style.setProperty('--font-total',(CFG.fontTotal||3)+'vh');
+  document.documentElement.style.setProperty('--font-prova',(CFG.fontProva||2.8)+'vh');
+  document.documentElement.style.setProperty('--font-detalhe',(CFG.fontDetalhe||2.05)+'vh');
+  document.documentElement.style.setProperty('--font-relogio',(CFG.fontRelogio||2.1)+'vh');
+  document.documentElement.style.setProperty('--logo-h',(CFG.logoH||6.5)+'vh');
+  // cabeçalho e altura do cabeçalho NÃO vem do admin
+  renderRodape();
+}
 let rodapeIndex=0,rodapeTimer=null;
 function renderRodape(){let el=document.getElementById('textoRodape');if(RODAPES.length==0){el.innerHTML='🔥 ADIQUIRA JA SUA MinuT&Ra 🔥';el.classList.add('show');return}if(rodapeTimer)clearInterval(rodapeTimer);function mostraProximo(){el.classList.remove('show');setTimeout(()=>{let r=RODAPES[rodapeIndex];el.innerHTML=`<span style="font-size:${CFG.propPx}px">🔥 ${r.prop||r.nome||''}</span> <span style="font-size:${CFG.contPx}px;color:#fff"> | 📞 ${r.contato||''}</span>`;el.classList.add('show');rodapeIndex=(rodapeIndex+1)%RODAPES.length},800)}mostraProximo();rodapeTimer=setInterval(mostraProximo,6000)}
 function contaTirosXa0(tiros){let m={X:0,'10':0,'9':0,'8':0,'7':0,'6':0,'5':0,'4':0,'3':0,'2':0,'1':0,'0':0};(tiros||[]).forEach(t=>{let k=String(t).toUpperCase();if(m.hasOwnProperty(k))m[k]++});return `X:${m.X} |10:${m['10']} |9:${m['9']} |8:${m['8']} |7:${m['7']} |6:${m['6']} |5:${m['5']} |4:${m['4']} |3:${m['3']} |2:${m['2']} |1:${m['1']} |0:${m['0']}`}
@@ -66,6 +83,7 @@ function filtraTop5Unico(listaOrdenada){
 }
 db.ref("PATROCINADORES_RODAPE_FTERJ").on('value',s=>{RODAPES=toArr(s.val()).filter(r=>{if(r.hasOwnProperty('ativo'))return r.ativo==true||r.ativo=="true";return true});renderRodape()});
 db.ref("PATROCINADORES_FULL_FTERJ").on('value',s=>{FULL=toArr(s.val()).filter(r=>{if(r.hasOwnProperty('ativo'))return r.ativo==true||r.ativo=="true";return true}).map(i=>typeof i==='string'?{arte:i}:i).filter(f=>f.arte||f.url||f.imagem)});
+db.ref("CONFIG_ANUNCIOS_FTERJ").on('value',s=>{let v=s.val();if(v){CFG={...CFG,...v};applyConfig()}});
 db.ref("FTERJ").on('value',snap=>{
 let data=snap.val();if(!data)return;let lista=[];
 Object.keys(data).forEach(k=>{if(k.startsWith("serie_")){let s=data[k];let tiros=s.tiros||[];lista.push({nome:s.nome||'TESTE',prova:s.prova||'R2',pontos:parseFloat(s.pontos||0),tiros:tiros})}});
@@ -77,4 +95,5 @@ document.getElementById('ranking').innerHTML=html;
 setInterval(()=>{let txt=new Date().toLocaleString('pt-BR');let el=document.getElementById('dhTopo');if(el)el.innerText=txt},1000);
 let emBloco=false;async function mostraBlocoFull(){if(FULL.length==0||emBloco)return;emBloco=true;for(let i=0;i<FULL.length;i++){let f=FULL[i];let url=f.arte||f.url||f.imagem||'';if(!url)continue;document.getElementById('imgFull').src=url;document.getElementById('txtFull').innerText=`${f.nome||''} ${f.prop||''} ${f.contato||''}`;document.getElementById('fullCount').innerText=`${i+1}/${FULL.length}`;document.getElementById('full').style.display='flex';await new Promise(r=>setTimeout(r,(f.tempo||7)*1000))}document.getElementById('full').style.display='none';emBloco=false}
 setInterval(mostraBlocoFull,120*1000);setTimeout(mostraBlocoFull,15000);
+applyConfig();
 </script></body></html>
