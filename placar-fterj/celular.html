@@ -1,64 +1,64 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>3x7 MinuT&Ra - FTERJ</title>
+<title>MinuT&Ra Mobile</title>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 <style>
-*{margin:0;padding:0;box-sizing:border-box}
-body{background:#000;color:#fff;font-family:Arial,sans-serif;padding-bottom:105px}
-.header{background:linear-gradient(90deg,#FF8C00,#FF6A00);padding:10px;text-align:center;color:#000;font-weight:900;font-size:14px}
-.linha{display:flex;flex-direction:column;background:#1a1a1a;border-radius:8px;padding:8px 10px;margin:4px 6px;border:1px solid #222}
-.top{display:flex;width:100%;align-items:center;gap:4px}
-.pos{width:36px;font-weight:900;text-align:center;font-size:12px;color:#fff}
-.nome{flex:1;font-size:11px;font-weight:800;text-transform:uppercase;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#fff}
-.prova{width:45px;text-align:center;font-size:11px;font-weight:900;color:#00E5FF}
-.total{width:65px;text-align:right;font-size:12px;font-weight:900;color:#FFD700}
-.detalhe{width:100%;font-size:9px;margin-top:4px;text-align:right;opacity:.9;color:#ccc}
-.linha.ouro{background:#FFD700!important;border-color:#FFD700!important; color:#000!important}
-.linha.prata{background:#C0C0C0!important;border-color:#C0C0C0!important; color:#000!important}
-.linha.bronze{background:#CD7F32!important;border-color:#CD7F32!important; color:#000!important}
-.ouro *{color:#000!important}
-.prata *{color:#000!important}
-.bronze *{color:#000!important}
-#footer{position:fixed;bottom:0;left:0;right:0;background:#000;padding:6px;text-align:center;color:#FFD700;font-size:10px;border-top:1px solid #333;z-index:30}
-.full-bar{position:fixed;bottom:28px;left:0;right:0;background:#111;border-top:2px solid #FFD700;padding:6px;display:none;justify-content:center;align-items:center;gap:10px;z-index:20;height:72px}
-.full-bar img{max-height:60px;max-width:85%;background:#fff;border-radius:4px}
+ body{background:#000;color:#fff;font-family:Arial Black;margin:0}
+ .topo{background:orange;color:#000;padding:10px;text-align:center;position:sticky;top:0;z-index:10}
+ .top5{background:#111;border:2px solid gold;margin:5px;border-radius:10px;overflow:hidden}
+ .top5-titulo{background:gold;color:#000;text-align:center;padding:5px;font-size:4vw}
+ .atleta{display:flex;justify-content:space-between;padding:10px 8px;border-bottom:1px solid #222;font-size:4vw}
+ .atleta.p1{background:gold;color:#000}
+ .atleta.p2{background:silver;color:#000}
+ .atleta.p3{background:#CD7F32;color:#000}
 </style>
 </head>
 <body>
-<div class="header">3x7 MinuT&Ra - FTERJ<br><span style="font-size:9px">RANKING GERAL - TODOS</span></div>
-<div id="ranking">CARREGANDO...</div>
-<div id="footer"></div>
-<div id="fullBar" class="full-bar"><img id="fullImg"><div id="fullNome" style="color:#FFD700;font-weight:900;font-size:11px"></div></div>
+<div class="topo" id="topo">CARREGANDO...</div>
+
+<div class="top5">
+  <div class="top5-titulo">TOP 5</div>
+  <div id="top5-lista"></div>
+</div>
+
+<div id="lista"></div>
+
 <script>
-const firebaseConfig={apiKey:"AIzaSyCTEXeRjxq0_3doBNyWm5AkQ0kmBXmjlSk",authDomain:"placar-minutera.firebaseapp.com",databaseURL:"https://placar-minutera-default-rtdb.firebaseio.com",projectId:"placar-minutera"};
-firebase.initializeApp(firebaseConfig); const db=firebase.database();
-function toArr(d){if(!d)return[];return Object.keys(d).map(k=>({key:k,...(typeof d[k]==='string'?{arte:d[k]}:d[k])}));}
-db.ref("FTERJ").on('value',snap=>{
- let data=snap.val(); let lista=[];
- if(data) Object.keys(data).forEach(k=>{if(k.startsWith("serie_")){let s=data[k]; lista.push({nome:s.nome||'SEM NOME',prova:s.prova||'R2',pontos:parseFloat(s.pontos||0),detalhe:(s.tiros||[]).join(' | ')})}});
- lista.sort((a,b)=>b.pontos-a.pontos);
- let html=""; lista.forEach((at,i)=>{let cls=i==0?'ouro':i==1?'prata':i==2?'bronze':''; html+=`<div class="linha ${cls}"><div class="top"><div class="pos">${i+1}º</div><div class="nome">${at.nome}</div><div class="prova">P:${at.prova}</div><div class="total">${at.pontos.toFixed(2)}</div></div><div class="detalhe">${at.detalhe}</div></div>`;});
- document.getElementById('ranking').innerHTML=html||"VAZIO";
+const BANCO = "FTERJ";
+firebase.initializeApp({databaseURL:"https://placar-minutera-default-rtdb.firebaseio.com"});
+const db = firebase.database();
+const prova = new URLSearchParams(window.location.search).get('prova');
+
+db.ref(BANCO).on('value', snap=>{
+  let lista=[];
+  snap.forEach(c=>{ let v=c.val(); if(v && v.contagem) lista.push(v); });
+  lista.sort((a,b)=>b.pontos-a.pontos || b.contagem.x12_01-a.contagem.x12_01);
+  
+  if(prova) lista = lista.filter(a=>a.prova.toString() == prova);
+
+  document.getElementById('topo').innerText = prova ? `PROVA ${prova} - ${lista.length} ATIRADORES` : `GERAL - ${lista.length} ATIRADORES`;
+
+  // TOP 5 COM NOMES REPETIDOS - desce normal
+  let top5 = lista.slice(0,5);
+  let htmlTop5="";
+  top5.forEach((a,i)=>{
+    let c = i==0?'p1':i==1?'p2':i==2?'p3':'';
+    htmlTop5+=`<div class="atleta ${c}"><span>${i+1}º ${a.nome}</span><span>${a.pontos.toFixed(2)}</span></div>`;
+  });
+  document.getElementById('top5-lista').innerHTML = htmlTop5 || "Sem dados";
+
+  // TODOS COM ROLAGEM - com nomes repetidos também
+  let htmlTodos="";
+  lista.forEach((a,i)=>{
+    let c = i<3 ? (i==0?'p1':i==1?'p2':'p3') : '';
+    htmlTodos+=`<div class="atleta ${c}"><span>${i+1}º ${a.nome} (P:${a.prova})</span><span>${a.pontos.toFixed(2)} | X:${a.contagem.x12_01}</span></div>`;
+  });
+  document.getElementById('lista').innerHTML = htmlTodos;
 });
-let fullLista=[], idx=0;
-db.ref("PATROCINADORES_FULL_FTERJ").on('value',snap=>{
- let arr=toArr(snap.val());
- let ativos=arr.filter(it=>!(it.ativo===false||it.ativo==="false"||it.ativo===0));
- document.getElementById('footer').innerText=`102 atiradores | TOTAL: ${arr.length} ATIVOS: ${ativos.length}`;
- fullLista=ativos;
-});
-setInterval(()=>{
- if(!fullLista.length){document.getElementById('fullBar').style.display='none';return;}
- let it=fullLista[idx%fullLista.length];
- document.getElementById('fullImg').src=it.arte||''; document.getElementById('fullNome').innerText=it.nome||'';
- document.getElementById('fullBar').style.display='flex';
- idx++;
- setTimeout(()=>{document.getElementById('fullBar').style.display='none';},(it.tempo||7)*1000);
-},9000);
 </script>
 </body>
 </html>
