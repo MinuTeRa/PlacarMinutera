@@ -1,19 +1,37 @@
 <!DOCTYPE html>
-<html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-<style>body{background:#000;color:#fff;font-family:Arial Black;margin:0}.topo{background:orange;color:#000;padding:12px;text-align:center;position:sticky;top:0}.atleta{display:flex;justify-content:space-between;padding:10px;border-bottom:1px solid #222}.p1{background:gold;color:#000}.p2{background:silver;color:#000}.p3{background:#CD7F32}
-#full{position:fixed;top:0;left:0;width:100%;height:100%;background:#000;z-index:9999;display:none;justify-content:center;align-items:center}#full img{width:100%;height:100%;object-fit:contain}</style>
+<style>body{background:#000;color:#fff;font-family:Arial;padding:10px}#full{position:fixed;top:0;left:0;width:100%;height:100%;background:red;z-index:9999;display:none;justify-content:center;align-items:center}#full img{width:100%;height:100%;object-fit:contain}</style>
 </head><body>
-<div class="topo" id="topo">GERAL</div><div id="lista"></div>
+<div id="debug">Procurando anúncios...</div>
 <div id="full"><img id="imgFull"></div>
 <script>
 firebase.initializeApp({databaseURL:"https://placar-minutera-default-rtdb.firebaseio.com"});
 const db=firebase.database();
-db.ref("FTERJ").on('value',s=>{let l=[];s.forEach(c=>{let v=c.val();if(v?.contagem)l.push(v)});l.sort((a,b)=>b.pontos-a.pontos);let t=[],n=new Set(),u=new Set();for(let a of l){let no=a.nome.trim().toUpperCase();if(!n.has(no)){t.push(a);n.add(no);u.add(a);if(t.length==5)break}}let f=[...t,...l.filter(x=>!u.has(x))];let h="";f.forEach((a,i)=>{let cl=i==0?'p1':i==1?'p2':i==2?'p3':'';h+=`<div class="atleta ${cl}"><span>${i+1}º ${a.nome}</span><span>${a.pontos.toFixed(2)}</span></div>`});document.getElementById('lista').innerHTML=h});
+const debug = document.getElementById('debug');
 
-let ads=[],i=0;
-db.ref("FTERJ_TELA_CHEIA").on('value',s=>{ads=[];s.forEach(c=>{let v=c.val();if(v.ativo)ads.push(v)})});
-function mostra(){if(!ads.length)return;let ad=ads[i%ads.length];document.getElementById('imgFull').src=ad.imagem;document.getElementById('full').style.display='flex';setTimeout(()=>{document.getElementById('full').style.display='none';i++;},(ad.tempo||7)*1000)}
-setInterval(mostra,30000);setTimeout(mostra,5000);
+function testa(caminho){
+  db.ref(caminho).once('value', s=>{
+    debug.innerHTML += `<br>Testando ${caminho}: ${s.numChildren()} encontrados`;
+    s.forEach(c=>{
+      let v=c.val();
+      debug.innerHTML += `<br> - ${caminho} -> ${JSON.stringify(v).substring(0,100)}`;
+      // se achar qualquer imagem, já mostra
+      if(v.imagem || v.url){
+        let img = v.imagem || v.url;
+        document.getElementById('imgFull').src = img;
+        document.getElementById('full').style.display='flex';
+        setTimeout(()=>{document.getElementById('full').style.display='none'},7000);
+      }
+    });
+  });
+}
+
+testa("FTERJ_TELA_CHEIA");
+testa("FTERJ/TELA_CHEIA");
+testa("FTERJ_CONFIG");
+testa("FTERJ_ANUNCIOS");
+testa("ANUNCIOS_TELA_CHEIA");
+testa("FTERJ");
 </script></body></html>
