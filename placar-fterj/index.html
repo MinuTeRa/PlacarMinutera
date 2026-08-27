@@ -1,9 +1,9 @@
-<!DOCTYPE html><html><head><meta charset="UTF-8"><title>V35.2 SEQUENCIAL</title>
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>V35.3 FTERJ</title>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}body{background:#121212;color:#fff;font-family:Arial}
-#header{background:linear-gradient(90deg,#FF8C00,#FF6A00);padding:12px 16px;display:flex;justify-content:space-between;color:#000;font-weight:900;font-size:18px}
+#header{background:linear-gradient(90deg,#FF8C00,#FF6A00);padding:12px 16px;display:flex;justify-content:center;color:#000;font-weight:900;font-size:18px;letter-spacing:0.5px}
 #main{display:flex;height:calc(100vh - 48px)}#left{width:350px;background:#1e1e1e;margin:8px;padding:10px;border-radius:8px;overflow:auto}#right{flex:1;background:#1e1e1e;margin:8px 8px 8px 0;padding:8px;border-radius:8px;overflow:auto}
 input,select{width:100%;padding:8px;background:#000;color:#fff;border:1px solid #444;border-radius:5px}.row{display:flex;gap:6px;margin-top:6px;position:relative}.linha-tiro{display:flex;gap:6px;align-items:center;margin-top:4px}.linha-tiro b{width:24px;color:#aaa;font-size:11px}
 .item{display:grid;grid-template-columns:55px 55px 1fr 75px 260px 140px;gap:12px;align-items:center;background:#2a2a2a;padding:8px 12px;margin-bottom:5px;border-radius:6px;border-left:5px solid #FF8C00;font-size:15px;height:48px;white-space:nowrap}
@@ -12,7 +12,7 @@ input,select{width:100%;padding:8px;background:#000;color:#fff;border:1px solid 
 #sugestoes{position:absolute;top:36px;left:0;background:#000;border:1px solid #FF8C00;max-height:200px;overflow:auto;width:100%;z-index:100;display:none;border-radius:5px}#sugestoes div{padding:10px 8px;font-size:13px;cursor:pointer;border-bottom:1px solid #222;font-weight:700}#sugestoes div:hover{background:#FF8C00;color:#000}
 </style></head><body>
 <div id="telaSenha"><div style="background:#1e1e1e;padding:24px;border-radius:12px;text-align:center;border:2px solid #FF8C00"><h2 style="color:#FF8C00">3x7 FTERJ</h2><input id="inputSenha" type="password" placeholder="Senha" style="text-align:center;margin-top:10px"><button onclick="checarSenha()" style="width:100%;margin-top:10px;padding:10px;background:#FF8C00;color:#000;border:none;border-radius:6px;font-weight:900">ENTRAR</button><p id="erroSenha" style="color:#f44;display:none"></p></div></div>
-<div id="header"><span>FTERJ | V35.2 SEQUENCIAL INFINITO</span><span>ULTIMO NO TOPO</span></div>
+<div id="header">MÓDULO DE LANÇAMENTO | FTERJ | V35.3 | X=12.01</div>
 <div id="main"><div id="left"><div class="row"><div style="flex:1;position:relative"><input id="nomeAtleta" placeholder="NOME" style="text-transform:uppercase" autocomplete="off" oninput="buscarNome(this.value)" onfocus="buscarNome(this.value)"><div id="sugestoes"></div></div><select id="provaSelect" style="width:90px"><option>C</option><option>R1</option><option>R2</option><option>R3</option><option>R4</option><option>R5</option><option>C/R</option></select></div><div id="tirosContainer"></div><div class="total">TOTAL: <span id="totalPontos">0.00</span></div><div style="display:flex;gap:6px"><button class="btn btn-salvar" onclick="salvarLancamento()">SALVAR [F2]</button><button class="btn btn-nova" onclick="novoLancamento()">NOVA [F3]</button></div></div><div id="right"><div id="listaLancamentos"></div></div></div>
 <script>
 const firebaseConfig={apiKey:"AIzaSyCTEXeRjxq0_3doBNyWm5AkQ0kmBXmjlSk",authDomain:"placar-minutera.firebaseapp.com",databaseURL:"https://placar-minutera-default-rtdb.firebaseio.com",projectId:"placar-minutera"};firebase.initializeApp(firebaseConfig);const db=firebase.database();
