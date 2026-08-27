@@ -1,17 +1,31 @@
-<!DOCTYPE html><html><head><meta charset="UTF-8"><title>TV FTERJ V21.0</title>
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>TV FTERJ V21.3</title>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 <style>
+/* =========================================
+   🔠 ALTERE AQUI O TAMANHO DA LETRA DO CABEÇALHO
+   ========================================= */
+:root{
+  --font-header: 6.5vh; /* << MUDA AQUI - quanto maior, maior o titulo */
+  --header-h:11vh;
+  --linha-h:6.1vh;
+  --rodape-h:5.5vh;
+  --font-nome:2.3vh;
+  --font-total:3vh;
+  --font-prova:2.8vh;
+  --font-detalhe:2.05vh;
+  --font-relogio:2.1vh;
+  --logo-h:6.5vh;
+}
 *{margin:0;padding:0;box-sizing:border-box}
-:root{--header-h:9vh;--linha-h:6.1vh;--rodape-h:5.5vh;--font-nome:2.3vh;--font-total:3vh;--font-prova:2.8vh;--font-detalhe:2.05vh;--font-header:4.2vh;--font-relogio:2.1vh;--logo-h:5.8vh}
 html,body{height:100vh;overflow:hidden}
 body{background:#000;color:#fff;font-family:Arial;display:flex;flex-direction:column}
 #header{height:var(--header-h);background:linear-gradient(90deg,#FF8C00,#FF6A00);display:flex;align-items:center;justify-content:center;position:relative}
-#header h1{font-size:var(--font-header);color:#000;font-weight:900;letter-spacing:.5px}
+#header h1{font-size:var(--font-header);color:#000;font-weight:900;text-transform:uppercase}
 .logo{position:absolute;top:50%;transform:translateY(-50%);height:var(--logo-h);background:#fff;border-radius:6px;display:flex;align-items:center;justify-content:center;overflow:hidden}
 .logo img{height:100%;width:auto;max-width:14vw;object-fit:contain;padding:3px 8px}
 #logoEsq{left:.8vw}#logoDir{right:.8vw}
-#relogioTopo{position:absolute;right:15.5vw;top:50%;transform:translateY(-50%);background:#000;border:1.5px solid #000;border-radius:20px;padding:3px 14px;color:#FFD700;font-size:var(--font-relogio);font-weight:900;box-shadow:0 0 5px rgba(0,0,0,.5)}
+#relogioTopo{position:absolute;right:15.5vw;top:50%;transform:translateY(-50%);background:#000;border-radius:20px;padding:4px 16px;color:#FFD700;font-size:var(--font-relogio);font-weight:900}
 #ranking{flex:1;display:flex;flex-direction:column;gap:.4vh;padding:.4vh.6vw;overflow:hidden;justify-content:space-between}
 .linha{display:flex;align-items:center;background:#1a1a1a;border-radius:8px;padding:0 0.8vw;height:var(--linha-h)}
 .linha.ouro{background:#FFD700;color:#000}
@@ -21,82 +35,46 @@ body{background:#000;color:#fff;font-family:Arial;display:flex;flex-direction:co
 .linha.prata .pos,.linha.prata .nome,.linha.prata .prova,.linha.prata .total,.linha.prata .detalhe{color:#000!important}
 .linha.bronze .pos,.linha.bronze .nome,.linha.bronze .prova,.linha.bronze .total,.linha.bronze .detalhe{color:#000!important}
 .pos{width:3.5vw;font-weight:900;text-align:center;font-size:var(--font-nome)}
-.nome{flex:1;font-size:var(--font-nome);font-weight:800;text-transform:uppercase;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.nome{flex:1;font-size:var(--font-nome);font-weight:800;text-transform:uppercase;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:flex;align-items:center;gap:.6vw}
 .prova{width:8vw;text-align:center;font-size:var(--font-prova);font-weight:900;color:#00E5FF}
 .total{width:10vw;text-align:center;font-size:var(--font-total);font-weight:900;color:#FFD700}
-.detalhe{width:34vw;text-align:right;font-size:var(--font-detalhe);font-weight:800;white-space:nowrap;overflow:hidden;color:#fff;letter-spacing:.2px}
-#datahora{display:none}
-#rodape{height:var(--rodape-h);background:#000;border-top:2px solid #FF8C00;display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative}
-#textoRodape{color:#FFD700;font-weight:900;text-align:center;opacity:0;transition:opacity.8s ease-in-out;white-space:nowrap;width:100%}
+.detalhe{width:34vw;text-align:right;font-size:var(--font-detalhe);font-weight:800;white-space:nowrap;overflow:hidden;color:#fff}
+.badge-subiu{font-size:1.4vh;background:#00FF00;color:#000;padding:2px 6px;border-radius:10px;font-weight:900}
+#rodape{height:var(--rodape-h);background:#000;border-top:2px solid #FF8C00;display:flex;align-items:center;justify-content:center;overflow:hidden}
+#textoRodape{color:#FFD700;font-weight:900;text-align:center;opacity:0;transition:opacity.8s;white-space:nowrap;width:100%}
 #textoRodape.show{opacity:1}
 #full{position:fixed;inset:0;background:rgba(0,0,0,.97);display:none;align-items:center;justify-content:center;z-index:9999;flex-direction:column}
 #full img{max-width:80%;max-height:65%;border:5px solid gold;border-radius:16px}
 </style></head><body>
-<div id="header">
-<div id="logoEsq" class="logo"><img src="logo-minha.png" onerror="this.parentElement.innerHTML='MinuT&Ra'"></div>
-<h1>3x7 MinuT&Ra - FTERJ</h1>
-<div id="relogioTopo"><span id="dhTopo">--:--:--</span></div>
-<div id="logoDir" class="logo"><img src="logo-clube.png" onerror="this.parentElement.innerHTML='FTERJ'"></div>
-</div>
+<div id="header"><div id="logoEsq" class="logo"><img src="logo-minha.png" onerror="this.parentElement.innerHTML='MinuT&Ra'"></div><h1>3x7 MinuT&Ra - FTERJ</h1><div id="relogioTopo"><span id="dhTopo">--:--:--</span></div><div id="logoDir" class="logo"><img src="logo-clube.png" onerror="this.parentElement.innerHTML='FTERJ'"></div></div>
 <div id="ranking">CARREGANDO...</div>
-<div id="datahora"><span id="dh">--/--/----</span></div>
 <div id="rodape"><div id="textoRodape"></div></div>
 <div id="full"><img id="imgFull"><div id="txtFull" style="color:gold;margin-top:12px;font-size:2.8vh;font-weight:bold"></div><div id="fullCount" style="color:#fff;margin-top:8px"></div></div>
 <script>
 const firebaseConfig={apiKey:"AIzaSyCTEXeRjxq0_3doBNyWm5AkQ0kmBXmjlSk",authDomain:"placar-minutera.firebaseapp.com",databaseURL:"https://placar-minutera-default-rtdb.firebaseio.com",projectId:"placar-minutera"};
 firebase.initializeApp(firebaseConfig);const db=firebase.database();
 function toArr(d){if(!d)return[];if(Array.isArray(d))return d.filter(x=>x);return Object.values(d).filter(x=>x)}
-let RODAPES=[],FULL=[];let CFG={propPx:28,contPx:20,escala:100,headerH:9,linhaH:6.1,rodapeH:5.5,fontNome:2.3,fontTotal:3,fontProva:2.8,fontDetalhe:2.05,fontHeader:4.2,fontRelogio:2.1,logoH:5.8,intervaloFull:120,tempoFull:7};
-function applyConfig(){
-document.body.style.zoom=(CFG.escala||100)/100;
-document.documentElement.style.setProperty('--header-h',(CFG.headerH||9)+'vh');
-document.documentElement.style.setProperty('--linha-h',(CFG.linhaH||6.1)+'vh');
-document.documentElement.style.setProperty('--rodape-h',(CFG.rodapeH||5.5)+'vh');
-document.documentElement.style.setProperty('--font-nome',(CFG.fontNome||2.3)+'vh');
-document.documentElement.style.setProperty('--font-total',(CFG.fontTotal||3)+'vh');
-document.documentElement.style.setProperty('--font-prova',(CFG.fontProva||2.8)+'vh');
-document.documentElement.style.setProperty('--font-detalhe',(CFG.fontDetalhe||2.05)+'vh');
-document.documentElement.style.setProperty('--font-header',(CFG.fontHeader||4.2)+'vh');
-document.documentElement.style.setProperty('--font-relogio',(CFG.fontRelogio||2.1)+'vh');
-document.documentElement.style.setProperty('--logo-h',(CFG.logoH||5.8)+'vh');
-renderRodape()}
+let RODAPES=[],FULL=[];let CFG={propPx:28,contPx:20,escala:100,headerH:11,linhaH:6.1,rodapeH:5.5,fontNome:2.3,fontTotal:3,fontProva:2.8,fontDetalhe:2.05,fontHeader:6.5,fontRelogio:2.1,logoH:6.5,intervaloFull:120,tempoFull:7};
+function applyConfig(){document.body.style.zoom=(CFG.escala||100)/100;}
 let rodapeIndex=0,rodapeTimer=null;
-function renderRodape(){let el=document.getElementById('textoRodape');if(RODAPES.length==0){el.innerHTML='🔥 ADIQUIRA JA SUA MinuT&Ra 🔥';el.classList.add('show');return}if(rodapeTimer)clearInterval(rodapeTimer);function mostraProximo(){el.classList.remove('show');setTimeout(()=>{let r=RODAPES[rodapeIndex];let pSize=Math.round((CFG.propPx||28)*(CFG.escala||100)/100);let cSize=Math.round((CFG.contPx||20)*(CFG.escala||100)/100);el.innerHTML=`<span style="font-size:${pSize}px">🔥 ${r.prop||r.nome||''}</span> <span style="font-size:${cSize}px;color:#fff"> | 📞 ${r.contato||''}</span>`;el.classList.add('show');rodapeIndex=(rodapeIndex+1)%RODAPES.length},800)}mostraProximo();rodapeTimer=setInterval(mostraProximo,6000)}
+function renderRodape(){let el=document.getElementById('textoRodape');if(RODAPES.length==0){el.innerHTML='🔥 ADIQUIRA JA SUA MinuT&Ra 🔥';el.classList.add('show');return}if(rodapeTimer)clearInterval(rodapeTimer);function mostraProximo(){el.classList.remove('show');setTimeout(()=>{let r=RODAPES[rodapeIndex];el.innerHTML=`<span style="font-size:${CFG.propPx}px">🔥 ${r.prop||r.nome||''}</span> <span style="font-size:${CFG.contPx}px;color:#fff"> | 📞 ${r.contato||''}</span>`;el.classList.add('show');rodapeIndex=(rodapeIndex+1)%RODAPES.length},800)}mostraProximo();rodapeTimer=setInterval(mostraProximo,6000)}
 function contaTirosXa0(tiros){let m={X:0,'10':0,'9':0,'8':0,'7':0,'6':0,'5':0,'4':0,'3':0,'2':0,'1':0,'0':0};(tiros||[]).forEach(t=>{let k=String(t).toUpperCase();if(m.hasOwnProperty(k))m[k]++});return `X:${m.X} |10:${m['10']} |9:${m['9']} |8:${m['8']} |7:${m['7']} |6:${m['6']} |5:${m['5']} |4:${m['4']} |3:${m['3']} |2:${m['2']} |1:${m['1']} |0:${m['0']}`}
-
-// NOVA REGRA TOP5 SEM DUPLICAR ATLETA
 function filtraTop5Unico(listaOrdenada){
- let vistosTop5 = new Set();
- let top5 = [];
- let resto = [];
- for(let at of listaOrdenada){
-   let nomeNorm = (at.nome||'').trim().toUpperCase();
-   if(top5.length < 5){
-     if(!vistosTop5.has(nomeNorm)){
-       vistosTop5.add(nomeNorm);
-       top5.push(at);
-     }else{
-       resto.push(at); // duplicado empurra pra baixo
-     }
-   }else{
-     resto.push(at);
-   }
- }
+ let vistosTop5=new Set();let top5=[];let resto=[];
+ for(let i=0;i<listaOrdenada.length;i++){let at=listaOrdenada[i];let nomeNorm=(at.nome||'').trim().toUpperCase();if(top5.length<5){if(!vistosTop5.has(nomeNorm)){vistosTop5.add(nomeNorm);top5.push({...at,subiu:i>top5.length});}else{resto.push({...at,subiu:false});}}else{resto.push({...at,subiu:false});}}
  return [...top5,...resto];
 }
-
 db.ref("PATROCINADORES_RODAPE_FTERJ").on('value',s=>{RODAPES=toArr(s.val()).filter(r=>{if(r.hasOwnProperty('ativo'))return r.ativo==true||r.ativo=="true";return true});renderRodape()});
 db.ref("PATROCINADORES_FULL_FTERJ").on('value',s=>{FULL=toArr(s.val()).filter(r=>{if(r.hasOwnProperty('ativo'))return r.ativo==true||r.ativo=="true";return true}).map(i=>typeof i==='string'?{arte:i}:i).filter(f=>f.arte||f.url||f.imagem)});
-db.ref("CONFIG_ANUNCIOS_FTERJ").on('value',s=>{let v=s.val();if(v){CFG={...CFG,...v};applyConfig()}});
 db.ref("FTERJ").on('value',snap=>{
 let data=snap.val();if(!data)return;let lista=[];
 Object.keys(data).forEach(k=>{if(k.startsWith("serie_")){let s=data[k];let tiros=s.tiros||[];lista.push({nome:s.nome||'TESTE',prova:s.prova||'R2',pontos:parseFloat(s.pontos||0),tiros:tiros})}});
 lista.sort((a,b)=>{if(b.pontos!==a.pontos)return b.pontos-a.pontos;let bx=(b.tiros||[]).filter(t=>String(t).toUpperCase()=='X').length;let ax=(a.tiros||[]).filter(t=>String(t).toUpperCase()=='X').length;return bx-ax});
-let listaFinal = filtraTop5Unico(lista);
-let html="";listaFinal.slice(0,10).forEach((at,i)=>{let cls=i==0?'ouro':i==1?'prata':i==2?'bronze':'';html+=`<div class="linha ${cls}"><div class="pos">${i+1}º</div><div class="nome">${at.nome}</div><div class="prova">P:${at.prova}</div><div class="total">${at.pontos.toFixed(2)}</div><div class="detalhe">${contaTirosXa0(at.tiros)}</div></div>`});
+let listaFinal=filtraTop5Unico(lista);
+let html="";listaFinal.slice(0,10).forEach((at,i)=>{let cls=i==0?'ouro':i==1?'prata':i==2?'bronze':'';let badge=at.subiu?`<span class="badge-subiu">🔼 SUBIU</span>`:'';html+=`<div class="linha ${cls}"><div class="pos">${i+1}º</div><div class="nome">${at.nome} ${badge}</div><div class="prova">P:${at.prova}</div><div class="total">${at.pontos.toFixed(2)}</div><div class="detalhe">${contaTirosXa0(at.tiros)}</div></div>`});
 document.getElementById('ranking').innerHTML=html;
 });
-setInterval(()=>{let agora=new Date();let txt=agora.toLocaleDateString('pt-BR')+" | "+agora.toLocaleTimeString('pt-BR');let el=document.getElementById('dh');if(el)el.innerText=txt;let el2=document.getElementById('dhTopo');if(el2)el2.innerText=txt},1000);
-let emBloco=false;async function mostraBlocoFull(){if(FULL.length==0||emBloco)return;emBloco=true;for(let i=0;i<FULL.length;i++){let f=FULL[i];let url=f.arte||f.url||f.imagem||'';if(!url)continue;document.getElementById('imgFull').src=url;document.getElementById('txtFull').innerText=`${f.nome||''} ${f.prop||''} ${f.contato||''}`;document.getElementById('fullCount').innerText=`${i+1}/${FULL.length}`;document.getElementById('full').style.display='flex';await new Promise(r=>setTimeout(r,(f.tempo||CFG.tempoFull||7)*1000))}document.getElementById('full').style.display='none';emBloco=false}
-setInterval(mostraBlocoFull,(CFG.intervaloFull||120)*1000);setTimeout(mostraBlocoFull,15000);applyConfig();
+setInterval(()=>{let txt=new Date().toLocaleString('pt-BR');let el=document.getElementById('dhTopo');if(el)el.innerText=txt},1000);
+let emBloco=false;async function mostraBlocoFull(){if(FULL.length==0||emBloco)return;emBloco=true;for(let i=0;i<FULL.length;i++){let f=FULL[i];let url=f.arte||f.url||f.imagem||'';if(!url)continue;document.getElementById('imgFull').src=url;document.getElementById('txtFull').innerText=`${f.nome||''} ${f.prop||''} ${f.contato||''}`;document.getElementById('fullCount').innerText=`${i+1}/${FULL.length}`;document.getElementById('full').style.display='flex';await new Promise(r=>setTimeout(r,(f.tempo||7)*1000))}document.getElementById('full').style.display='none';emBloco=false}
+setInterval(mostraBlocoFull,120*1000);setTimeout(mostraBlocoFull,15000);
 </script></body></html>
