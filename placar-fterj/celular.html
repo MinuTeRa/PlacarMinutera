@@ -1,37 +1,111 @@
 <!DOCTYPE html>
-<html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>CELULAR FTERJ - TEMPO GLOBAL</title>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-<style>body{background:#000;color:#fff;font-family:Arial;padding:10px}#full{position:fixed;top:0;left:0;width:100%;height:100%;background:red;z-index:9999;display:none;justify-content:center;align-items:center}#full img{width:100%;height:100%;object-fit:contain}</style>
-</head><body>
-<div id="debug">Procurando anúncios...</div>
-<div id="full"><img id="imgFull"></div>
-<script>
-firebase.initializeApp({databaseURL:"https://placar-minutera-default-rtdb.firebaseio.com"});
-const db=firebase.database();
-const debug = document.getElementById('debug');
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#000;color:#fff;font-family:Arial;overflow:hidden;height:100vh;width:100vw}
+#placar{padding:8px;height:100vh;display:flex;flex-direction:column}
+.header{display:flex;justify-content:space-between;align-items:center;background:#111;padding:8px 10px;border-radius:8px;border:1px solid #222}
+.header img{height:22px}
+.header b{font-size:11px;color:#FFD700}
+.lista{flex:1;overflow:auto;margin-top:8px;background:#111;border-radius:8px;border:1px solid #222;padding:6px}
+.atleta{display:flex;justify-content:space-between;padding:8px 10px;border-bottom:1px solid #222;font-size:12px}
+.atleta b{color:#fff}.atleta span{color:#FF8C00;font-weight:900}
+#rodape{position:fixed;bottom:0;left:0;width:100%;background:#000;border-top:2px solid #FF8C00;padding:6px 10px;font-size:11px;white-space:nowrap;overflow:hidden;display:none}
+#rodape span{animation:marquee 20s linear infinite;display:inline-block;padding-left:100%}
+@keyframes marquee{0%{transform:translateX(0)}100%{transform:translateX(-100%)}}
+#full{position:fixed;top:0;left:0;width:100vw;height:100vh;background:#000;z-index:9999;display:none;justify-content:center;align-items:center}
+#full img{width:100%;height:100%;object-fit:contain}
+#fullInfo{position:absolute;bottom:20px;left:0;width:100%;text-align:center;background:rgba(0,0,0,0.7);padding:6px;font-size:11px;color:#FFD700}
+</style>
+</head>
+<body>
+<div id="placar">
+<div class="header"><img id="logoClube" src="" style="display:none"><b id="titulo">FTERJ - AO VIVO</b><img id="logoMinu" src="" style="display:none"></div>
+<div class="lista" id="listaAtletas">Carregando atletas...</div>
+</div>
+<div id="rodape"><span id="rodapeTexto">Carregando patrocinadores...</span></div>
+<div id="full" onclick="fecharFull()"><img id="fullImg" src=""><div id="fullInfo">PATROCINADOR - Toque para fechar</div></div>
 
-function testa(caminho){
-  db.ref(caminho).once('value', s=>{
-    debug.innerHTML += `<br>Testando ${caminho}: ${s.numChildren()} encontrados`;
-    s.forEach(c=>{
-      let v=c.val();
-      debug.innerHTML += `<br> - ${caminho} -> ${JSON.stringify(v).substring(0,100)}`;
-      // se achar qualquer imagem, já mostra
-      if(v.imagem || v.url){
-        let img = v.imagem || v.url;
-        document.getElementById('imgFull').src = img;
-        document.getElementById('full').style.display='flex';
-        setTimeout(()=>{document.getElementById('full').style.display='none'},7000);
-      }
-    });
+<script>
+const firebaseConfig={apiKey:"AIzaSyCTEXeRjxq0_3doBNyWm5AkQ0kmBXmjlSk",authDomain:"placar-minutera.firebaseapp.com",databaseURL:"https://placar-minutera-default-rtdb.firebaseio.com",projectId:"placar-minutera",storageBucket:"placar-minutera.appspot.com"};
+firebase.initializeApp(firebaseConfig);const db=firebase.database();
+
+// CONFIG GLOBAL - PUXA DO CONTROLE
+let tempoGlobalFull = 10; // Duração de cada FULL - GLOBAL
+let intervaloGlobal = 20; // Intervalo entre blocos
+let tempoRodapeGlobal = 6; // Duração RODAPÉ FADE
+let fullAtivos = [];
+let rodapeAtivos = [];
+let fullIndex = 0;
+let rodapeIndex = 0;
+
+db.ref("CONFIG_ANUNCIOS_FTERJ").on('value', s=>{
+  let cfg = s.val() || {};
+  tempoGlobalFull = parseInt(cfg.tempoFull) || 10;
+  intervaloGlobal = parseInt(cfg.intervaloFull) || 20;
+  tempoRodapeGlobal = parseInt(cfg.tempoRodape) || 6;
+  console.log("CONFIG GLOBAL:", tempoGlobalFull, intervaloGlobal, tempoRodapeGlobal);
+  if(cfg.logoClube){document.getElementById('logoClube').src=cfg.logoClube;document.getElementById('logoClube').style.display='block';}
+  if(cfg.logoMinu){document.getElementById('logoMinu').src=cfg.logoMinu;document.getElementById('logoMinu').style.display='block';}
+});
+
+// FULL - GLOBAL TIME
+db.ref("PATROCINADORES_FULL_FTERJ").on('value', s=>{
+  let d = s.val() || {};
+  fullAtivos = Object.keys(d).map(k=>d[k]).filter(a=>a.ativo!==false);
+});
+
+db.ref("PATROCINADORES_RODAPE_FTERJ").on('value', s=>{
+  let d = s.val() || {};
+  rodapeAtivos = Object.keys(d).map(k=>d[k]).filter(a=>a.ativo!==false);
+  if(rodapeAtivos.length>0){rodape.style.display='block'; iniciarRodape();}
+});
+
+// PLACAR
+db.ref("FTERJ").on('value', s=>{
+  let d = s.val() || {};
+  let ks = Object.keys(d).filter(k=>k.startsWith("serie_"));
+  let html = "";
+  ks.sort((a,b)=>(d[b].pontos||0)-(d[a].pontos||0));
+  ks.forEach(k=>{
+    let at = d[k];
+    html+=`<div class="atleta"><b>${at.nome}</b><span>${at.pontos||0} pts - ${at.tiros?at.tiros.join('/'):'-'} </span></div>`;
   });
+  listaAtletas.innerHTML = html || "Nenhum atleta";
+});
+
+// RODAPÉ FADE COM TEMPO GLOBAL
+function iniciarRodape(){
+  if(rodapeAtivos.length==0) return;
+  let r = rodapeAtivos[rodapeIndex % rodapeAtivos.length];
+  rodapeTexto.innerText = `${r.prop} - ${r.contato||''}`;
+  rodapeIndex++;
+  setTimeout(iniciarRodape, tempoRodapeGlobal*1000);
 }
 
-testa("FTERJ_TELA_CHEIA");
-testa("FTERJ/TELA_CHEIA");
-testa("FTERJ_CONFIG");
-testa("FTERJ_ANUNCIOS");
-testa("ANUNCIOS_TELA_CHEIA");
-testa("FTERJ");
-</script></body></html>
+// FULL COM TEMPO GLOBAL - SEM TEMPO INDIVIDUAL
+function iniciarFullLoop(){
+  if(fullAtivos.length==0){setTimeout(iniciarFullLoop, intervaloGlobal*1000); return;}
+  setTimeout(()=>{
+    let item = fullAtivos[fullIndex % fullAtivos.length];
+    fullImg.src = item.arte;
+    fullInfo.innerText = item.nome;
+    full.style.display='flex';
+    setTimeout(()=>{
+      full.style.display='none';
+      fullIndex++;
+      iniciarFullLoop();
+    }, tempoGlobalFull*1000); // USA TEMPO GLOBAL DO CONTROLE
+  }, intervaloGlobal*1000);
+}
+function fecharFull(){full.style.display='none';}
+
+setTimeout(iniciarFullLoop, 5000);
+</script>
+</body>
+</html>
