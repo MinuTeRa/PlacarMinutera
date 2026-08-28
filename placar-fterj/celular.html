@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CELULAR - V27.4 SUBIU SIMPLES</title>
+<title>CELULAR - V27.6 CORES VIVAS</title>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 <style>
@@ -10,23 +10,28 @@
 body{background:#000;color:#fff;font-family:Arial Black,Arial;height:100vh;overflow:hidden}
 .header{height:56px;background:#000;border-bottom:4px solid #FF8C00;display:flex;align-items:center;padding:0 12px;gap:10px}
 .header img{height:28px;background:#fff;border-radius:4px;padding:2px 4px;object-fit:contain}
-#txtMinu{text-transform:none!important;color:#FFD700;font-size:14px;font-weight:900}
-#txtClube{text-transform:uppercase;color:#fff;font-size:14px;font-weight:900}
-.placar{height:calc(100vh - 56px);overflow:auto;padding:6px}
-.linha{display:flex;align-items:center;justify-content:space-between;background:#111;border:2px solid #222;border-left:6px solid #333;padding:12px;margin-bottom:6px;border-radius:4px}
-.linha.pos1{border-color:#FFD700;background:linear-gradient(90deg,#1a1500,#2a2200);border-left-color:#FFD700}
-.linha.pos2{border-color:#C0C0C0;background:linear-gradient(90deg,#1a1a1a,#222);border-left-color:#C0C0C0}
-.linha.pos3{border-color:#CD7F32;background:linear-gradient(90deg,#1a1000,#251a00);border-left-color:#CD7F32}
-.pos{font-size:26px;min-width:44px;text-align:center}
-.pos1.pos{color:#FFD700}.pos2.pos{color:#C0C0C0}.pos3.pos{color:#CD7F32}
-.pts{font-size:24px;color:#fff;font-weight:900}
-.badge-subiu{background:#00E676;color:#000;font-size:9px;font-weight:900;padding:3px 7px;border-radius:10px;margin-left:6px;font-family:Arial;vertical-align:middle}
+#txtMinu{color:#FFD700;font-size:14px;font-weight:900}
+#txtClube{color:#fff;font-size:14px;font-weight:900;text-transform:uppercase}
+.placar{height:calc(100vh - 56px);overflow:auto;padding:6px;display:flex;flex-direction:column;gap:4px}
+.linha{display:flex;align-items:center;justify-content:space-between;background:#1a1a1a;border:2px solid #333;border-left:8px solid #555;padding:8px 10px;border-radius:6px;gap:8px}
+/* VIVAS */
+.linha.pos1{border-color:#FFD700;background:linear-gradient(90deg,#FFD700,#FFB700);color:#000;border-left-color:#FFEE00;box-shadow:0 0 12px rgba(255,215,0,0.5)}
+.linha.pos2{border-color:#E8E8E8;background:linear-gradient(90deg,#E8E8E8,#C0C0C0);color:#000;border-left-color:#fff;box-shadow:0 0 10px rgba(192,192,192,0.4)}
+.linha.pos3{border-color:#FF8C00;background:linear-gradient(90deg,#CD7F32,#FF8C00);color:#fff;border-left-color:#FFA500;box-shadow:0 0 10px rgba(205,127,50,0.4)}
+.linha.pos1.tiros{color:#222!important}.linha.pos2.tiros{color:#333!important}.linha.pos3.tiros{color:#ffe0b0!important}
+.pos{font-size:28px;min-width:44px;text-align:center;line-height:1}
+.pos1.pos{color:#000;text-shadow:none}.pos2.pos{color:#000}.pos3.pos{color:#fff}
+.nome-wrap{flex:1;overflow:hidden;min-width:0}
+.nome{font-size:16px;font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.1;text-transform:uppercase}
+.tiros{font-size:12px;font-family:Arial;font-weight:800;color:#aaa;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pts{font-size:26px;font-weight:900;white-space:nowrap;margin-left:auto}
+.linha.pos1.pts{color:#000}.linha.pos2.pts{color:#000}.linha.pos3.pts{color:#fff}
+.badge-subiu{background:#00FF6A;color:#000;font-size:10px;font-weight:900;padding:2px 7px;border-radius:10px;margin-left:6px;font-family:Arial;box-shadow:0 0 6px #00FF6A}
 #full{position:fixed;inset:0;background:#000;z-index:999;display:none;justify-content:center;align-items:center}
 #full img{width:100%;height:100%;object-fit:contain}
 </style>
 </head>
 <body>
-<script>const TEXTO_MINUTERA_FIXO = "MinuT&Ra";</script>
 <div class="header">
   <img id="logoMinu" src="logo-minha.png"><span id="txtMinu">MinuT&Ra</span>
   <img id="logoClube" src="logo-clube.png"><span id="txtClube">FTERJ</span>
@@ -35,7 +40,6 @@ body{background:#000;color:#fff;font-family:Arial Black,Arial;height:100vh;overf
 <div class="placar" id="lista">CARREGANDO...</div>
 <div id="full" onclick="this.style.display='none'"><img id="fullImg"></div>
 <script>
-document.getElementById('txtMinu').innerText = TEXTO_MINUTERA_FIXO;
 const firebaseConfig={apiKey:"AIzaSyA6DCLCJ86Qoe2Ph3VuCF6_vYv6EARedKE",authDomain:"placar-minutera.firebaseapp.com",databaseURL:"https://placar-minutera-default-rtdb.firebaseio.com",projectId:"placar-minutera",storageBucket:"placar-minutera.firebasestorage.app",messagingSenderId:"689991648080",appId:"1:689991648080:web:9deeb958183eaeaa23e255"};
 firebase.initializeApp(firebaseConfig);const db=firebase.database();
 let fulls=[],fIdx=0,tempoFull=11,intervaloFull=90;
@@ -63,16 +67,11 @@ function render(dados){
     let pts=fmt(at.pontos); let tiros=(at.tiros||[]).join('/').toUpperCase();
     let cls=i==0?'pos1':i==1?'pos2':i==2?'pos3':'';
     let subiu = (posicaoBruta[k] > (i+1))? `<span class="badge-subiu">⬆ SUBIU</span>` : "";
-    h+=`<div class="linha ${cls}"><div class="pos">${i+1}º</div><div style="flex:1;overflow:hidden"><b style="font-size:13px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${at.nome} ${subiu}</b><div style="font-size:10px;color:#888;font-family:Arial">${at.prova||''} • ${tiros}</div></div><div class="pts">${pts} <small style="font-size:10px">pts</small></div></div>`;
+    h+=`<div class="linha ${cls}"><div class="pos">${i+1}º</div><div class="nome-wrap"><div class="nome">${at.nome} ${subiu}</div><div class="tiros">${at.prova||''} • ${tiros}</div></div><div class="pts">${pts}<small style="font-size:11px"> pts</small></div></div>`;
   });
   document.getElementById('lista').innerHTML=h||'Aguardando...';
 }
-function loopFull(){
-  if(fulls.length==0){setTimeout(loopFull,intervaloFull*1000);return;}
-  if(fIdx>=fulls.length){fIdx=0;setTimeout(loopFull,intervaloFull*1000);return;}
-  let f=fulls[fIdx]; fullImg.src=f.arte||f.url; full.style.display='flex';
-  setTimeout(()=>{full.style.display='none';fIdx++;loopFull();},(f.tempo||tempoFull)*1000);
-}
+function loopFull(){ if(fulls.length==0){setTimeout(loopFull,intervaloFull*1000);return;} if(fIdx>=fulls.length){fIdx=0;setTimeout(loopFull,intervaloFull*1000);return;} let f=fulls[fIdx]; fullImg.src=f.arte||f.url; full.style.display='flex'; setTimeout(()=>{full.style.display='none';fIdx++;loopFull();},(f.tempo||tempoFull)*1000); }
 setTimeout(loopFull,5000);
 </script>
 </body>
