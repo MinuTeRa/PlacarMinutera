@@ -1,10 +1,9 @@
-<!DOCTYPE html><html><head><meta charset="UTF-8"><title>TV FTERJ V26.1 - CHAVE NOVA - FULL CORRIGIDO</title>
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>TV FTERJ V26.2 - FULL CORRIGIDO CHAVE NOVA</title>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 <style>
-:root{ --font-header: 6.5vh; }
 *{margin:0;padding:0;box-sizing:border-box}
-:root{ --header-h:11vh; --linha-h:6.1vh; --rodape-h:5.5vh; --font-nome:2.3vh; --font-total:3vh; --font-prova:2.8vh; --font-detalhe:2.05vh; --font-relogio:2.1vh; --logo-h:6.5vh; }
+:root{ --header-h:11vh; --linha-h:6.1vh; --rodape-h:5.5vh; --font-nome:2.3vh; --font-total:3vh; --font-prova:2.8vh; --font-detalhe:2.05vh; --font-relogio:2.1vh; --logo-h:6.5vh; --font-header:6.5vh; }
 html,body{height:100vh;overflow:hidden}
 body{background:#000;color:#fff;font-family:Arial;display:flex;flex-direction:column}
 #header{height:var(--header-h);background:linear-gradient(90deg,#FF8C00,#FF6A00);display:flex;align-items:center;justify-content:center;position:relative}
@@ -16,9 +15,9 @@ body{background:#000;color:#fff;font-family:Arial;display:flex;flex-direction:co
 #ranking{flex:1;display:flex;flex-direction:column;gap:.4vh;padding:.4vh.6vw;overflow:hidden;justify-content:space-between}
 .linha{display:flex;align-items:center;background:#1a1a1a;border-radius:8px;padding:0 0.8vw;height:var(--linha-h)}
 .linha.ouro{background:#FFD700;color:#000}.linha.prata{background:#C0C0C0;color:#000}.linha.bronze{background:#CD7F32;color:#000}
-.linha.ouro .pos,.linha.ouro .nome,.linha.ouro .prova,.linha.ouro .total,.linha.ouro .detalhe{color:#000!important}
-.linha.prata .pos,.linha.prata .nome,.linha.prata .prova,.linha.prata .total,.linha.prata .detalhe{color:#000!important}
-.linha.bronze .pos,.linha.bronze .nome,.linha.bronze .prova,.linha.bronze .total,.linha.bronze .detalhe{color:#000!important}
+.linha.ouro.pos,.linha.ouro.nome,.linha.ouro.prova,.linha.ouro.total,.linha.ouro.detalhe{color:#000!important}
+.linha.prata.pos,.linha.prata.nome,.linha.prata.prova,.linha.prata.total,.linha.prata.detalhe{color:#000!important}
+.linha.bronze.pos,.linha.bronze.nome,.linha.bronze.prova,.linha.bronze.total,.linha.bronze.detalhe{color:#000!important}
 .pos{width:3.5vw;font-weight:900;text-align:center;font-size:var(--font-nome)}
 .nome{flex:1;font-size:var(--font-nome);font-weight:800;text-transform:uppercase;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:flex;align-items:center;gap:.6vw}
 .prova{width:8vw;text-align:center;font-size:var(--font-prova);font-weight:900;color:#00E5FF}
@@ -29,13 +28,14 @@ body{background:#000;color:#fff;font-family:Arial;display:flex;flex-direction:co
 #textoRodape{color:#FFD700;font-weight:900;text-align:center;opacity:0;transition:opacity.8s;white-space:nowrap;width:100%}
 #textoRodape.show{opacity:1}
 #full{position:fixed;inset:0;background:#000;display:none;align-items:center;justify-content:center;z-index:9999;}
-#full img{width:100vw;height:100vh;object-fit:contain;background:#000;border:none!important;border-radius:0!important;}
+#full img{width:100vw;height:100vh;object-fit:contain;background:#000;}
 </style></head><body>
-<div id="header"><div id="logoEsq" class="logo"><img id="imgLogoMinu" src="logo-minha.png" onerror="this.parentElement.innerHTML='MinuT&Ra'"></div><h1>3x7 MinuT&Ra - FTERJ</h1><div id="relogioTopo"><span id="dhTopo">--:--:--</span></div><div id="logoDir" class="logo"><img id="imgLogoClube" src="logo-clube.png" onerror="this.parentElement.innerHTML='FTERJ'"></div></div>
+<div id="header"><div id="logoEsq" class="logo"><img id="imgLogoMinu" src="https://i.imgur.com/placeholder.png" onerror="this.parentElement.innerHTML='MinuT&Ra'"></div><h1>3x7 MinuT&Ra - FTERJ</h1><div id="relogioTopo"><span id="dhTopo">--:--:--</span></div><div id="logoDir" class="logo"><img id="imgLogoClube" src="https://i.imgur.com/placeholder.png" onerror="this.parentElement.innerHTML='FTERJ'"></div></div>
 <div id="ranking">CARREGANDO...</div>
 <div id="rodape"><div id="textoRodape"></div></div>
 <div id="full"><img id="imgFull"></div>
 <script>
+// === CHAVE NOVA - CORRIGE API_KEY_INVALID ===
 const firebaseConfig={
   apiKey: "AIzaSyA6DCLCJ86Qoe2Ph3VuCF6_vYv6EARedKE",
   authDomain: "placar-minutera.firebaseapp.com",
@@ -48,7 +48,9 @@ const firebaseConfig={
 firebase.initializeApp(firebaseConfig);const db=firebase.database();
 function toArr(d){if(!d)return[];if(Array.isArray(d))return d.filter(x=>x);return Object.values(d).filter(x=>x)}
 let RODAPES=[],FULL=[];
-let CFG={propPx:28,contPx:20,escala:100,headerH:11,linhaH:6.1,rodapeH:5.5,fontNome:2.3,fontTotal:3,fontProva:2.8,fontDetalhe:2.05,fontRelogio:2.1,logoH:6.5,intervaloFull:30,tempoFull:6,tempoRodape:4};
+let CFG={propPx:28,contPx:20,escala:100,headerH:11,linhaH:6.1,rodapeH:5.5,fontNome:2.3,fontTotal:3,fontProva:2.8,fontDetalhe:2.05,fontRelogio:2.1,logoH:6.5,intervaloFull:90,tempoFull:11,tempoRodape:7,logoMinu:"",logoClube:""};
+let rodapeIndex=0,rodapeTimer=null;
+let TEMPO_RODAPE=7000,TEMPO_FULL=11000,INTERVALO_FULL=90000;
 
 function applyConfig(){
   document.body.style.zoom=(CFG.escala||100)/100;
@@ -63,27 +65,32 @@ function applyConfig(){
   document.documentElement.style.setProperty('--logo-h',(CFG.logoH||6.5)+'vh');
   if(CFG.logoMinu) document.getElementById('imgLogoMinu').src=CFG.logoMinu;
   if(CFG.logoClube) document.getElementById('imgLogoClube').src=CFG.logoClube;
+
+  TEMPO_RODAPE = (CFG.tempoRodape||7)*1000;
+  TEMPO_FULL = (CFG.tempoFull||11)*1000;
+  INTERVALO_FULL = (CFG.intervaloFull||90)*1000;
+
   renderRodape();
   agendaBlocoFull();
+  console.log("✅ CONFIG APLICADA:",CFG,"RODAPE:",TEMPO_RODAPE/1000+"s","FULL:",TEMPO_FULL/1000+"s","INTERVALO:",INTERVALO_FULL/1000+"s");
 }
-let rodapeIndex=0,rodapeTimer=null;
+
 function renderRodape(){
   let el=document.getElementById('textoRodape');
-  if(RODAPES.length==0){el.innerHTML='ADIQUIRA JA SUA MinuT&Ra';el.classList.add('show');return}
+  if(RODAPES.length==0){el.innerHTML='ADQUIRA JA SUA MinuT&Ra';el.classList.add('show');return}
   if(rodapeTimer)clearInterval(rodapeTimer);
   function mostraProximo(){
     el.classList.remove('show');
     setTimeout(()=>{
       let r=RODAPES[rodapeIndex];
       let prop = r.prop||r.nome||''; let cont = r.contato||'';
-      if(prop && cont){el.innerHTML=`<span style="font-size:${CFG.propPx||28}px">${prop}</span><span style="font-size:${CFG.contPx||20}px;color:#fff"> | ${cont}</span>`;}
-      else{el.innerHTML=`<span style="font-size:${CFG.propPx||28}px">${prop} ${cont}</span>`;}
+      if(prop && cont){el.innerHTML=`<span style="font-size:${CFG.propPx||35}px">${prop}</span><span style="font-size:${CFG.contPx||35}px;color:#fff"> | ${cont}</span>`;}
+      else{el.innerHTML=`<span style="font-size:${CFG.propPx||35}px">${prop} ${cont}</span>`;}
       el.classList.add('show'); rodapeIndex=(rodapeIndex+1)%RODAPES.length
     },800)
   }
   mostraProximo();
-  let t = (CFG.tempoRodape || CFG.cfgTempoRodape || 4) * 1000;
-  rodapeTimer=setInterval(mostraProximo, t);
+  rodapeTimer=setInterval(mostraProximo, TEMPO_RODAPE);
 }
 function contaTirosXa0(tiros){let m={X:0,'10':0,'9':0,'8':0,'7':0,'6':0,'5':0,'4':0,'3':0,'2':0,'1':0,'0':0};(tiros||[]).forEach(t=>{let k=String(t).toUpperCase();if(m.hasOwnProperty(k))m[k]++});return `X:${m.X} |10:${m['10']} |9:${m['9']} |8:${m['8']} |7:${m['7']} |6:${m['6']} |5:${m['5']} |4:${m['4']} |3:${m['3']} |2:${m['2']} |1:${m['1']} |0:${m['0']}`}
 function filtraTop5Unico(listaOrdenada){
@@ -96,14 +103,20 @@ db.ref("PATROCINADORES_FULL_FTERJ").on('value',s=>{FULL=toArr(s.val()).filter(r=
 
 db.ref("CONFIG_ANUNCIOS_FTERJ").on('value',s=>{
   let v=s.val();if(!v)return;
-  // CORREÇÃO: aceita tanto tempoFull quanto cfgTempoFull
-  for(let k in v){if(typeof v[k]==='string'){let num=parseFloat(v[k].replace(',','.')); if(!isNaN(num)) v[k]=num;}}
-  // Mapeia nomes antigos para novos para compatibilidade
+  // COMPATIBILIDADE: aceita nomes antigos e novos
   if(v.cfgTempoRodape &&!v.tempoRodape) v.tempoRodape = v.cfgTempoRodape;
   if(v.cfgTempoFull &&!v.tempoFull) v.tempoFull = v.cfgTempoFull;
   if(v.cfgIntervalo &&!v.intervaloFull) v.intervaloFull = v.cfgIntervalo;
+  if(v.propPx) v.propPx = parseInt(v.propPx);
+  if(v.contPx) v.contPx = parseInt(v.contPx);
+
+  for(let k in v){
+    if(typeof v[k]==='string' &&!k.includes('logo') &&!k.includes('Logo')){
+      let num=parseFloat(v[k].replace(',','.'));
+      if(!isNaN(num)) v[k]=num;
+    }
+  }
   CFG={...CFG,...v};
-  console.log("CONFIG NOVA RECEBIDA:", CFG);
   applyConfig();
 });
 
@@ -128,9 +141,8 @@ async function mostraBlocoFull(){
     if(!url) continue;
     document.getElementById('imgFull').src=url;
     document.getElementById('full').style.display='flex';
-    let tempoIndividual = (f.tempo||CFG.tempoFull||CFG.cfgTempoFull||6)*1000;
-    console.log("MOSTRANDO FULL", i, "POR", tempoIndividual/1000, "seg");
-    await new Promise(r=>setTimeout(r, tempoIndividual));
+    console.log("MOSTRANDO FULL",i+1,"/",FULL.length,"POR",TEMPO_FULL/1000,"s");
+    await new Promise(r=>setTimeout(r,TEMPO_FULL));
   }
   document.getElementById('full').style.display='none';
   emBloco=false;
@@ -138,9 +150,8 @@ async function mostraBlocoFull(){
 }
 function agendaBlocoFull(){
   if(timerFullBloco) clearTimeout(timerFullBloco);
-  let intervalo = (CFG.intervaloFull || CFG.cfgIntervalo || 30) * 1000;
-  console.log("PRÓXIMO FULL EM:", intervalo/1000, "seg");
-  timerFullBloco = setTimeout(mostraBlocoFull, intervalo);
+  console.log("PRÓXIMO BLOCO FULL EM:",INTERVALO_FULL/1000,"s");
+  timerFullBloco = setTimeout(mostraBlocoFull, INTERVALO_FULL);
 }
 setTimeout(mostraBlocoFull, 15000);
 applyConfig();
