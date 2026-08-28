@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CELULAR - V27.2 FINAL</title>
+<title>CELULAR - V27.3 PODIUM + SUBIU</title>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 <style>
@@ -13,10 +13,15 @@ body{background:#000;color:#fff;font-family:Arial Black,Arial;height:100vh;overf
 #txtMinu{text-transform:none!important;color:#FFD700;font-size:14px;font-weight:900}
 #txtClube{text-transform:uppercase;color:#fff;font-size:14px;font-weight:900}
 .placar{height:calc(100vh - 56px);overflow:auto;padding:6px}
-.linha{display:flex;align-items:center;justify-content:space-between;background:#111;border:2px solid #222;border-left:6px solid #333;padding:12px;margin-bottom:6px;border-radius:4px}
-.linha.pos1{border-color:#FFD700;background:#1a1500}
-.pos{font-size:26px;min-width:44px;color:#333;text-align:center}
+.linha{display:flex;align-items:center;justify-content:space-between;background:#111;border:2px solid #222;border-left:6px solid #333;padding:12px;margin-bottom:6px;border-radius:4px;position:relative}
+.linha.pos1{border-color:#FFD700;background:linear-gradient(90deg,#1a1500,#2a2200);border-left-color:#FFD700}
+.linha.pos2{border-color:#C0C0C0;background:linear-gradient(90deg,#1a1a1a,#222);border-left-color:#C0C0C0}
+.linha.pos3{border-color:#CD7F32;background:linear-gradient(90deg,#1a1000,#251a00);border-left-color:#CD7F32}
+.pos{font-size:26px;min-width:44px;text-align:center}
+.pos1.pos{color:#FFD700}.pos2.pos{color:#C0C0C0}.pos3.pos{color:#CD7F32}
 .pts{font-size:24px;color:#fff;font-weight:900}
+.badge-subiu{background:#00E676;color:#000;font-size:9px;font-weight:900;padding:2px 6px;border-radius:10px;margin-left:6px;font-family:Arial;vertical-align:middle}
+.linha.pos1.pts{color:#FFD700}.linha.pos2.pts{color:#C0C0C0}.linha.pos3.pts{color:#CD7F32}
 #full{position:fixed;inset:0;background:#000;z-index:999;display:none;justify-content:center;align-items:center}
 #full img{width:100%;height:100%;object-fit:contain}
 </style>
@@ -24,56 +29,37 @@ body{background:#000;color:#fff;font-family:Arial Black,Arial;height:100vh;overf
 <body>
 <script>const TEXTO_MINUTERA_FIXO = "MinuT&Ra";</script>
 <div class="header">
-  <img id="logoMinu" src="logo-minha.png">
-  <span id="txtMinu">MinuT&Ra</span>
-  <img id="logoClube" src="logo-clube.png">
-  <span id="txtClube">FTERJ</span>
+  <img id="logoMinu" src="logo-minha.png"><span id="txtMinu">MinuT&Ra</span>
+  <img id="logoClube" src="logo-clube.png"><span id="txtClube">FTERJ</span>
   <div style="margin-left:auto;color:#FF8C00;font-size:9px;font-family:Arial">PLACAR AO VIVO</div>
 </div>
 <div class="placar" id="lista">CARREGANDO...</div>
 <div id="full" onclick="this.style.display='none'"><img id="fullImg"></div>
 <script>
 document.getElementById('txtMinu').innerText = TEXTO_MINUTERA_FIXO;
-const firebaseConfig={
-  apiKey:"AIzaSyA6DCLCJ86Qoe2Ph3VuCF6_vYv6EARedKE",
-  authDomain:"placar-minutera.firebaseapp.com",
-  databaseURL:"https://placar-minutera-default-rtdb.firebaseio.com",
-  projectId:"placar-minutera",
-  storageBucket:"placar-minutera.firebasestorage.app",
-  messagingSenderId:"689991648080",
-  appId:"1:689991648080:web:9deeb958183eaeaa23e255"
-};
+const firebaseConfig={apiKey:"AIzaSyA6DCLCJ86Qoe2Ph3VuCF6_vYv6EARedKE",authDomain:"placar-minutera.firebaseapp.com",databaseURL:"https://placar-minutera-default-rtdb.firebaseio.com",projectId:"placar-minutera",storageBucket:"placar-minutera.firebasestorage.app",messagingSenderId:"689991648080",appId:"1:689991648080:web:9deeb958183eaeaa23e255"};
 firebase.initializeApp(firebaseConfig);const db=firebase.database();
 let fulls=[],fIdx=0,tempoFull=11,intervaloFull=90;
 db.ref("CONFIG_ANUNCIOS_FTERJ").on('value',s=>{
-  let c=s.val()||{};
-  tempoFull=c.tempoFull||11;
-  intervaloFull=c.intervaloFull||90;
-  if(c.logoClube && c.logoClube.trim().startsWith('http')){
-    logoClube.src=c.logoClube;
-  } else {
-    logoClube.src='logo-clube.png';
-  }
-  if(c.logoMinu && c.logoMinu.trim().startsWith('http')){
-    logoMinu.src=c.logoMinu;
-  } else {
-    logoMinu.src='logo-minha.png';
-  }
-  let raw=c.nomeClube||c.clube||c.banco||"FTERJ";
-  if(raw){
-    let nome=String(raw).split(" - ").pop().split("-").pop().split("_").pop().replace(/CLUBE/gi,"").trim();
-    if(nome) txtClube.innerText=nome.toUpperCase();
-  }
+  let c=s.val()||{}; tempoFull=c.tempoFull||11; intervaloFull=c.intervaloFull||90;
+  logoClube.src=(c.logoClube&&c.logoClube.startsWith('http'))?c.logoClube:'logo-clube.png';
+  logoMinu.src=(c.logoMinu&&c.logoMinu.startsWith('http'))?c.logoMinu:'logo-minha.png';
+  let raw=c.nomeClube||"FTERJ"; let nome=String(raw).split(" - ").pop().split("-").pop().split("_").pop().replace(/CLUBE/gi,"").trim(); if(nome) txtClube.innerText=nome.toUpperCase();
 });
 db.ref("FTERJ").on('value',s=>{render(s.val()||{});});
 db.ref("PATROCINADORES_FULL_FTERJ").on('value',s=>{
-  let d=s.val()||{};
-  fulls=Object.values(d).filter(x=>x.ativo!==false).map(f=>({...f,tempo:f.tempo||tempoFull}));
+  let d=s.val()||{}; fulls=Object.values(d).filter(x=>x.ativo!==false).map(f=>({...f,tempo:f.tempo||tempoFull}));
 });
 function fmt(p){return (Math.round((parseFloat(p)||0)*100)/100).toFixed(2)}
 function render(dados){
   let ks=Object.keys(dados).filter(k=>k.startsWith("serie_"));
   ks.sort((a,b)=>(parseFloat(dados[b].pontos)||0)-(parseFloat(dados[a].pontos)||0));
+
+  // REGRA BRUTA sem filtro (posicao real por pontos)
+  let posicaoBruta = {};
+  ks.forEach((k,i)=>{posicaoBruta[k]=i+1});
+
+  // REGRA SUBIU - TOP5 nomes únicos
   let top5=[], usadosNome=new Set(), usadosKey=new Set();
   for(let k of ks){
     if(top5.length>=5) break;
@@ -83,25 +69,24 @@ function render(dados){
   }
   let resto=ks.filter(k=>!usadosKey.has(k));
   let lista=[...top5,...resto];
+
   let h="";
   lista.forEach((k,i)=>{
-    let at=dados[k];
-    if(!at.nome) return;
+    let at=dados[k]; if(!at.nome) return;
     let pts=fmt(at.pontos);
     let tiros=(at.tiros||[]).join('/').toUpperCase();
-    let cls=i==0?'pos1':'';
-    h+=`<div class="linha ${cls}"><div class="pos">${i+1}º</div><div style="flex:1;overflow:hidden"><b style="font-size:13px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${at.nome}</b><div style="font-size:10px;color:#888;font-family:Arial">${at.prova||''} • ${tiros}</div></div><div class="pts">${pts} <small style="font-size:10px">pts</small></div></div>`;
+    let cls=i==0?'pos1':i==1?'pos2':i==2?'pos3':'';
+    let posBruta=posicaoBruta[k];
+    let subiu = (i<5 && posBruta>5)? `<span class="badge-subiu">⬆ SUBIU</span>` : "";
+    h+=`<div class="linha ${cls}"><div class="pos">${i+1}º</div><div style="flex:1;overflow:hidden"><b style="font-size:13px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${at.nome} ${subiu}</b><div style="font-size:10px;color:#888;font-family:Arial">${at.prova||''} • ${tiros}</div></div><div class="pts">${pts} <small style="font-size:10px">pts</small></div></div>`;
   });
   document.getElementById('lista').innerHTML=h||'Aguardando...';
 }
 function loopFull(){
   if(fulls.length==0){setTimeout(loopFull,intervaloFull*1000);return;}
   if(fIdx>=fulls.length){fIdx=0;setTimeout(loopFull,intervaloFull*1000);return;}
-  let f=fulls[fIdx];
-  fullImg.src=f.arte||f.url;
-  full.style.display='flex';
-  let tempoUsado = (f.tempo||tempoFull)*1000;
-  setTimeout(()=>{full.style.display='none';fIdx++;loopFull();},tempoUsado);
+  let f=fulls[fIdx]; fullImg.src=f.arte||f.url; full.style.display='flex';
+  setTimeout(()=>{full.style.display='none';fIdx++;loopFull();},(f.tempo||tempoFull)*1000);
 }
 setTimeout(loopFull,5000);
 </script>
