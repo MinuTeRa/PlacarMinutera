@@ -2,35 +2,35 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CELULAR - V27.7 UMA LINHA</title>
+<title>CELULAR - V27.8 LINHA ALTA</title>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{background:#000;color:#fff;font-family:Arial Black,Arial;height:100vh;overflow:hidden}
-.header{height:50px;background:#000;border-bottom:3px solid #FF8C00;display:flex;align-items:center;padding:0 10px;gap:8px}
-.header img{height:24px;background:#fff;border-radius:3px;padding:2px}
-.placar{height:calc(100vh - 50px);overflow:auto;padding:4px;display:flex;flex-direction:column;gap:3px}
-.linha{display:flex;align-items:center;background:#1a1a1a;border:2px solid #333;border-left:7px solid #555;padding:6px 8px;border-radius:5px;gap:8px;white-space:nowrap;overflow:hidden}
-.linha.pos1{border-color:#FFD700;background:linear-gradient(90deg,#FFD700,#FFB700);color:#000;box-shadow:0 0 8px rgba(255,215,0,.4)}
+.header{height:56px;background:#000;border-bottom:4px solid #FF8C00;display:flex;align-items:center;padding:0 12px;gap:10px}
+.header img{height:28px;background:#fff;border-radius:4px;padding:2px 4px}
+.placar{height:calc(100vh - 56px);overflow:auto;padding:8px;display:flex;flex-direction:column;gap:6px}
+.linha{display:flex;align-items:center;background:#1e1e1e;border:2px solid #333;border-left:8px solid #555;padding:14px 12px;border-radius:6px;gap:10px;white-space:nowrap;overflow:hidden}
+.linha.pos1{border-color:#FFD700;background:linear-gradient(90deg,#FFD700,#FFB700);color:#000;box-shadow:0 0 10px rgba(255,215,0,.5)}
 .linha.pos2{border-color:#E8E8E8;background:linear-gradient(90deg,#E8E8E8,#C0C0C0);color:#000}
-.linha.pos3{border-color:#FF8C00;background:linear-gradient(90deg,#CD7F32,#FF8C00);color:#fff}
-/* TUDO 15px MESMO TAMANHO */
-.pos,.nome,.tiros,.pts{font-size:15px;font-weight:900;line-height:1}
-.pos{min-width:32px;text-align:center}
+.linha.pos3{border-color:#FF8C00;background:linear-gradient(90deg,#FF8C00,#CD7F32);color:#fff}
+/* TUDO 16px MESMA LINHA */
+.pos,.nome,.tiros,.pts{font-size:16px;font-weight:900;line-height:1.2}
+.pos{min-width:40px;text-align:center}
 .nome{flex:1;overflow:hidden;text-overflow:ellipsis;text-transform:uppercase;min-width:0}
-.tiros{font-family:Arial;font-weight:800;opacity:0.8;max-width:35%;overflow:hidden;text-overflow:ellipsis}
-.pts{min-width:75px;text-align:right}
-.badge-subiu{background:#00FF6A;color:#000;font-size:10px;font-weight:900;padding:1px 5px;border-radius:8px;margin-left:4px}
+.tiros{font-family:Arial;font-weight:800;opacity:0.85;max-width:38%;overflow:hidden;text-overflow:ellipsis}
+.pts{min-width:85px;text-align:right;font-size:17px}
+.badge-subiu{background:#00FF6A;color:#000;font-size:11px;font-weight:900;padding:2px 6px;border-radius:8px;margin-left:6px}
 #full{position:fixed;inset:0;background:#000;z-index:999;display:none;justify-content:center;align-items:center}
 #full img{width:100%;height:100%;object-fit:contain}
 </style>
 </head>
 <body>
 <div class="header">
-  <img id="logoMinu" src="logo-minha.png"><span id="txtMinu" style="color:#FFD700;font-weight:900">MinuT&Ra</span>
-  <img id="logoClube" src="logo-clube.png"><span id="txtClube" style="font-weight:900">FTERJ</span>
-  <span style="margin-left:auto;color:#FF8C00;font-size:8px;font-family:Arial">PLACAR AO VIVO</span>
+  <img id="logoMinu" src="logo-minha.png"><span style="color:#FFD700;font-weight:900">MinuT&Ra</span>
+  <img id="logoClube" src="logo-clube.png"><span style="font-weight:900">FTERJ</span>
+  <span style="margin-left:auto;color:#FF8C00;font-size:9px;font-family:Arial">PLACAR AO VIVO</span>
 </div>
 <div class="placar" id="lista">CARREGANDO...</div>
 <div id="full" onclick="this.style.display='none'"><img id="fullImg"></div>
@@ -42,7 +42,6 @@ db.ref("CONFIG_ANUNCIOS_FTERJ").on('value',s=>{
   let c=s.val()||{}; tempoFull=c.tempoFull||11; intervaloFull=c.intervaloFull||90;
   logoClube.src=(c.logoClube&&c.logoClube.startsWith('http'))?c.logoClube:'logo-clube.png';
   logoMinu.src=(c.logoMinu&&c.logoMinu.startsWith('http'))?c.logoMinu:'logo-minha.png';
-  let raw=c.nomeClube||"FTERJ"; let nome=String(raw).split(" - ").pop().split("-").pop().split("_").pop().replace(/CLUBE/gi,"").trim(); if(nome) txtClube.innerText=nome.toUpperCase();
 });
 db.ref("FTERJ").on('value',s=>{render(s.val()||{});});
 db.ref("PATROCINADORES_FULL_FTERJ").on('value',s=>{
