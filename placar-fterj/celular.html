@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CELULAR - V27.3 PODIUM + SUBIU</title>
+<title>CELULAR - V27.4 SUBIU SIMPLES</title>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 <style>
@@ -13,15 +13,14 @@ body{background:#000;color:#fff;font-family:Arial Black,Arial;height:100vh;overf
 #txtMinu{text-transform:none!important;color:#FFD700;font-size:14px;font-weight:900}
 #txtClube{text-transform:uppercase;color:#fff;font-size:14px;font-weight:900}
 .placar{height:calc(100vh - 56px);overflow:auto;padding:6px}
-.linha{display:flex;align-items:center;justify-content:space-between;background:#111;border:2px solid #222;border-left:6px solid #333;padding:12px;margin-bottom:6px;border-radius:4px;position:relative}
+.linha{display:flex;align-items:center;justify-content:space-between;background:#111;border:2px solid #222;border-left:6px solid #333;padding:12px;margin-bottom:6px;border-radius:4px}
 .linha.pos1{border-color:#FFD700;background:linear-gradient(90deg,#1a1500,#2a2200);border-left-color:#FFD700}
 .linha.pos2{border-color:#C0C0C0;background:linear-gradient(90deg,#1a1a1a,#222);border-left-color:#C0C0C0}
 .linha.pos3{border-color:#CD7F32;background:linear-gradient(90deg,#1a1000,#251a00);border-left-color:#CD7F32}
 .pos{font-size:26px;min-width:44px;text-align:center}
 .pos1.pos{color:#FFD700}.pos2.pos{color:#C0C0C0}.pos3.pos{color:#CD7F32}
 .pts{font-size:24px;color:#fff;font-weight:900}
-.badge-subiu{background:#00E676;color:#000;font-size:9px;font-weight:900;padding:2px 6px;border-radius:10px;margin-left:6px;font-family:Arial;vertical-align:middle}
-.linha.pos1.pts{color:#FFD700}.linha.pos2.pts{color:#C0C0C0}.linha.pos3.pts{color:#CD7F32}
+.badge-subiu{background:#00E676;color:#000;font-size:9px;font-weight:900;padding:3px 7px;border-radius:10px;margin-left:6px;font-family:Arial;vertical-align:middle}
 #full{position:fixed;inset:0;background:#000;z-index:999;display:none;justify-content:center;align-items:center}
 #full img{width:100%;height:100%;object-fit:contain}
 </style>
@@ -54,30 +53,16 @@ function fmt(p){return (Math.round((parseFloat(p)||0)*100)/100).toFixed(2)}
 function render(dados){
   let ks=Object.keys(dados).filter(k=>k.startsWith("serie_"));
   ks.sort((a,b)=>(parseFloat(dados[b].pontos)||0)-(parseFloat(dados[a].pontos)||0));
-
-  // REGRA BRUTA sem filtro (posicao real por pontos)
-  let posicaoBruta = {};
-  ks.forEach((k,i)=>{posicaoBruta[k]=i+1});
-
-  // REGRA SUBIU - TOP5 nomes únicos
+  let posicaoBruta={}; ks.forEach((k,i)=>{posicaoBruta[k]=i+1});
   let top5=[], usadosNome=new Set(), usadosKey=new Set();
-  for(let k of ks){
-    if(top5.length>=5) break;
-    let nk=(dados[k].nome||'').trim().toUpperCase();
-    if(!nk) continue;
-    if(!usadosNome.has(nk)){usadosNome.add(nk);usadosKey.add(k);top5.push(k);}
-  }
-  let resto=ks.filter(k=>!usadosKey.has(k));
-  let lista=[...top5,...resto];
-
+  for(let k of ks){ if(top5.length>=5) break; let nk=(dados[k].nome||'').trim().toUpperCase(); if(!nk) continue; if(!usadosNome.has(nk)){usadosNome.add(nk);usadosKey.add(k);top5.push(k);} }
+  let resto=ks.filter(k=>!usadosKey.has(k)); let lista=[...top5,...resto];
   let h="";
   lista.forEach((k,i)=>{
     let at=dados[k]; if(!at.nome) return;
-    let pts=fmt(at.pontos);
-    let tiros=(at.tiros||[]).join('/').toUpperCase();
+    let pts=fmt(at.pontos); let tiros=(at.tiros||[]).join('/').toUpperCase();
     let cls=i==0?'pos1':i==1?'pos2':i==2?'pos3':'';
-    let posBruta=posicaoBruta[k];
-    let subiu = (i<5 && posBruta>5)? `<span class="badge-subiu">⬆ SUBIU</span>` : "";
+    let subiu = (posicaoBruta[k] > (i+1))? `<span class="badge-subiu">⬆ SUBIU</span>` : "";
     h+=`<div class="linha ${cls}"><div class="pos">${i+1}º</div><div style="flex:1;overflow:hidden"><b style="font-size:13px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${at.nome} ${subiu}</b><div style="font-size:10px;color:#888;font-family:Arial">${at.prova||''} • ${tiros}</div></div><div class="pts">${pts} <small style="font-size:10px">pts</small></div></div>`;
   });
   document.getElementById('lista').innerHTML=h||'Aguardando...';
