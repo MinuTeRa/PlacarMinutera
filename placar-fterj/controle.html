@@ -1,177 +1,93 @@
-<!DOCTYPE html><html lang="pt-BR"><head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CONTROLE V29 - 3 TVs</title>
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>CONTROLE FTERJ - V28 </title>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script><script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script><script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script><script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
 <style>
-*{margin:0;padding:0;box-sizing:border-box}
-body{background:#0a0a0a;color:#fff;font-family:Arial;padding:15px}
-h2{color:#FF8C00;margin:15px 0 8px 0;border-left:4px solid #FF8C00;padding-left:8px}
-.card{background:#1e1e1e;border:1px solid #333;border-radius:10px;padding:15px;margin-bottom:15px}
-.abas{display:flex;gap:8px;margin-bottom:15px}
-.aba{flex:1;padding:12px;text-align:center;border-radius:8px;font-weight:900;cursor:pointer;border:2px solid #333;background:#222;color:#888}
-.aba.ativa{background:#FF8C00;color:#000;border-color:#FF8C00}
-label{font-size:11px;color:#aaa;display:block;margin:8px 0 3px 0;font-weight:800}
-input[type=range]{width:100%}
-input[type=text],input[type=number]{width:100%;padding:10px;background:#000;color:#fff;border:1px solid #444;border-radius:6px}
-.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.btn{width:100%;padding:12px;background:#FF8C00;color:#000;border:none;border-radius:8px;font-weight:900;cursor:pointer;margin-top:10px}
-.btn-sec{background:#333;color:#fff}
-.val{float:right;color:#FFD700}
-.small{font-size:11px;color:#888}
-.preview{height:60px;background:#000;border:2px dashed #444;border-radius:8px;display:flex;align-items:center;justify-content:center;margin-top:8px;overflow:hidden}
-.preview img{height:100%;max-width:100%;object-fit:contain}
+*{margin:0;padding:0;box-sizing:border-box}body{background:#f5f5f7;font-family:Inter,Arial;color:#1d1d1f}
+#login{position:fixed;inset:0;background:#000;z-index:9999;display:flex;justify-content:center;align-items:center;flex-direction:column}
+#login input{width:280px;padding:14px;margin:10px;border-radius:10px;border:1px solid #FF8C00;background:#111;color:#fff;text-align:center}
+#login button{width:280px;padding:12px;background:#FF8C00;color:#000;font-weight:900;border:none;border-radius:10px;cursor:pointer}
+.header{background:#000;color:#FF8C00;padding:14px;text-align:center;font-weight:900}
+.tabs{display:flex;background:#fff;border-bottom:1px solid #ddd;position:sticky;top:0;z-index:10;overflow-x:auto}
+.tab{flex:1;padding:14px;text-align:center;font-weight:700;cursor:pointer;border-bottom:3px solid transparent;color:#888;font-size:12px;white-space:nowrap}
+.tab.active{color:#000;border-bottom-color:#FF8C00}
+.painel{display:none;padding:16px;max-width:800px;margin:0 auto}.painel.active{display:block}
+.card{background:#fff;border-radius:16px;padding:16px;margin-bottom:16px;box-shadow:0 2px 10px rgba(0,0,0,0.06)}
+.card h3{font-size:14px;margin-bottom:12px;color:#FF6A00}
+label{font-size:11px;font-weight:700;color:#666;margin-top:10px;display:block}
+input,select{width:100%;padding:12px;background:#f5f5f7;border:1px solid #e5e5e5;border-radius:10px;margin-top:4px;font-size:14px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.btn{width:100%;padding:12px;border:none;border-radius:10px;font-weight:900;cursor:pointer;margin-top:8px;font-size:14px}
+.btn-laranja{background:#FF8C00;color:#000}.btn-preto{background:#000;color:#fff}.btn-vermelho{background:#ff3b30;color:#fff}
+.item{display:flex;align-items:center;gap:10px;background:#f9f9fb;padding:10px;border-radius:12px;margin-top:8px;border:1px solid #eee}
+.item img{width:48px;height:32px;object-fit:cover;border-radius:6px;background:#ddd}
+.item-info{flex:1;font-size:12px}.badge{font-size:10px;padding:3px 6px;border-radius:20px;font-weight:800}.badge.on{background:#d4f8d4;color:#0a7a0a}.badge.off{background:#ffd6d6;color:#a00}.badge.grupo{background:#FF8C00;color:#000;margin-left:6px}
+.icon-btn{width:32px;height:32px;border-radius:8px;border:none;font-weight:900;cursor:pointer}.ativar{background:#000;color:#fff}.apagar{background:#ff3b30;color:#fff}
+.tempo-box{display:flex;align-items:center;gap:4px;margin-top:4px;background:#fff3e0;padding:4px 8px;border-radius:8px;border:1px dashed #FF8C00}
+.tempo-box input{width:60px;padding:4px;margin:0;text-align:center;font-weight:900}
 </style></head><body>
-<h2 style="color:#FFD700">CONTROLE V29 - 3 TVs - MESMOS PATROCINIOS</h2>
-
-<div class="abas">
-<div class="aba ativa" id="abaTV" onclick="trocaPerfil('TV')">TV PADRÃO<br><span class="small">tv.html</span></div>
-<div class="aba" id="abaTV1" onclick="trocaPerfil('TV1')">TV 1<br><span class="small">?tv=tv1</span></div>
-<div class="aba" id="abaTV2" onclick="trocaPerfil('TV2')">TV 2<br><span class="small">?tv=tv2</span></div>
+<div id="login"><h2 style="color:#FF8C00">🔒 CONTROLE FTERJ V28 - GRUPOS</h2><p style="font-size:11px;color:#888">Login obrigatório</p><input id="emailLogin" type="email" value="thiago1.elb@gmail.com"><input id="senhaInput" type="password" placeholder="Senha = minutera2025" value="minutera2025"><button onclick="checarSenha()">ENTRAR</button><div id="senhaErro" style="color:#f44;font-size:11px;margin-top:8px;display:none"></div></div>
+<div class="header">MinuT&Ra - FTERJ V28 - GRUPOS ILIMITADOS</div>
+<div class="tabs">
+<div class="tab active" onclick="aba('full',this)">🖥️ FULL</div>
+<div class="tab" onclick="aba('rodape',this)">🔥 RODAPÉ</div>
+<div class="tab" onclick="aba('controle',this)">🎮 PROVA</div>
+<div class="tab" onclick="aba('admintv',this)">⚙️ TV</div>
+<div class="tab" onclick="aba('links',this)">🔗 LINKS</div>
 </div>
-
-<div class="card" style="border-color:#FFD700">
-<b id="tituloPerfil" style="color:#FFD700">Editando: TV PADRÃO</b>
-<div class="small" id="pathPerfil">CONFIG_ANUNCIOS_FTERJ</div>
-<button class="btn btn-sec" onclick="copiarDaPrincipal()">📋 Copiar regulagem da TV principal para esta</button>
-</div>
-
-<div class="card">
-<h2>LOGOS - <span id="labelPerfilLogo">TV</span></h2>
-<label>Logo MinuT&Ra (URL https://...)</label><input type="text" id="logoMinu" placeholder="https://..." oninput="salvar()">
-<label>Logo Clube (URL https://...)</label><input type="text" id="logoClube" placeholder="https://..." oninput="salvar()">
-<div class="row"><div><div class="preview"><img id="prevMinu"></div></div><div><div class="preview"><img id="prevClube"></div></div></div>
-</div>
-
-<div class="card">
-<h2>TAMANHOS GERAIS - <span class="labelP">TV</span></h2>
-<label>Escala Geral <span class="val" id="vEscala">100%</span></label><input type="range" id="escala" min="60" max="140" value="100" oninput="upd('escala',this.value);salvar()">
-<label>Altura Header <span class="val" id="vHeaderH">11</span></label><input type="range" id="headerH" min="7" max="18" step="0.5" value="11" oninput="upd('headerH',this.value);salvar()">
-<label>Altura Linha <span class="val" id="vLinhaH">6.1</span></label><input type="range" id="linhaH" min="4" max="10" step="0.1" value="6.1" oninput="upd('linhaH',this.value);salvar()">
-<label>Altura Rodapé <span class="val" id="vRodapeH">5.5</span></label><input type="range" id="rodapeH" min="3" max="12" step="0.5" value="5.5" oninput="upd('rodapeH',this.value);salvar()">
-<label>Altura Logos <span class="val" id="vLogoH">6.5</span></label><input type="range" id="logoH" min="3" max="12" step="0.5" value="6.5" oninput="upd('logoH',this.value);salvar()">
-</div>
-
-<div class="card">
-<h2>FONTES - <span class="labelP">TV</span></h2>
-<div class="row">
-<div><label>Nome <span class="val" id="vFontNome">2.3</span></label><input type="range" id="fontNome" min="1" max="5" step="0.1" value="2.3" oninput="upd('fontNome',this.value);salvar()"></div>
-<div><label>Total <span class="val" id="vFontTotal">3</span></label><input type="range" id="fontTotal" min="1" max="6" step="0.1" value="3" oninput="upd('fontTotal',this.value);salvar()"></div>
-<div><label>Prova <span class="val" id="vFontProva">2.8</span></label><input type="range" id="fontProva" min="1" max="6" step="0.1" value="2.8" oninput="upd('fontProva',this.value);salvar()"></div>
-<div><label>Detalhe X <span class="val" id="vFontDetalhe">2.05</span></label><input type="range" id="fontDetalhe" min="0.8" max="4" step="0.05" value="2.05" oninput="upd('fontDetalhe',this.value);salvar()"></div>
-<div><label>Relógio <span class="val" id="vFontRelogio">2.1</span></label><input type="range" id="fontRelogio" min="0.8" max="4" step="0.1" value="2.1" oninput="upd('fontRelogio',this.value);salvar()"></div>
-</div>
-</div>
-
-<div class="card">
-<h2>RODAPÉ - <span class="labelP">TV</span></h2>
-<div class="row">
-<div><label>Tamanho Prop <span class="val" id="vPropPx">35</span></label><input type="range" id="propPx" min="15" max="80" value="35" oninput="upd('propPx',this.value);salvar()"></div>
-<div><label>Tamanho Contato <span class="val" id="vContPx">35</span></label><input type="range" id="contPx" min="15" max="80" value="35" oninput="upd('contPx',this.value);salvar()"></div>
-</div>
-<label>Tempo Rodapé (seg)</label><input type="number" id="tempoRodape" value="7" oninput="salvar()">
-</div>
-
-<div class="card">
-<h2>FULL - <span class="labelP">TV</span></h2>
-<div class="row">
-<div><label>Tempo por Full (seg)</label><input type="number" id="tempoFull" value="11" oninput="salvar()"></div>
-<div><label>Intervalo Full (seg)</label><input type="number" id="intervaloFull" value="90" oninput="salvar()"></div>
-</div>
-<div class="small">O tempo por patrocinador individual ainda vale (prioridade sobre este)</div>
-</div>
-
-<div class="card" style="background:#111">
-<b>Links para testar:</b><br>
-<div class="small" style="color:#fff;margin-top:8px">
-tv.html -> TV PADRÃO<br>
-tv.html?tv=tv1 -> TV1<br>
-tv.html?tv=tv2 -> TV2<br><br>
-Regule uma TV por vez usando as abas acima.
-</div>
-</div>
-
+<div id="painel-full" class="painel active"><div class="card"><h3>Novo Anúncio Tela Cheia - com GRUPO ⏱️</h3><div class="grid2"><div><label>Nome</label><input id="fullNome" placeholder="Ex: Loja X"></div><div><label>GRUPO (1 a 99)</label><input id="fullGrupo" type="number" min="1" max="99" value="1"></div></div><div class="grid2"><div><label>Tempo exclusivo (seg)</label><input id="fullTempo" type="number" value="11"></div><div><label>URL (opcional)</label><input id="fullUrl" placeholder="https://..."></div></div><label style="border:2px dashed #FF8C00;border-radius:12px;padding:16px;text-align:center;background:#fff8f0;margin-top:8px;cursor:pointer" for="fullFile">📁 CLIQUE PARA ENVIAR IMAGEM<input type="file" id="fullFile" accept="image/*" hidden onchange="previewFile()"></label><div id="preview" style="display:none;margin-top:10px"><img id="imgPrev" style="width:100%;border-radius:10px;max-height:180px;object-fit:contain"></div><button class="btn btn-preto" onclick="addFull()">+ ADICIONAR NO GRUPO</button></div><div class="card"><h3>Anúncios Ativos - por GRUPO ⏱️</h3><div id="resumoGrupos" style="font-size:12px;font-weight:800;color:#FF6A00;margin-bottom:10px"></div><div id="listaFull">Carregando...</div></div></div>
+<div id="painel-rodape" class="painel"><div class="card"><h3>Novo Rodapé</h3><label>Texto</label><input id="rdProp"><label>Contato</label><input id="rdCont"><button class="btn btn-laranja" onclick="addRodape()">+ ADICIONAR</button></div><div class="card"><h3>Rodapés Ativos</h3><div id="listaRodape"></div></div></div>
+<div id="painel-controle" class="painel"><div class="card"><h3>📁 Lista de Atletas</h3><span id="lblCount">0 atletas</span><div id="boxAtletas" style="background:#f5f5f7;border:1px solid #e5e5e5;border-radius:10px;padding:10px;max-height:180px;overflow:auto;font-size:11px;white-space:pre-wrap;margin-top:8px">Nenhum</div><div style="display:flex;gap:8px;margin-top:8px"><button class="btn btn-preto" onclick="carregar()" style="flex:1">🔄 RECARREGAR</button><button class="btn btn-vermelho" onclick="apagarLista()" style="flex:1">🗑️ APAGAR</button></div><label>Importar TXT/CSV</label><input type="file" id="fileAtletas" accept=".txt,.csv"></div><div class="card"><h3>🎮 Ações da Prova</h3><div style="display:flex;gap:8px"><button class="btn btn-laranja" onclick="zerarCR()" style="flex:1">ZERAR C/R</button><button class="btn btn-vermelho" onclick="apagarPlacar()" style="flex:1">APAGAR PLACAR</button></div><button class="btn btn-vermelho" style="margin-top:12px" onclick="sair()">SAIR</button></div></div>
+<div id="painel-admintv" class="painel"><div class="card"><h3>⚙️ TAMANHOS DA TV</h3><div class="grid2"><div><label>CABEÇALHO vh</label><input type="number" id="headerH" step="0.1"></div><div><label>LINHAS vh</label><input type="number" id="linhaH" step="0.1"></div><div><label>LOGO vh</label><input type="number" id="logoH" step="0.1"></div><div><label>RODAPÉ vh</label><input type="number" id="rodapeH" step="0.1"></div><div><label>NOME vh</label><input type="number" id="fontNome" step="0.1"></div><div><label>TOTAL vh</label><input type="number" id="fontTotal" step="0.1"></div><div><label>PROVA P: vh</label><input type="number" id="fontProva" step="0.1"></div><div><label>DETALHE vh</label><input type="number" id="fontDetalhe" step="0.1"></div><div><label>RELÓGIO vh</label><input type="number" id="fontRelogio" step="0.1"></div><div><label>ESCALA %</label><input type="number" id="escala" step="5"></div><div><label>PROP RODAPÉ px</label><input type="number" id="propPx" step="1"></div><div><label>CONTATO px</label><input type="number" id="contPx" step="1"></div><div><label>TEMPO RODAPÉ seg</label><input type="number" id="cfgTempoRodape" step="1"></div><div><label>TEMPO FULL padrão seg</label><input type="number" id="cfgTempoFull" step="1"></div></div><label>INTERVALO FULL seg</label><input type="number" id="cfgIntervalo" step="1"><button class="btn btn-laranja" onclick="salvarTudoTV()">💾 SALVAR TUDO NA TV</button><div id="statusTV" style="text-align:center;color:#0a0;font-weight:900;margin-top:8px"></div></div><div class="card"><h3>🖼️ Logos</h3><label>URL Logo Clube</label><input id="logoClube"><label>URL Logo MinuT&Ra</label><input id="logoMinu"><div class="grid2"><button class="btn btn-preto" onclick="salvarLogos()">SALVAR LOGOS</button><button class="btn btn-laranja" onclick="restaurarLogos()">RESTAURAR</button></div></div></div>
+<div id="painel-links" class="painel"><div class="card"><h3>🔗 LINKS</h3><div id="listaLinks"></div></div></div>
 <script>
 const firebaseConfig={apiKey:"AIzaSyA6DCLCJ86Qoe2Ph3VuCF6_vYv6EARedKE",authDomain:"placar-minutera.firebaseapp.com",databaseURL:"https://placar-minutera-default-rtdb.firebaseio.com",projectId:"placar-minutera",storageBucket:"placar-minutera.firebasestorage.app",messagingSenderId:"689991648080",appId:"1:689991648080:web:9deeb958183eaeaa23e255"};
-firebase.initializeApp(firebaseConfig);const db=firebase.database();
-let perfilAtual="TV";let CONFIG_PATH="CONFIG_ANUNCIOS_FTERJ";
-function trocaPerfil(p){
- perfilAtual=p;
- document.querySelectorAll('.aba').forEach(a=>a.classList.remove('ativa'));
- document.getElementById('aba'+p).classList.add('ativa');
- if(p=="TV"){CONFIG_PATH="CONFIG_ANUNCIOS_FTERJ"; document.getElementById('tituloPerfil').innerText="Editando: TV PADRÃO"; document.getElementById('pathPerfil').innerText=CONFIG_PATH;}
- else if(p=="TV1"){CONFIG_PATH="CONFIG_ANUNCIOS_FTERJ_TV1"; document.getElementById('tituloPerfil').innerText="Editando: TV1"; document.getElementById('pathPerfil').innerText=CONFIG_PATH;}
- else if(p=="TV2"){CONFIG_PATH="CONFIG_ANUNCIOS_FTERJ_TV2"; document.getElementById('tituloPerfil').innerText="Editando: TV2"; document.getElementById('pathPerfil').innerText=CONFIG_PATH;}
- document.querySelectorAll('.labelP').forEach(e=>e.innerText=p);
- document.getElementById('labelPerfilLogo').innerText=p;
- carregar();
+firebase.initializeApp(firebaseConfig);const db=firebase.database();const storage=firebase.storage();
+function checarSenha(){let e=document.getElementById('emailLogin').value.trim(),s=document.getElementById('senhaInput').value.trim(),er=document.getElementById('senhaErro');er.style.display='none';if(!e||!s){er.style.display='block';er.innerText='Digite e-mail e senha';return;}firebase.auth().signInWithEmailAndPassword(e,s).then(()=>{document.getElementById('login').style.display='none';carregar();}).catch(err=>{er.style.display='block';er.innerText='Erro: '+err.code;});}
+firebase.auth().onAuthStateChanged(u=>{if(u){document.getElementById('login').style.display='none';carregar();}else{document.getElementById('login').style.display='flex';}});
+function sair(){firebase.auth().signOut().then(()=>{localStorage.clear();location.reload();});}
+function aba(nome,el){document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));document.querySelectorAll('.painel').forEach(p=>p.classList.remove('active'));document.getElementById('painel-'+nome).classList.add('active');if(el)el.classList.add('active');}
+function carregar(){db.ref("FTERJ").once('value').then(s=>{let d=s.val()||{};let ks=Object.keys(d).filter(k=>k.startsWith("serie_"));document.getElementById('lblCount').innerText=ks.length+" atletas";document.getElementById('boxAtletas').innerText=ks.map(k=>d[k].nome).join("\n")||"VAZIO";});}
+function apagarLista(){if(confirm("Apagar lista?"))db.ref("FTERJ").remove().then(carregar);}
+function zerarCR(){if(!confirm("ZERAR C/R?"))return;db.ref("FTERJ").once('value').then(s=>{let d=s.val()||{};Object.keys(d).forEach(k=>{if(k.startsWith("serie_"))db.ref("FTERJ/"+k).update({pontos:0,tiros:[]});});alert("Zerado");});}
+function apagarPlacar(){if(confirm("APAGAR PLACAR?"))db.ref("FTERJ").remove().then(carregar);}
+document.getElementById('fileAtletas').addEventListener('change',e=>{let f=e.target.files[0];if(!f)return;let r=new FileReader();r.onload=ev=>{let ls=ev.target.result.split('\n').map(l=>l.trim()).filter(l=>l);let b={};ls.forEach((n,i)=>{b["serie_"+String(Date.now()+i).slice(-6)]={nome:n.toUpperCase(),prova:"R2",pontos:0,tiros:[]};});db.ref("FTERJ").update(b).then(()=>{carregar();alert(ls.length+" importados");});};r.readAsText(f);});
+function previewFile(){let f=document.getElementById('fullFile').files[0];if(!f)return;let r=new FileReader();r.onload=e=>{document.getElementById('imgPrev').src=e.target.result;document.getElementById('preview').style.display='block';};r.readAsDataURL(f);}
+async function addFull(){
+  let nome=document.getElementById('fullNome').value||"Patrocinador";
+  let url=document.getElementById('fullUrl').value;
+  let tempo=parseInt(document.getElementById('fullTempo').value)||11;
+  let grupo=parseInt(document.getElementById('fullGrupo').value)||1;
+  if(grupo<1)grupo=1; if(grupo>99)grupo=99;
+  let file=document.getElementById('fullFile').files[0];
+  if(file){
+    let ref=storage.ref("anuncios_fterj/"+Date.now()+"_"+file.name);
+    let task=ref.put(file);
+    task.on('state_changed',()=>{},e=>alert(e.message),async()=>{
+      let dl=await task.snapshot.ref.getDownloadURL();
+      db.ref("PATROCINADORES_FULL_FTERJ").push({nome,arte:dl,tempo,ativo:true,grupo});
+      alert("Enviado G"+grupo);
+    });
+  }else if(url){
+    db.ref("PATROCINADORES_FULL_FTERJ").push({nome,arte:url,tempo,ativo:true,grupo});
+    alert("Adicionado G"+grupo);
+  }else alert("Escolha imagem");
 }
-function upd(id,val){document.getElementById('v'+id.charAt(0).toUpperCase()+id.slice(1)).innerText=val;}
-let CFG={};
-function carregar(){
- db.ref(CONFIG_PATH).once('value').then(s=>{
-   let v=s.val();
-   if(!v && CONFIG_PATH!="CONFIG_ANUNCIOS_FTERJ"){ // se TV1/TV2 vazio, pega da principal como base visual mas não salva ainda
-     db.ref("CONFIG_ANUNCIOS_FTERJ").once('value').then(ss=>{let vv=ss.val()||{}; aplicaTela(vv);});
-     return;
-   }
-   aplicaTela(v||{});
- });
-}
-function aplicaTela(v){
- CFG=v;
- document.getElementById('escala').value=v.escala||100; upd('escala',v.escala||100);
- document.getElementById('headerH').value=v.headerH||11; upd('headerH',v.headerH||11);
- document.getElementById('linhaH').value=v.linhaH||6.1; upd('linhaH',v.linhaH||6.1);
- document.getElementById('rodapeH').value=v.rodapeH||5.5; upd('rodapeH',v.rodapeH||5.5);
- document.getElementById('logoH').value=v.logoH||6.5; upd('logoH',v.logoH||6.5);
- document.getElementById('fontNome').value=v.fontNome||2.3; upd('fontNome',v.fontNome||2.3);
- document.getElementById('fontTotal').value=v.fontTotal||3; upd('fontTotal',v.fontTotal||3);
- document.getElementById('fontProva').value=v.fontProva||2.8; upd('fontProva',v.fontProva||2.8);
- document.getElementById('fontDetalhe').value=v.fontDetalhe||2.05; upd('fontDetalhe',v.fontDetalhe||2.05);
- document.getElementById('fontRelogio').value=v.fontRelogio||2.1; upd('fontRelogio',v.fontRelogio||2.1);
- document.getElementById('propPx').value=v.propPx||35; upd('propPx',v.propPx||35);
- document.getElementById('contPx').value=v.contPx||35; upd('contPx',v.contPx||35);
- document.getElementById('tempoRodape').value=v.tempoRodape||7;
- document.getElementById('tempoFull').value=v.tempoFull||11;
- document.getElementById('intervaloFull').value=v.intervaloFull||90;
- document.getElementById('logoMinu').value=v.logoMinu||"";
- document.getElementById('logoClube').value=v.logoClube||"";
- document.getElementById('prevMinu').src=(v.logoMinu&&v.logoMinu.startsWith('http'))?v.logoMinu:'logo-minha.png';
- document.getElementById('prevClube').src=(v.logoClube&&v.logoClube.startsWith('http'))?v.logoClube:'logo-clube.png';
-}
-function salvar(){
- let dados={
-  escala:parseFloat(document.getElementById('escala').value),
-  headerH:parseFloat(document.getElementById('headerH').value),
-  linhaH:parseFloat(document.getElementById('linhaH').value),
-  rodapeH:parseFloat(document.getElementById('rodapeH').value),
-  logoH:parseFloat(document.getElementById('logoH').value),
-  fontNome:parseFloat(document.getElementById('fontNome').value),
-  fontTotal:parseFloat(document.getElementById('fontTotal').value),
-  fontProva:parseFloat(document.getElementById('fontProva').value),
-  fontDetalhe:parseFloat(document.getElementById('fontDetalhe').value),
-  fontRelogio:parseFloat(document.getElementById('fontRelogio').value),
-  propPx:parseInt(document.getElementById('propPx').value),
-  contPx:parseInt(document.getElementById('contPx').value),
-  tempoRodape:parseInt(document.getElementById('tempoRodape').value),
-  tempoFull:parseInt(document.getElementById('tempoFull').value),
-  intervaloFull:parseInt(document.getElementById('intervaloFull').value),
-  logoMinu:document.getElementById('logoMinu').value.trim(),
-  logoClube:document.getElementById('logoClube').value.trim()
- };
- db.ref(CONFIG_PATH).set(dados);
- let lm=dados.logoMinu, lc=dados.logoClube;
- document.getElementById('prevMinu').src=(lm&&lm.startsWith('http'))?lm:'logo-minha.png';
- document.getElementById('prevClube').src=(lc&&lc.startsWith('http'))?lc:'logo-clube.png';
-}
-function copiarDaPrincipal(){
- if(CONFIG_PATH=="CONFIG_ANUNCIOS_FTERJ"){alert("Você já está na principal");return;}
- if(!confirm("Copiar toda regulagem da TV PADRÃO para "+perfilAtual+" ?")) return;
- db.ref("CONFIG_ANUNCIOS_FTERJ").once('value').then(s=>{
-   let v=s.val(); if(!v){alert("TV principal vazia");return;}
-   db.ref(CONFIG_PATH).set(v).then(()=>{alert("Copiado para "+perfilAtual+"! Agora ajuste fino."); carregar();});
- });
-}
-carregar();
+db.ref("PATROCINADORES_FULL_FTERJ").on('value',s=>{
+  let d=s.val()||{}; let h=""; let contagem={};
+  Object.keys(d).forEach(k=>{
+    let r=d[k]; let on=r.ativo!==false; let tempo=r.tempo||11; let grupo=r.grupo||1;
+    contagem[grupo]=(contagem[grupo]||0)+1;
+    h+=`<div class="item"><img src="${r.arte}"><div class="item-info"><b>${r.nome}</b> <span class="badge grupo">G${grupo}</span><br><span class="badge ${on?'on':'off'}">${on?'ATIVO':'OFF'}</span><div style="display:flex;gap:4px;margin-top:4px"><div class="tempo-box" style="flex:1">⏱️<input type="number" value="${tempo}" onchange="setTempoFull('${k}',this.value)">s</div><div class="tempo-box" style="flex:1">G<input type="number" min="1" max="99" value="${grupo}" onchange="setGrupoFull('${k}',this.value)"></div></div></div><button class="icon-btn ativar" onclick="db.ref('PATROCINADORES_FULL_FTERJ/${k}').update({ativo:${!on}})">${on?'||':'▶'}</button><button class="icon-btn apagar" onclick="if(confirm('Apagar?'))db.ref('PATROCINADORES_FULL_FTERJ/${k}').remove()">✕</button></div>`
+  });
+  let resumo=""; Object.keys(contagem).sort((a,b)=>a-b).forEach(g=>{resumo+=` G${g}: ${contagem[g]} |`;});
+  document.getElementById('resumoGrupos').innerText = resumo? "Resumo:"+resumo+" Total grupos: "+Object.keys(contagem).length : "";
+  document.getElementById('listaFull').innerHTML=h||"Nenhum";
+});
+function setTempoFull(k,v){db.ref('PATROCINADORES_FULL_FTERJ/'+k).update({tempo:parseInt(v)||11});}
+function setGrupoFull(k,v){let g=parseInt(v)||1; if(g<1)g=1; if(g>99)g=99; db.ref('PATROCINADORES_FULL_FTERJ/'+k).update({grupo:g});}
+function addRodape(){let p=document.getElementById('rdProp').value,c=document.getElementById('rdCont').value;if(!p)return alert("Texto");db.ref("PATROCINADORES_RODAPE_FTERJ").push({prop:p,contato:c,ativo:true});}
+db.ref("PATROCINADORES_RODAPE_FTERJ").on('value',s=>{let d=s.val()||{};let h="";Object.keys(d).forEach(k=>{let r=d[k];let on=r.ativo!==false;h+=`<div class="item"><div class="item-info"><b>${r.prop}</b><br>${r.contato||''}<br><span class="badge ${on?'on':'off'}">${on?'ATIVO':'OFF'}</span></div><button class="icon-btn ativar" onclick="db.ref('PATROCINADORES_RODAPE_FTERJ/${k}').update({ativo:${!on}})">${on?'||':'▶'}</button><button class="icon-btn apagar" onclick="db.ref('PATROCINADORES_RODAPE_FTERJ/${k}').remove()">✕</button></div>`});document.getElementById('listaRodape').innerHTML=h||"Nenhum";});
+db.ref("CONFIG_ANUNCIOS_FTERJ").on('value',s=>{let v=s.val()||{};if(v.headerH!=null)headerH.value=v.headerH;if(v.linhaH!=null)linhaH.value=v.linhaH;if(v.logoH!=null)logoH.value=v.logoH;if(v.rodapeH!=null)rodapeH.value=v.rodapeH;if(v.fontNome!=null)fontNome.value=v.fontNome;if(v.fontTotal!=null)fontTotal.value=v.fontTotal;if(v.fontProva!=null)fontProva.value=v.fontProva;if(v.fontDetalhe!=null)fontDetalhe.value=v.fontDetalhe;if(v.fontRelogio!=null)fontRelogio.value=v.fontRelogio;if(v.escala!=null)escala.value=v.escala;if(v.propPx!=null)propPx.value=v.propPx;if(v.contPx!=null)contPx.value=v.contPx;if(v.tempoRodape!=null)cfgTempoRodape.value=v.tempoRodape;if(v.tempoFull!=null)cfgTempoFull.value=v.tempoFull;if(v.intervaloFull!=null)cfgIntervalo.value=v.intervaloFull;if(v.logoClube)logoClube.value=v.logoClube;if(v.logoMinu)logoMinu.value=v.logoMinu;});
+function salvarTudoTV(){let novo={headerH:parseFloat(headerH.value),linhaH:parseFloat(linhaH.value),logoH:parseFloat(logoH.value),rodapeH:parseFloat(rodapeH.value),fontNome:parseFloat(fontNome.value),fontTotal:parseFloat(fontTotal.value),fontProva:parseFloat(fontProva.value),fontDetalhe:parseFloat(fontDetalhe.value),fontRelogio:parseFloat(fontRelogio.value),escala:parseInt(escala.value),propPx:parseInt(propPx.value),contPx:parseInt(contPx.value),tempoRodape:parseInt(cfgTempoRodape.value),tempoFull:parseInt(cfgTempoFull.value),intervaloFull:parseInt(cfgIntervalo.value)};db.ref("CONFIG_ANUNCIOS_FTERJ").update(novo).then(()=>{statusTV.innerText="✅ TV ATUALIZADA!";setTimeout(()=>statusTV.innerText="",3000);});}
+function salvarLogos(){db.ref("CONFIG_ANUNCIOS_FTERJ").update({logoClube:logoClube.value.trim(),logoMinu:logoMinu.value.trim()});alert("Logos salvos");}
+function restaurarLogos(){db.ref("CONFIG_ANUNCIOS_FTERJ").update({logoClube:"",logoMinu:""}).then(()=>{logoClube.value="";logoMinu.value="";});}
 </script></body></html>
