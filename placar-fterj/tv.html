@@ -1,4 +1,4 @@
-<!DOCTYPE html><html><head><meta charset="UTF-8"><title>TV FTERJ V28 - GRUPOS ILIMITADOS</title>
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>TV FTERJ V28.2 CORRIGIDO</title>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 <style>
@@ -22,19 +22,19 @@ body{background:#000;color:#fff;font-family:Arial;display:flex;flex-direction:co
 .nome{flex:1;font-size:var(--font-nome);font-weight:800;text-transform:uppercase;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:flex;align-items:center;gap:.6vw}
 .prova{width:8vw;text-align:center;font-size:var(--font-prova);font-weight:900;color:#00E5FF}
 .total{width:10vw;text-align:center;font-size:var(--font-total);font-weight:900;color:#FFD700}
+.linha.ouro.total,.linha.prata.total,.linha.bronze.total{color:#000!important}
 .detalhe{width:34vw;text-align:right;font-size:var(--font-detalhe);font-weight:800;white-space:nowrap;overflow:hidden;color:#fff}
 .badge-subiu{font-size:1.4vh;background:#00FF00;color:#000;padding:2px 6px;border-radius:10px;font-weight:900}
 #rodape{height:var(--rodape-h);background:#000;border-top:2px solid #FF8C00;display:flex;align-items:center;justify-content:center;overflow:hidden}
 #textoRodape{color:#FFD700;font-weight:900;text-align:center;opacity:0;transition:opacity.8s;white-space:nowrap;width:100%}
 #textoRodape.show{opacity:1}
-#full{position:fixed;inset:0;background:#000;display:none;align-items:center;justify-content:center;z-index:9999;flex-direction:column}
-#full img{width:100vw;height:100vh;object-fit:contain;background:#000;}
-#fullLabel{position:absolute;bottom:2vh;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.7);color:#FF8C00;padding:6px 18px;border-radius:20px;font-size:2vh;font-weight:900}
+#full{position:fixed;inset:0;background:#000;display:none;align-items:center;justify-content:center;z-index:9999}
+#full img{width:100vw;height:100vh;object-fit:contain;background:#000}
 </style></head><body>
 <div id="header"><div id="logoEsq" class="logo"><img id="imgLogoMinu" src="logo-minha.png"></div><h1>3x7 MinuT&Ra - FTERJ</h1><div id="relogioTopo"><span id="dhTopo">--:--:--</span></div><div id="logoDir" class="logo"><img id="imgLogoClube" src="logo-clube.png"></div></div>
 <div id="ranking">CARREGANDO...</div>
 <div id="rodape"><div id="textoRodape"></div></div>
-<div id="full"><img id="imgFull"><div id="fullLabel"></div></div>
+<div id="full"><img id="imgFull"></div>
 <script>
 const firebaseConfig={apiKey:"AIzaSyA6DCLCJ86Qoe2Ph3VuCF6_vYv6EARedKE",authDomain:"placar-minutera.firebaseapp.com",databaseURL:"https://placar-minutera-default-rtdb.firebaseio.com",projectId:"placar-minutera",storageBucket:"placar-minutera.firebasestorage.app",messagingSenderId:"689991648080",appId:"1:689991648080:web:9deeb958183eaeaa23e255"};
 firebase.initializeApp(firebaseConfig);const db=firebase.database();
@@ -83,13 +83,7 @@ function filtraTop5Unico(listaOrdenada){
 }
 db.ref("PATROCINADORES_RODAPE_FTERJ").on('value',s=>{RODAPES=toArr(s.val()).filter(r=>{if(r.hasOwnProperty('ativo'))return r.ativo==true||r.ativo=="true";return true});renderRodape()});
 db.ref("PATROCINADORES_FULL_FTERJ").on('value',s=>{FULL=toArr(s.val()).filter(r=>{if(r.hasOwnProperty('ativo'))return r.ativo==true||r.ativo=="true";return true}).map(i=>typeof i==='string'?{arte:i}:i).filter(f=>f.arte||f.url||f.imagem).map(f=>({...f,tempo:f.tempo||11,grupo:parseInt(f.grupo)||1}))});
-db.ref("CONFIG_ANUNCIOS_FTERJ").on('value',s=>{
-  let v=s.val();if(!v)return;
-  if(v.cfgTempoRodape &&!v.tempoRodape) v.tempoRodape=v.cfgTempoRodape;
-  if(v.cfgTempoFull &&!v.tempoFull) v.tempoFull=v.cfgTempoFull;
-  if(v.cfgIntervalo &&!v.intervaloFull) v.intervaloFull=v.cfgIntervalo;
-  CFG={...CFG,...v}; applyConfig();
-});
+db.ref("CONFIG_ANUNCIOS_FTERJ").on('value',s=>{let v=s.val();if(!v)return; CFG={...CFG,...v}; applyConfig();});
 db.ref("FTERJ").on('value',snap=>{
 let data=snap.val();if(!data)return;let lista=[];
 Object.keys(data).forEach(k=>{if(k.startsWith("serie_")){let s=data[k];let tiros=s.tiros||[];lista.push({nome:s.nome||'TESTE',prova:s.prova||'R2',pontos:parseFloat(s.pontos||0),tiros:tiros})}});
@@ -111,7 +105,6 @@ async function mostraBlocoFull(){
   for(let i=0;i<listaGrupo.length;i++){
     let f=listaGrupo[i];let url=f.arte||f.url||f.imagem||'';if(!url) continue;
     document.getElementById('imgFull').src=url;
-    document.getElementById('fullLabel').innerText=`GRUPO ${grupoDaVez} - ${i+1}/${listaGrupo.length}`;
     document.getElementById('full').style.display='flex';
     let tempoUsado=(f.tempo||CFG.tempoFull||11)*1000;
     await new Promise(r=>setTimeout(r,tempoUsado));
