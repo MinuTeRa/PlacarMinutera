@@ -1,4 +1,4 @@
-<!DOCTYPE html><html><head><meta charset="UTF-8"><title>TV FTERJ V29 - 3 PERFIS</title>
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>TV FTERJ V29.3 - 3 perfis + TAG opcional</title>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 <style>
@@ -6,24 +6,22 @@
 :root{ --header-h:11vh; --linha-h:6.1vh; --rodape-h:5.5vh; --font-nome:2.3vh; --font-total:3vh; --font-prova:2.8vh; --font-detalhe:2.05vh; --font-relogio:2.1vh; --logo-h:6.5vh; --font-header:6.5vh; }
 html,body{height:100vh;overflow:hidden}
 body{background:#000;color:#fff;font-family:Arial;display:flex;flex-direction:column}
-#header{height:var(--header-h);background:linear-gradient(90deg,#FF8C00,#FF6A00);display:flex;align-items:center;justify-content:center;position:relative}
+#header{height:var(--header-h);background:#FF8C00;display:flex;align-items:center;justify-content:center;position:relative}
 #header h1{font-size:var(--font-header);color:#000;font-weight:900;text-transform:uppercase}
 .logo{position:absolute;top:50%;transform:translateY(-50%);height:var(--logo-h);background:#fff;border-radius:6px;display:flex;align-items:center;justify-content:center;overflow:hidden}
 .logo img{height:100%;width:auto;max-width:14vw;object-fit:contain;padding:3px 8px}
 #logoEsq{left:.8vw}#logoDir{right:.8vw}
 #relogioTopo{position:absolute;right:15.5vw;top:50%;transform:translateY(-50%);background:#000;border-radius:20px;padding:4px 16px;color:#FFD700;font-size:var(--font-relogio);font-weight:900}
-#perfilTag{position:absolute;left:16vw;top:2px;background:#000;color:#FFD700;font-size:1.2vh;padding:2px 8px;border-radius:10px;font-weight:900}
+#perfilTag{position:absolute;left:16vw;top:4px;background:#000;color:#FFD700;font-size:1.2vh;padding:3px 10px;border-radius:10px;font-weight:900;display:none;z-index:10}
+#perfilTag.on{display:block}
 #ranking{flex:1;display:flex;flex-direction:column;gap:.4vh;padding:.4vh.6vw;overflow:hidden;justify-content:space-between}
 .linha{display:flex;align-items:center;background:#1a1a1a;border-radius:8px;padding:0 0.8vw;height:var(--linha-h)}
 .linha.ouro{background:#FFD700;color:#000}.linha.prata{background:#C0C0C0;color:#000}.linha.bronze{background:#CD7F32;color:#000}
-.linha.ouro .pos,.linha.ouro .nome,.linha.ouro .prova,.linha.ouro .total,.linha.ouro .detalhe{color:#000!important}
-.linha.prata .pos,.linha.prata .nome,.linha.prata .prova,.linha.prata .total,.linha.prata .detalhe{color:#000!important}
-.linha.bronze .pos,.linha.bronze .nome,.linha.bronze .prova,.linha.bronze .total,.linha.bronze .detalhe{color:#000!important}
 .pos{width:3.5vw;font-weight:900;text-align:center;font-size:var(--font-nome)}
 .nome{flex:1;font-size:var(--font-nome);font-weight:800;text-transform:uppercase;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:flex;align-items:center;gap:.6vw}
 .prova{width:8vw;text-align:center;font-size:var(--font-prova);font-weight:900;color:#00E5FF}
 .total{width:10vw;text-align:center;font-size:var(--font-total);font-weight:900;color:#FFD700}
-.linha.ouro.total,.linha.prata.total,.linha.bronze.total{color:#000!important}
+.linha.ouro.total,.linha.prata.total,.linha.bronze.total,.linha.ouro.pos,.linha.ouro.nome,.linha.ouro.prova,.linha.ouro.detalhe,.linha.prata.pos,.linha.prata.nome,.linha.prata.prova,.linha.prata.detalhe,.linha.bronze.pos,.linha.bronze.nome,.linha.bronze.prova,.linha.bronze.detalhe{color:#000!important}
 .detalhe{width:34vw;text-align:right;font-size:var(--font-detalhe);font-weight:800;white-space:nowrap;overflow:hidden;color:#fff}
 .badge-subiu{font-size:1.4vh;background:#00FF00;color:#000;padding:2px 6px;border-radius:10px;font-weight:900}
 #rodape{height:var(--rodape-h);background:#000;border-top:2px solid #FF8C00;display:flex;align-items:center;justify-content:center;overflow:hidden}
@@ -42,15 +40,19 @@ firebase.initializeApp(firebaseConfig);const db=firebase.database();
 const urlParams=new URLSearchParams(window.location.search);
 let tvParam=(urlParams.get('tv')||'').toLowerCase();
 let CONFIG_PATH="CONFIG_ANUNCIOS_FTERJ";
-if(tvParam=="tv1"||tvParam=="1"){CONFIG_PATH="CONFIG_ANUNCIOS_FTERJ_TV1"; document.getElementById('perfilTag').innerText="TV1";}
-else if(tvParam=="tv2"||tvParam=="2"){CONFIG_PATH="CONFIG_ANUNCIOS_FTERJ_TV2"; document.getElementById('perfilTag').innerText="TV2";}
-else {document.getElementById('perfilTag').innerText="TV";}
-
+let tvNome="TV";
+if(tvParam=="tv1"||tvParam=="1"){CONFIG_PATH="CONFIG_ANUNCIOS_FTERJ_TV1"; tvNome="TV1";}
+else if(tvParam=="tv2"||tvParam=="2"){CONFIG_PATH="CONFIG_ANUNCIOS_FTERJ_TV2"; tvNome="TV2";}
 function toArr(d){if(!d)return[];if(Array.isArray(d))return d.filter(x=>x);return Object.values(d).filter(x=>x)}
 let RODAPES=[],FULL=[];
-let CFG={propPx:28,contPx:20,escala:100,headerH:11,linhaH:6.1,rodapeH:5.5,fontNome:2.3,fontTotal:3,fontProva:2.8,fontDetalhe:2.05,fontRelogio:2.1,logoH:6.5,intervaloFull:90,tempoFull:11,tempoRodape:7,logoMinu:"",logoClube:""};
+let CFG={propPx:35,contPx:35,escala:100,headerH:11,linhaH:6.1,rodapeH:5.5,fontNome:2.3,fontTotal:3,fontProva:2.8,fontDetalhe:2.05,fontRelogio:2.1,logoH:6.5,intervaloFull:90,tempoFull:11,tempoRodape:7,logoMinu:"",logoClube:"",mostrarTag:false};
 let rodapeIndex=0,rodapeTimer=null;
 let TEMPO_RODAPE=7000,TEMPO_FULL=11000,INTERVALO_FULL=90000;
+function atualizaTag(){
+ let tag=document.getElementById('perfilTag');
+ if(!tag) return;
+ if(CFG.mostrarTag){tag.innerText=tvNome; tag.classList.add('on');} else {tag.classList.remove('on');}
+}
 function applyConfig(){
   document.body.style.zoom=(CFG.escala||100)/100;
   document.documentElement.style.setProperty('--header-h',(CFG.headerH||11)+'vh');
@@ -65,7 +67,7 @@ function applyConfig(){
   if(CFG.logoMinu && CFG.logoMinu.trim().startsWith('http')){document.getElementById('imgLogoMinu').src=CFG.logoMinu;} else {document.getElementById('imgLogoMinu').src='logo-minha.png';}
   if(CFG.logoClube && CFG.logoClube.trim().startsWith('http')){document.getElementById('imgLogoClube').src=CFG.logoClube;} else {document.getElementById('imgLogoClube').src='logo-clube.png';}
   TEMPO_RODAPE=(CFG.tempoRodape||7)*1000; TEMPO_FULL=(CFG.tempoFull||11)*1000; INTERVALO_FULL=(CFG.intervaloFull||90)*1000;
-  renderRodape(); agendaBlocoFull();
+  atualizaTag(); renderRodape(); agendaBlocoFull();
 }
 function renderRodape(){
   let el=document.getElementById('textoRodape');
