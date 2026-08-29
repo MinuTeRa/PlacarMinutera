@@ -1,4 +1,4 @@
-<!DOCTYPE html><html><head><meta charset="UTF-8"><title>TV FTERJ V28.2</title>
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>TV FTERJ V29 - 3 PERFIS</title>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 <style>
@@ -12,12 +12,13 @@ body{background:#000;color:#fff;font-family:Arial;display:flex;flex-direction:co
 .logo img{height:100%;width:auto;max-width:14vw;object-fit:contain;padding:3px 8px}
 #logoEsq{left:.8vw}#logoDir{right:.8vw}
 #relogioTopo{position:absolute;right:15.5vw;top:50%;transform:translateY(-50%);background:#000;border-radius:20px;padding:4px 16px;color:#FFD700;font-size:var(--font-relogio);font-weight:900}
+#perfilTag{position:absolute;left:16vw;top:2px;background:#000;color:#FFD700;font-size:1.2vh;padding:2px 8px;border-radius:10px;font-weight:900}
 #ranking{flex:1;display:flex;flex-direction:column;gap:.4vh;padding:.4vh.6vw;overflow:hidden;justify-content:space-between}
 .linha{display:flex;align-items:center;background:#1a1a1a;border-radius:8px;padding:0 0.8vw;height:var(--linha-h)}
 .linha.ouro{background:#FFD700;color:#000}.linha.prata{background:#C0C0C0;color:#000}.linha.bronze{background:#CD7F32;color:#000}
-.linha.ouro .pos,.linha.ouro .nome,.linha.ouro .prova,.linha.ouro .total,.linha.ouro .detalhe{color:#000!important}
-.linha.prata .pos,.linha.prata .nome,.linha.prata .prova,.linha.prata .total,.linha.prata .detalhe{color:#000!important}
-.linha.bronze .pos,.linha.bronze .nome,.linha.bronze .prova,.linha.bronze .total,.linha.bronze .detalhe{color:#000!important}
+.linha.ouro.pos,.linha.ouro.nome,.linha.ouro.prova,.linha.ouro.total,.linha.ouro.detalhe{color:#000!important}
+.linha.prata.pos,.linha.prata.nome,.linha.prata.prova,.linha.prata.total,.linha.prata.detalhe{color:#000!important}
+.linha.bronze.pos,.linha.bronze.nome,.linha.bronze.prova,.linha.bronze.total,.linha.bronze.detalhe{color:#000!important}
 .pos{width:3.5vw;font-weight:900;text-align:center;font-size:var(--font-nome)}
 .nome{flex:1;font-size:var(--font-nome);font-weight:800;text-transform:uppercase;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:flex;align-items:center;gap:.6vw}
 .prova{width:8vw;text-align:center;font-size:var(--font-prova);font-weight:900;color:#00E5FF}
@@ -31,13 +32,20 @@ body{background:#000;color:#fff;font-family:Arial;display:flex;flex-direction:co
 #full{position:fixed;inset:0;background:#000;display:none;align-items:center;justify-content:center;z-index:9999}
 #full img{width:100vw;height:100vh;object-fit:contain;background:#000}
 </style></head><body>
-<div id="header"><div id="logoEsq" class="logo"><img id="imgLogoMinu" src="logo-minha.png"></div><h1>3x7 MinuT&Ra - FTERJ</h1><div id="relogioTopo"><span id="dhTopo">--:--:--</span></div><div id="logoDir" class="logo"><img id="imgLogoClube" src="logo-clube.png"></div></div>
+<div id="header"><div id="perfilTag"></div><div id="logoEsq" class="logo"><img id="imgLogoMinu" src="logo-minha.png"></div><h1>3x7 MinuT&Ra - FTERJ</h1><div id="relogioTopo"><span id="dhTopo">--:--:--</span></div><div id="logoDir" class="logo"><img id="imgLogoClube" src="logo-clube.png"></div></div>
 <div id="ranking">CARREGANDO...</div>
 <div id="rodape"><div id="textoRodape"></div></div>
 <div id="full"><img id="imgFull"></div>
 <script>
 const firebaseConfig={apiKey:"AIzaSyA6DCLCJ86Qoe2Ph3VuCF6_vYv6EARedKE",authDomain:"placar-minutera.firebaseapp.com",databaseURL:"https://placar-minutera-default-rtdb.firebaseio.com",projectId:"placar-minutera",storageBucket:"placar-minutera.firebasestorage.app",messagingSenderId:"689991648080",appId:"1:689991648080:web:9deeb958183eaeaa23e255"};
 firebase.initializeApp(firebaseConfig);const db=firebase.database();
+const urlParams=new URLSearchParams(window.location.search);
+let tvParam=(urlParams.get('tv')||'').toLowerCase();
+let CONFIG_PATH="CONFIG_ANUNCIOS_FTERJ";
+if(tvParam=="tv1"||tvParam=="1"){CONFIG_PATH="CONFIG_ANUNCIOS_FTERJ_TV1"; document.getElementById('perfilTag').innerText="TV1";}
+else if(tvParam=="tv2"||tvParam=="2"){CONFIG_PATH="CONFIG_ANUNCIOS_FTERJ_TV2"; document.getElementById('perfilTag').innerText="TV2";}
+else {document.getElementById('perfilTag').innerText="TV";}
+
 function toArr(d){if(!d)return[];if(Array.isArray(d))return d.filter(x=>x);return Object.values(d).filter(x=>x)}
 let RODAPES=[],FULL=[];
 let CFG={propPx:28,contPx:20,escala:100,headerH:11,linhaH:6.1,rodapeH:5.5,fontNome:2.3,fontTotal:3,fontProva:2.8,fontDetalhe:2.05,fontRelogio:2.1,logoH:6.5,intervaloFull:90,tempoFull:11,tempoRodape:7,logoMinu:"",logoClube:""};
@@ -83,7 +91,7 @@ function filtraTop5Unico(listaOrdenada){
 }
 db.ref("PATROCINADORES_RODAPE_FTERJ").on('value',s=>{RODAPES=toArr(s.val()).filter(r=>{if(r.hasOwnProperty('ativo'))return r.ativo==true||r.ativo=="true";return true});renderRodape()});
 db.ref("PATROCINADORES_FULL_FTERJ").on('value',s=>{FULL=toArr(s.val()).filter(r=>{if(r.hasOwnProperty('ativo'))return r.ativo==true||r.ativo=="true";return true}).map(i=>typeof i==='string'?{arte:i}:i).filter(f=>f.arte||f.url||f.imagem).map(f=>({...f,tempo:f.tempo||11,grupo:parseInt(f.grupo)||1}))});
-db.ref("CONFIG_ANUNCIOS_FTERJ").on('value',s=>{let v=s.val();if(!v)return; CFG={...CFG,...v}; applyConfig();});
+db.ref(CONFIG_PATH).on('value',s=>{let v=s.val();if(!v){if(CONFIG_PATH!="CONFIG_ANUNCIOS_FTERJ"){db.ref("CONFIG_ANUNCIOS_FTERJ").once('value',snap=>{let vb=snap.val();if(vb){CFG={...CFG,...vb};applyConfig();}});return;}return;} CFG={...CFG,...v}; applyConfig();});
 db.ref("FTERJ").on('value',snap=>{
 let data=snap.val();if(!data)return;let lista=[];
 Object.keys(data).forEach(k=>{if(k.startsWith("serie_")){let s=data[k];let tiros=s.tiros||[];lista.push({nome:s.nome||'TESTE',prova:s.prova||'R2',pontos:parseFloat(s.pontos||0),tiros:tiros})}});
