@@ -1,0 +1,89 @@
+<!DOCTYPE html><html lang="pt-BR"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>CELULAR MULTI - ORGANIZADO</title>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#000;color:#fff;font-family:Arial Black,Arial;height:100vh;overflow:hidden}
+.header{height:56px;background:#000;border-bottom:4px solid #FF8C00;display:flex;align-items:center;padding:0 10px;gap:8px}
+.header img{height:28px;background:#fff;border-radius:4px;padding:2px 4px}
+.placar{height:calc(100vh - 56px);overflow:auto;padding:6px;display:flex;flex-direction:column;gap:7px}
+.linha{display:flex;align-items:center;background:#1e1e1e;border:2px solid #333;border-left:8px solid #555;padding:10px 12px;border-radius:8px;gap:10px}
+.linha.pos1{border-color:#FFD700;background:linear-gradient(90deg,#FFD700,#FFB700);color:#000}
+.linha.pos2{border-color:#E8E8E8;background:linear-gradient(90deg,#E8E8E8,#C0C0C0);color:#000}
+.linha.pos3{border-color:#FF8C00;background:linear-gradient(90deg,#FF8C00,#CD7F32);color:#fff}
+.pos{font-size:22px;font-weight:900;min-width:38px;text-align:center}
+.conteudo{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+.linha-top{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.nome{font-size:16px;font-weight:900;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1}
+.pts{font-size:18px;font-weight:900}
+.tiros{font-size:12px;font-family:Arial;font-weight:800;opacity:0.9;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.badge-subiu{background:#00FF6A;color:#000;font-size:9px;font-weight:900;padding:2px 6px;border-radius:8px;margin-left:6px}
+#full{position:fixed;inset:0;background:#000;z-index:999;display:none;justify-content:center;align-items:center}#full img{width:100%;height:100%;object-fit:contain}
+</style></head><body>
+<div class="header">
+<img id="logoMinu" src="logo-minha.png"><span style="color:#FFD700;font-weight:900">MinuT&Ra</span>
+<img id="logoClube" src="logo-clube.png"><span id="lblClube" style="font-weight:900">FTERJ</span>
+</div>
+<div class="placar" id="lista">CARREGANDO...</div>
+<div id="full" onclick="this.style.display='none'"><img id="fullImg"></div>
+<script>
+const firebaseConfig={apiKey:"AIzaSyA6DCLCJ86Qoe2Ph3VuCF6_vYv6EARedKE",authDomain:"placar-minutera.firebaseapp.com",databaseURL:"https://placar-minutera-default-rtdb.firebaseio.com",projectId:"placar-minutera",storageBucket:"placar-minutera.firebasestorage.app",messagingSenderId:"689991648080",appId:"1:689991648080:web:9deeb958183eaeaa23e255"};
+firebase.initializeApp(firebaseConfig);const db=firebase.database();
+const urlParams=new URLSearchParams(window.location.search);
+let CLUBE=(urlParams.get('clube')||'FTERJ').toUpperCase().replace(/[^A-Z0-9]/g,'');
+let PATH_ATLETAS=`CLUBES/${CLUBE}/atletas`;
+let PATH_FULL_LOCAL=`CLUBES/${CLUBE}/full`;
+let PATH_FULL_GLOBAL=`PATROCINADORES_GLOBAIS/full`;
+let PATH_CONFIG=`CLUBES/${CLUBE}/config`;
+document.getElementById('lblClube').innerText=CLUBE;
+let fulls=[],fIdx=0,tempoFull=11,intervaloFull=90,grupoIdx=0;
+function toArr(d){if(!d)return[];return Object.values(d).filter(x=>x&&!x._meta);}
+db.ref(PATH_CONFIG).on('value',s=>{
+ let c=s.val();
+ if(!c&&CLUBE=='FTERJ'){db.ref('CONFIG_ANUNCIOS_FTERJ').once('value',s2=>{let v=s2.val();if(v){if(v.logoClube&&v.logoClube.startsWith('http'))logoClube.src=v.logoClube;if(v.logoMinu&&v.logoMinu.startsWith('http'))logoMinu.src=v.logoMinu;}});return;}
+ if(!c)return;
+ if(c.logoClube&&c.logoClube.startsWith('http'))logoClube.src=c.logoClube;
+ if(c.logoMinu&&c.logoMinu.startsWith('http'))logoMinu.src=c.logoMinu;
+ tempoFull=c.tempoFull||11;intervaloFull=c.intervaloFull||90;
+});
+let fullLocal=[],fullGlobal=[];
+function junta(){fulls=[...fullGlobal,...fullLocal].filter(x=>x.ativo!==false).map(f=>({...f,tempo:f.tempo||tempoFull,grupo:parseInt(f.grupo)||1}));}
+db.ref(PATH_FULL_GLOBAL).on('value',s=>{fullGlobal=toArr(s.val());junta();});
+db.ref(PATH_FULL_LOCAL).on('value',s=>{fullLocal=toArr(s.val());junta();});
+db.ref(PATH_ATLETAS).on('value',s=>{
+ let data=s.val();
+ if(!data&&CLUBE=='FTERJ'){db.ref('FTERJ').once('value',s2=>{render(s2.val()||{});});return;}
+ render(data||{});
+});
+function fmt(p){return (Math.round((parseFloat(p)||0)*100)/100).toFixed(2)}
+function render(dados){
+ let ks=Object.keys(dados).filter(k=>k.startsWith("serie_"));
+ ks.sort((a,b)=>(parseFloat(dados[b].pontos)||0)-(parseFloat(dados[a].pontos)||0));
+ let posBruta={};ks.forEach((k,i)=>posBruta[k]=i+1);
+ let top5=[],usados=new Set(),usadosKey=new Set();
+ for(let k of ks){if(top5.length>=5)break;let nk=(dados[k].nome||'').trim().toUpperCase();if(!usados.has(nk)){usados.add(nk);usadosKey.add(k);top5.push(k);}}
+ let resto=ks.filter(k=>!usadosKey.has(k));let lista=[...top5,...resto];
+ let h="";lista.forEach((k,i)=>{
+  let at=dados[k];if(!at.nome)return;
+  let pts=fmt(at.pontos);let tiros=(at.tiros||[]).join('/').toUpperCase();
+  let cls=i==0?'pos1':i==1?'pos2':i==2?'pos3':'';
+  let subiu=(posBruta[k]>(i+1))?`<span class="badge-subiu">SUBIU</span>`:"";
+  h+=`<div class="linha ${cls}"><div class="pos">${i+1}º</div><div class="conteudo"><div class="linha-top"><div class="nome">${at.nome} ${subiu}</div><div class="pts">${pts}</div></div><div class="tiros">${at.prova||'C'} • ${tiros}</div></div></div>`;
+ });
+ document.getElementById('lista').innerHTML=h||'Aguardando...';
+}
+function getGrupos(){let g=[...new Set(fulls.map(f=>parseInt(f.grupo)||1))].sort((a,b)=>a-b);return g.length?g:[1];}
+function loop(){
+ if(fulls.length==0){setTimeout(loop,intervaloFull*1000);return;}
+ let grupos=getGrupos();if(grupoIdx>=grupos.length)grupoIdx=0;
+ let gAtual=grupos[grupoIdx];
+ let lista=fulls.filter(f=>(parseInt(f.grupo)||1)==gAtual);
+ if(lista.length==0){grupoIdx=(grupoIdx+1)%grupos.length;setTimeout(loop,1000);return;}
+ if(fIdx>=lista.length){fIdx=0;grupoIdx=(grupoIdx+1)%grupos.length;setTimeout(loop,intervaloFull*1000);return;}
+ let f=lista[fIdx];fullImg.src=f.arte||f.url;full.style.display='flex';
+ setTimeout(()=>{full.style.display='none';fIdx++;loop();},(f.tempo||tempoFull)*1000);
+}
+setTimeout(loop,5000);
+</script></body></html>
