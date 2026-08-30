@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html><head><meta charset="UTF-8"><title>V36 MULTI - LANCAMENTO - DUAL</title>
+<html><head><meta charset="UTF-8"><title>V36.1 MULTI - LANCAMENTO - DUAL</title>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
@@ -15,8 +15,8 @@ input,select{width:100%;padding:8px;background:#000;color:#fff;border:1px solid 
 #sugestoes{position:absolute;top:36px;left:0;background:#000;border:1px solid #FF8C00;max-height:200px;overflow:auto;width:100%;z-index:100;display:none;border-radius:5px}#sugestoes div{padding:10px 8px;font-size:13px;cursor:pointer;border-bottom:1px solid #222;font-weight:700}#sugestoes div:hover{background:#FF8C00;color:#000}
 #clubeBadge{background:#000;color:#FF8C00;border:1px solid #FF8C00;padding:4px 10px;border-radius:20px;font-size:11px}
 </style></head><body>
-<div id="telaLogin"><div style="background:#1e1e1e;padding:24px;border-radius:12px;text-align:center;border:2px solid #FF8C00;min-width:320px"><h2 style="color:#FF8C00" id="tituloLogin">LOGIN</h2><input id="emailLogin" type="email" placeholder="E-mail" value="thiago1.elb@gmail.com" style="text-align:center;margin-top:12px"><input id="senhaLogin" type="password" placeholder="Senha" style="text-align:center;margin-top:10px"><button onclick="fazerLogin()" style="width:100%;margin-top:12px;padding:10px;background:#FF8C00;color:#000;border:none;border-radius:6px;font-weight:900">ENTRAR</button><p id="erroLogin" style="color:#f44;display:none;margin-top:10px;font-size:13px"></p></div></div>
-<div id="header"><span>LANÇAMENTO | <span id="clubeNome">...</span> | V36 DUAL</span><span style="font-size:12px;display:flex;align-items:center;gap:8px"><span id="clubeBadge">...</span><select id="seletorClube" style="display:none;width:auto;background:#000;color:#fff;padding:4px 8px" onchange="trocarClube(this.value)"><option value="FTERJ">FTERJ</option><option value="SGC">SGC</option><option value="CFTE">CFTE</option><option value="CTEC">CTEC</option></select><span id="userEmail" style="margin-left:10px"></span><button onclick="firebase.auth().signOut()" style="background:#000;color:#fff;border:1px solid #444;padding:4px 8px;border-radius:4px;cursor:pointer">SAIR</button></span></div>
+<div id="telaLogin"><div style="background:#1e1e1e;padding:24px;border-radius:12px;text-align:center;border:2px solid #FF8C00;min-width:320px"><h2 style="color:#FF8C00" id="tituloLogin">LOGIN</h2><input id="emailLogin" type="email" placeholder="E-mail" value="" style="text-align:center;margin-top:12px"><input id="senhaLogin" type="password" placeholder="Senha" style="text-align:center;margin-top:10px"><button onclick="fazerLogin()" style="width:100%;margin-top:12px;padding:10px;background:#FF8C00;color:#000;border:none;border-radius:6px;font-weight:900">ENTRAR</button><p id="erroLogin" style="color:#f44;display:none;margin-top:10px;font-size:13px"></p></div></div>
+<div id="header"><span>LANÇAMENTO | <span id="clubeNome">...</span> | V36.1 DUAL</span><span style="font-size:12px;display:flex;align-items:center;gap:8px"><span id="clubeBadge">...</span><select id="seletorClube" style="display:none;width:auto;background:#000;color:#fff;padding:4px 8px" onchange="trocarClube(this.value)"><option value="FTERJ">FTERJ</option><option value="SGC">SGC</option><option value="CFTE">CFTE</option><option value="CTEC">CTEC</option></select><span id="userEmail" style="margin-left:10px"></span><button onclick="firebase.auth().signOut()" style="background:#000;color:#fff;border:1px solid #444;padding:4px 8px;border-radius:4px;cursor:pointer">SAIR</button></span></div>
 <div id="main"><div id="left"><div class="row"><div style="flex:1;position:relative"><input id="nomeAtleta" placeholder="NOME" style="text-transform:uppercase" autocomplete="off" oninput="buscarNome(this.value)" onfocus="buscarNome(this.value)"><div id="sugestoes"></div></div><select id="provaSelect" style="width:90px"><option>C</option><option>R1</option><option>R2</option><option>R3</option><option>R4</option><option>R5</option><option>C/R</option></select></div><div id="tirosContainer"></div><div class="total">TOTAL: <span id="totalPontos">0.00</span></div><div style="display:flex;gap:6px"><button class="btn btn-salvar" onclick="salvarLancamento()">SALVAR [F2]</button><button class="btn btn-nova" onclick="novoLancamento()">NOVA [F3]</button></div></div><div id="right"><div id="listaLancamentos"></div></div></div>
 <script>
 const firebaseConfig = {
@@ -47,18 +47,25 @@ firebase.auth().onAuthStateChanged(async user=>{
     const key=user.email.replace(/\./g,',');
     const snap=await db.ref('USUARIOS_PERMISSOES/'+key).once('value');
     let perm=snap.val();
+    console.log('PERM LIDA:', perm);
     if(!perm){ clubeAtual='FTERJ'; isMaster=false; }
-    else { clubeAtual=perm.clube || 'FTERJ'; isMaster=!!perm.master; }
+    else { clubeAtual=(perm.clube || 'FTERJ').toUpperCase(); isMaster = (perm.master === true); }
     const urlClube=new URLSearchParams(window.location.search).get('clube');
-    if(urlClube && isMaster) clubeAtual=urlClube;
+    if(urlClube && isMaster === true) clubeAtual=urlClube.toUpperCase();
     document.getElementById('clubeNome').innerText=clubeAtual;
     document.getElementById('clubeBadge').innerText=clubeAtual;
     document.getElementById('tituloLogin').innerText=clubeAtual+' - LOGIN';
-    if(isMaster){ document.getElementById('seletorClube').style.display='block'; document.getElementById('seletorClube').value=clubeAtual; }
+    if(isMaster === true){
+      document.getElementById('seletorClube').style.display='block';
+      document.getElementById('seletorClube').value=clubeAtual;
+    } else {
+      document.getElementById('seletorClube').style.display='none';
+    }
+    console.log('FINAL:', user.email, clubeAtual, 'master?', isMaster);
     iniciarApp();
   } else { document.getElementById('telaLogin').style.display='flex'; }
 });
-function trocarClube(novo){ clubeAtual=novo; document.getElementById('clubeNome').innerText=novo; document.getElementById('clubeBadge').innerText=novo; if(refAtual) refAtual.off(); iniciarApp(); }
+function trocarClube(novo){ clubeAtual=novo.toUpperCase(); document.getElementById('clubeNome').innerText=clubeAtual; document.getElementById('clubeBadge').innerText=clubeAtual; if(refAtual) refAtual.off(); iniciarApp(); }
 function getRef(){ return db.ref('CLUBES/'+clubeAtual); }
 function valorTiro(v){v=String(v).trim().toUpperCase();if(v=='X') return 12;let n=parseFloat(v);return isNaN(n)?0:n;}
 function calcTotal(){let s=0,x=0;for(let i=1;i<=10;i++){let v=document.getElementById('t'+i).value.toUpperCase();if(v=='X') x++;s+=valorTiro(v);}document.getElementById('totalPontos').innerText=(s+x*0.01).toFixed(2);}
@@ -122,14 +129,11 @@ function salvarLancamento(){
   let obj={nome,prova,tiros,pontos:total,data:Date.now()};
   const ref=getRef();
   const id=editKey || "serie_"+Date.now();
-  // GRAVAÇÃO DUAL - mantém banco antigo funcionando
   if(editKey){
     ref.child(editKey).set(obj).then(()=>{ if(clubeAtual=='FTERJ') db.ref('FTERJ/'+editKey).set(obj); editKey=null;novoLancamento(); });
   } else {
     ref.child(id).set(obj).then(()=>{
-      if(clubeAtual=='FTERJ'){
-        db.ref('FTERJ/'+id).set(obj); // mantém TV antiga funcionando
-      }
+      if(clubeAtual=='FTERJ'){ db.ref('FTERJ/'+id).set(obj); }
       novoLancamento();
     });
   }
@@ -139,7 +143,7 @@ function editar(k){getRef().child(k).once('value',s=>{let v=s.val();document.get
 function excluir(k){
   if(confirm("Excluir?")){
     getRef().child(k).remove();
-    if(clubeAtual=='FTERJ') db.ref('FTERJ/'+k).remove(); // apaga nos 2 pra manter sincronizado
+    if(clubeAtual=='FTERJ') db.ref('FTERJ/'+k).remove();
   }
 }
 document.addEventListener('keydown',e=>{if(e.key=='F2'){e.preventDefault();salvarLancamento();}if(e.key=='F3'){e.preventDefault();novoLancamento();}});
