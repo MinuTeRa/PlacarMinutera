@@ -1,105 +1,82 @@
-<!DOCTYPE html><html><head><meta charset="UTF-8"><title>TV MULTI</title>
+<!DOCTYPE html>
+<html><head><meta charset="UTF-8"><title>TV - Placar</title>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 <style>
-*{margin:0;padding:0;box-sizing:border-box}
-:root{--header-h:11vh;--linha-h:6.1vh;--rodape-h:5.5vh;--font-nome:2.3vh;--font-total:3vh;--font-prova:2.8vh;--font-detalhe:2.05vh;--font-relogio:2.1vh;--logo-h:6.5vh;--font-header:6.5vh}
-html,body{height:100vh;overflow:hidden}body{background:#000;color:#fff;font-family:Arial;display:flex;flex-direction:column}
-#header{height:var(--header-h);background:#FF8C00;display:flex;align-items:center;justify-content:center;position:relative}
-#header h1{font-size:var(--font-header);color:#000;font-weight:900}
-.logo{position:absolute;top:50%;transform:translateY(-50%);height:var(--logo-h);background:#fff;border-radius:6px;display:flex;overflow:hidden}
-.logo img{height:100%;object-fit:contain;padding:3px 8px}
-#logoEsq{left:.8vw}#logoDir{right:.8vw}
-#relogioTopo{position:absolute;right:15.5vw;top:50%;transform:translateY(-50%);background:#000;border-radius:20px;padding:4px 16px;color:#FFD700;font-size:var(--font-relogio);font-weight:900}
-#perfilTag{position:absolute;left:16vw;top:4px;background:#000;color:#FFD700;font-size:1.2vh;padding:3px 10px;border-radius:10px;font-weight:900;display:none}#perfilTag.on{display:block}
-#ranking{flex:1;display:flex;flex-direction:column;gap:.4vh;padding:.4vh.6vw;overflow:hidden;justify-content:space-between}
-.linha{display:flex;align-items:center;background:#1a1a1a;border-radius:8px;padding:0 0.8vw;height:var(--linha-h)}
-.linha.ouro{background:#FFD700;color:#000}.linha.prata{background:#C0C0C0;color:#000}.linha.bronze{background:#CD7F32;color:#000}
-.pos{width:3.5vw;font-weight:900;text-align:center;font-size:var(--font-nome)}
-.nome{flex:1;font-size:var(--font-nome);font-weight:800;text-transform:uppercase;overflow:hidden;white-space:nowrap}
-.prova{width:8vw;text-align:center;font-size:var(--font-prova);font-weight:900;color:#00E5FF}
-.total{width:10vw;text-align:center;font-size:var(--font-total);font-weight:900;color:#FFD700}
-.detalhe{width:34vw;text-align:right;font-size:var(--font-detalhe);font-weight:800;white-space:nowrap;overflow:hidden;color:#fff}
-.badge-subiu{font-size:1.4vh;background:#00FF00;color:#000;padding:2px 6px;border-radius:10px;font-weight:900}
-#rodape{height:var(--rodape-h);background:#000;border-top:2px solid #FF8C00;display:flex;align-items:center;justify-content:center;overflow:hidden}
-#textoRodape{color:#FFD700;font-weight:900;text-align:center;opacity:0;transition:opacity.8s;white-space:nowrap;width:100%}#textoRodape.show{opacity:1}
-#full{position:fixed;inset:0;background:#000;display:none;align-items:center;justify-content:center;z-index:9999}#full img{width:100vw;height:100vh;object-fit:contain}
+*{margin:0;padding:0;box-sizing:border-box}body{background:#000;color:#fff;font-family:Arial;overflow:hidden}
+#header{background:linear-gradient(90deg,#FF8C00,#FF6A00);color:#000;padding:10px 20px;display:flex;justify-content:space-between;align-items:center;font-weight:900}
+#lista{padding:10px}
+.item{display:grid;grid-template-columns:60px 80px 1fr 100px 300px;gap:10px;background:#1a1a1a;padding:12px;margin-bottom:6px;border-radius:6px;border-left:5px solid #FF8C00;font-size:18px}
+#erro{height:100vh;background:#111;color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;font-family:Arial}
 </style></head><body>
-<div id="header"><div id="perfilTag"></div><div id="logoEsq" class="logo"><img id="imgLogoMinu" src="logo-minha.png"></div><h1 id="tituloHeader">CARREGANDO</h1><div id="relogioTopo"><span id="dhTopo">--:--:--</span></div><div id="logoDir" class="logo"><img id="imgLogoClube" src="logo-clube.png"></div></div>
-<div id="ranking">CARREGANDO...</div>
-<div id="rodape"><div id="textoRodape"></div></div>
-<div id="full"><img id="imgFull"></div>
+<div id="app"></div>
 <script>
-const firebaseConfig={apiKey:"AIzaSyA6DCLCJ86Qoe2Ph3VuCF6_vYv6EARedKE",authDomain:"placar-minutera.firebaseapp.com",databaseURL:"https://placar-minutera-default-rtdb.firebaseio.com",projectId:"placar-minutera",storageBucket:"placar-minutera.firebasestorage.app",messagingSenderId:"689991648080",appId:"1:689991648080:web:9deeb958183eaeaa23e255"};
-firebase.initializeApp(firebaseConfig);const db=firebase.database();
-const urlParams=new URLSearchParams(window.location.search);
-let CLUBE=(urlParams.get('clube')||'FTERJ').toUpperCase().replace(/[^A-Z0-9]/g,'');
-let tvParam=(urlParams.get('tv')||'').toLowerCase();
-let PATH_ATLETAS=`CLUBES/${CLUBE}/atletas`;
-let PATH_CONFIG=`CLUBES/${CLUBE}/config`;
-let PATH_FULL_LOCAL=`CLUBES/${CLUBE}/full`;
-let PATH_RODAPE_LOCAL=`CLUBES/${CLUBE}/rodape`;
-let PATH_FULL_GLOBAL=`PATROCINADORES_GLOBAIS/full`;
-let PATH_RODAPE_GLOBAL=`PATROCINADORES_GLOBAIS/rodape`;
-if(tvParam=="tv1")PATH_CONFIG=`CLUBES/${CLUBE}/config_TV1`;
-if(tvParam=="tv2")PATH_CONFIG=`CLUBES/${CLUBE}/config_TV2`;
-document.getElementById('tituloHeader').innerText=CLUBE+" - 3x7 MinuT&Ra";
-function toArr(d){if(!d)return[];if(Array.isArray(d))return d.filter(x=>x);return Object.values(d).filter(x=>x&&!x._meta);}
-let RODAPES=[],FULL=[];let CFG={propPx:35,contPx:35,escala:100,headerH:11,linhaH:6.1,rodapeH:5.5,fontNome:2.3,fontTotal:3,fontProva:2.8,fontDetalhe:2.05,fontRelogio:2.1,logoH:6.5,intervaloFull:90,tempoFull:11,tempoRodape:7,logoMinu:"",logoClube:"",mostrarTag:false};
-let rodapeIndex=0,rodapeTimer=null;let TEMPO_RODAPE=7000,TEMPO_FULL=11000,INTERVALO_FULL=90000;
-function applyConfig(){
- document.body.style.zoom=(CFG.escala||100)/100;
- document.documentElement.style.setProperty('--header-h',(CFG.headerH||11)+'vh');
- document.documentElement.style.setProperty('--linha-h',(CFG.linhaH||6.1)+'vh');
- document.documentElement.style.setProperty('--rodape-h',(CFG.rodapeH||5.5)+'vh');
- document.documentElement.style.setProperty('--font-nome',(CFG.fontNome||2.3)+'vh');
- document.documentElement.style.setProperty('--font-total',(CFG.fontTotal||3)+'vh');
- document.documentElement.style.setProperty('--font-prova',(CFG.fontProva||2.8)+'vh');
- document.documentElement.style.setProperty('--font-detalhe',(CFG.fontDetalhe||2.05)+'vh');
- document.documentElement.style.setProperty('--font-relogio',(CFG.fontRelogio||2.1)+'vh');
- document.documentElement.style.setProperty('--logo-h',(CFG.logoH||6.5)+'vh');
- if(CFG.logoMinu&&CFG.logoMinu.startsWith('http'))document.getElementById('imgLogoMinu').src=CFG.logoMinu;
- if(CFG.logoClube&&CFG.logoClube.startsWith('http'))document.getElementById('imgLogoClube').src=CFG.logoClube;
- TEMPO_RODAPE=(CFG.tempoRodape||7)*1000;TEMPO_FULL=(CFG.tempoFull||11)*1000;INTERVALO_FULL=(CFG.intervaloFull||90)*1000;
- let tag=document.getElementById('perfilTag');if(CFG.mostrarTag){tag.innerText=CLUBE+" "+(tvParam.toUpperCase()||"TV");tag.classList.add('on');}else tag.classList.remove('on');
- renderRodape();agendaBlocoFull();
+const firebaseConfig = {
+  apiKey: "AIzaSyA6DCLCJ86Qoe2Ph3VuCF6_vYv6EARedKE",
+  authDomain: "placar-minutera.firebaseapp.com",
+  databaseURL: "https://placar-minutera-default-rtdb.firebaseio.com",
+  projectId: "placar-minutera",
+  storageBucket: "placar-minutera.firebasestorage.app",
+  messagingSenderId: "689991648080",
+  appId: "1:689991648080:web:9deeb958183eaeaa23e255"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
+// --- IDENTIFICA CLUBE?FTERJ?SGC?clube=SGC ---
+let clubeAtual = null;
+const params = new URLSearchParams(window.location.search);
+if(params.get('clube')) clubeAtual = params.get('clube').toUpperCase();
+else {
+  const raw = window.location.search.replace('?','').toUpperCase().trim();
+  if(raw) clubeAtual = raw.split('=')[0].split('&')[0];
 }
-function renderRodape(){
- let el=document.getElementById('textoRodape');
- if(RODAPES.length==0){el.innerHTML=`CLUBE ${CLUBE} - MinuT&Ra`;el.classList.add('show');return}
- if(rodapeTimer)clearInterval(rodapeTimer);
- function mostra(){el.classList.remove('show');setTimeout(()=>{let r=RODAPES[rodapeIndex];el.innerHTML=`<span style="font-size:${CFG.propPx}px">${r.prop||r.nome||''}</span><span style="font-size:${CFG.contPx}px;color:#fff"> | ${r.contato||''}</span>`;el.classList.add('show');rodapeIndex=(rodapeIndex+1)%RODAPES.length},800)}
- mostra();rodapeTimer=setInterval(mostra,TEMPO_RODAPE);
+const CLUBES_VALIDOS = ['FTERJ','SGC','CFTE','CTEC'];
+
+if(!clubeAtual ||!CLUBES_VALIDOS.includes(clubeAtual)){
+  document.getElementById('app').innerHTML = `
+    <div id="erro">
+      <h1 style="color:#FF8C00;font-size:52px">CLUBE NÃO DEFINIDO</h1>
+      <p style="margin-top:20px;font-size:18px;color:#aaa">Use um dos links abaixo:</p>
+      <div style="margin-top:25px;background:#222;padding:20px 30px;border-radius:12px;text-align:left;line-height:2;font-size:18px">
+        <div><b style="color:#FF8C00">FTERJ:</b> tv.html?FTERJ</div>
+        <div><b style="color:#FF8C00">SGC:</b> tv.html?SGC</div>
+        <div><b style="color:#FF8C00">CFTE:</b> tv.html?CFTE</div>
+        <div><b style="color:#FF8C00">CTEC:</b> tv.html?CTEC</div>
+      </div>
+      <p style="margin-top:25px;font-size:13px;color:#555">minutera.com.br/placar/tv.html?SGC</p>
+    </div>`;
+  throw new Error('Clube nao definido');
 }
-function contaTiros(tiros){let m={X:0,'10':0,'9':0,'8':0,'7':0,'6':0,'5':0,'4':0,'3':0,'2':0,'1':0,'0':0};(tiros||[]).forEach(t=>{let k=String(t).toUpperCase();if(m.hasOwnProperty(k))m[k]++});return `X:${m.X} |10:${m['10']} |9:${m['9']} |8:${m['8']} |7:${m['7']} |6:${m['6']} |5:${m['5']} |4:${m['4']} |3:${m['3']} |2:${m['2']} |1:${m['1']} |0:${m['0']}`}
-function filtra(lista){let vistos=new Set();let top5=[];let resto=[];for(let i=0;i<lista.length;i++){let at=lista[i];let n=(at.nome||'').trim().toUpperCase();if(top5.length<5){if(!vistos.has(n)){vistos.add(n);top5.push({...at,subiu:i>top5.length});}else resto.push({...at,subiu:false});}else resto.push({...at,subiu:false});}return [...top5,...resto];}
-let fullLocal=[],fullGlobal=[],rodapeLocal=[],rodapeGlobal=[];
-function juntaRodape(){RODAPES=[...rodapeGlobal,...rodapeLocal];renderRodape();}
-function juntaFull(){FULL=[...fullGlobal,...fullLocal];}
-db.ref(PATH_RODAPE_GLOBAL).on('value',s=>{rodapeGlobal=toArr(s.val()).filter(r=>r.ativo!==false);juntaRodape();});
-db.ref(PATH_RODAPE_LOCAL).on('value',s=>{rodapeLocal=toArr(s.val()).filter(r=>r.ativo!==false);juntaRodape();});
-db.ref(PATH_FULL_GLOBAL).on('value',s=>{fullGlobal=toArr(s.val()).filter(r=>r.ativo!==false).map(f=>({...f,tempo:f.tempo||11,grupo:parseInt(f.grupo)||1}));juntaFull();});
-db.ref(PATH_FULL_LOCAL).on('value',s=>{fullLocal=toArr(s.val()).filter(r=>r.ativo!==false).map(f=>({...f,tempo:f.tempo||11,grupo:parseInt(f.grupo)||1}));juntaFull();});
-db.ref(PATH_CONFIG).on('value',s=>{
- let v=s.val();
- if(!v&&CLUBE=='FTERJ'){db.ref(tvParam?`CONFIG_ANUNCIOS_FTERJ_${tvParam.toUpperCase()}`:"CONFIG_ANUNCIOS_FTERJ").once('value',snap=>{let vb=snap.val();if(vb){CFG={...CFG,...vb};applyConfig();}});return;}
- if(!v)return;CFG={...CFG,...v};applyConfig();
+
+// --- SE PASSOU, MOSTRA PLACAR ---
+document.getElementById('app').innerHTML = `
+<div id="header"><span id="nomeClube">${clubeAtual} - AO VIVO</span><span id="hora"></span></div>
+<div id="lista">Carregando...</div>
+`;
+
+setInterval(()=>{ document.getElementById('hora').innerText = new Date().toLocaleTimeString(); },1000);
+
+function render(dados){
+  const lista = Object.keys(dados||{}).filter(k=>k.startsWith('serie_')).map(k=>({key:k,...dados[k]}));
+  lista.sort((a,b)=>(b.pontos||0)-(a.pontos||0));
+  let html='';
+  lista.forEach((it,i)=>{
+    html+=`<div class="item"><div>${i+1}º</div><div><b>${it.prova||''}</b></div><div>${it.nome||''}</div><div>${(it.pontos||0).toFixed(2)}</div><div style="color:#aaa;font-size:14px">${(it.tiros||[]).join(' | ')}</div></div>`;
+  });
+  document.getElementById('lista').innerHTML = html || '<div style="padding:20px;color:#666">Nenhum lançamento</div>';
+}
+
+// tenta novo, se não tiver cai no antigo pra FTERJ
+db.ref('CLUBES/'+clubeAtual).on('value', snap=>{
+  const val = snap.val();
+  if(val && Object.keys(val).some(k=>k.startsWith('serie_'))){
+    render(val);
+  } else if(clubeAtual=='FTERJ'){
+    // fallback banco antigo
+    db.ref('FTERJ').once('value', s2=> render(s2.val()));
+  } else {
+    render(val);
+  }
 });
-db.ref(PATH_ATLETAS).on('value',snap=>{
- let data=snap.val();
- if(!data&&CLUBE=='FTERJ'){db.ref('FTERJ').once('value',s2=>{renderAtletas(s2.val()||{});});return;}
- renderAtletas(data||{});
-});
-function renderAtletas(data){
- let lista=[];Object.keys(data).forEach(k=>{if(k.startsWith("_"))return;let s=data[k];if(!s||!s.nome)return;lista.push({nome:s.nome,prova:s.prova||'R2',pontos:parseFloat(s.pontos||0),tiros:s.tiros||[]})});
- lista.sort((a,b)=>{if(b.pontos!==a.pontos)return b.pontos-a.pontos;let bx=(b.tiros||[]).filter(t=>String(t).toUpperCase()=='X').length;let ax=(a.tiros||[]).filter(t=>String(t).toUpperCase()=='X').length;return bx-ax});
- let final=filtra(lista);let html="";final.slice(0,10).forEach((at,i)=>{let cls=i==0?'ouro':i==1?'prata':i==2?'bronze':'';let badge=at.subiu?`<span class="badge-subiu">SUBIU</span>`:'';html+=`<div class="linha ${cls}"><div class="pos">${i+1}º</div><div class="nome">${at.nome} ${badge}</div><div class="prova">P:${at.prova}</div><div class="total">${at.pontos.toFixed(2)}</div><div class="detalhe">${contaTiros(at.tiros)}</div></div>`});
- document.getElementById('ranking').innerHTML=html||'Aguardando...';
-}
-setInterval(()=>{document.getElementById('dhTopo').innerText=new Date().toLocaleString('pt-BR')},1000);
-let emBloco=false,timerFull=null,grupoIdx=0;
-function getGrupos(){let g=[...new Set(FULL.map(f=>parseInt(f.grupo)||1))].sort((a,b)=>a-b);return g.length?g:[1];}
-async function mostraBloco(){if(FULL.length==0||emBloco)return;emBloco=true;let grupos=getGrupos();if(grupoIdx>=grupos.length)grupoIdx=0;let gvez=grupos[grupoIdx];let lista=FULL.filter(f=>(parseInt(f.grupo)||1)==gvez);for(let f of lista){let url=f.arte||f.url||'';if(!url)continue;document.getElementById('imgFull').src=url;document.getElementById('full').style.display='flex';await new Promise(r=>setTimeout(r,(f.tempo||11)*1000));}document.getElementById('full').style.display='none';emBloco=false;grupoIdx=(grupoIdx+1)%grupos.length;agenda();}
-function agenda(){if(timerFull)clearTimeout(timerFull);timerFull=setTimeout(mostraBloco,INTERVALO_FULL);}
-setTimeout(mostraBloco,15000);applyConfig();
 </script></body></html>
