@@ -1,18 +1,18 @@
-<!DOCTYPE html><html><head><meta charset="UTF-8"><title>FABRICA - SaaS</title>
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>FABRICA - ORGANIZADA</title>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
-<style>body{background:#0a0a0a;color:#fff;font-family:Arial;padding:20px}.card{background:#1e1e1e;border-radius:16px;padding:20px;max-width:600px;margin:20px auto;border:2px solid #FF8C00}input{width:100%;padding:12px;background:#000;color:#fff;border:1px solid #444;border-radius:8px;margin-top:6px}label{font-size:12px;color:#FF8C00;font-weight:800;margin-top:14px;display:block}.btn{width:100%;padding:14px;background:#FF8C00;color:#000;font-weight:900;border:none;border-radius:10px;margin-top:14px;cursor:pointer}.links{background:#000;border:1px dashed #FF8C00;border-radius:10px;padding:12px;margin-top:16px;font-size:13px;word-break:break-all;display:none}#preview{max-height:120px;margin-top:10px;border-radius:8px;display:none}</style></head><body>
-<div style="text-align:center"><h1 style="color:#FF8C00">FABRICA DE CLIENTE</h1></div>
+<style>body{background:#0a0a0a;color:#fff;font-family:Arial;padding:20px}.card{background:#1e1e1e;border-radius:16px;padding:20px;max-width:600px;margin:20px auto;border:2px solid #FF8C00}input{width:100%;padding:12px;background:#000;color:#fff;border:1px solid #444;border-radius:8px;margin-top:6px}label{font-size:12px;color:#FF8C00;font-weight:800;margin-top:14px;display:block}.btn{width:100%;padding:14px;background:#FF8C00;color:#000;font-weight:900;border:none;border-radius:10px;margin-top:14px;cursor:pointer}.links{background:#000;border:1px dashed #FF8C00;border-radius:10px;padding:12px;margin-top:16px;font-size:13px;word-break:break-all;display:none}</style></head><body>
+<div style="text-align:center"><h1 style="color:#FF8C00">🏭 FABRICA DE CLIENTE</h1><p style="color:#888;font-size:11px">Estrutura: CLUBES/SIGLA/ + GLOBAL</p></div>
 <div class="card">
-<label>SIGLA (ex: CFTE)</label><input id="sigla" style="text-transform:uppercase">
-<label>NOME COMPLETO</label><input id="nome">
-<label>E-MAIL DO LANCADOR</label><input id="email">
-<label>SENHA</label><input id="senha" value="minutera2025">
-<label>LOGO</label><input type="file" id="fileLogo" accept="image/*"><img id="preview">
-<button class="btn" onclick="criar()">CRIAR CLIENTE</button>
-<div id="status" style="text-align:center;margin-top:10px"></div>
+<label>SIGLA (ex: CFTE - SEM ESPAÇO)</label><input id="sigla" style="text-transform:uppercase" placeholder="CFTE">
+<label>NOME COMPLETO</label><input id="nome" placeholder="Clube de Tiro de Campos">
+<label>E-MAIL DO CLIENTE (lançador)</label><input id="email" placeholder="contato@cfte.com.br">
+<label>SENHA PROVISÓRIA</label><input id="senha" value="minutera2025">
+<label>LOGO DO CLUBE</label><input type="file" id="fileLogo" accept="image/*">
+<button class="btn" onclick="criar()">🚀 CRIAR CLIENTE NOVO</button>
+<div id="status" style="text-align:center;margin-top:10px;font-size:13px"></div>
 <div id="linksBox" class="links"></div>
 </div>
 <script>
@@ -23,26 +23,39 @@ async function criar(){
  let nome=document.getElementById('nome').value.trim();
  let email=document.getElementById('email').value.trim().toLowerCase();
  let senha=document.getElementById('senha').value.trim();
- if(!sigla||!nome||!email){alert("Preencha");return;}
+ if(!sigla||!nome||!email){alert("Preencha sigla, nome e email");return;}
  document.getElementById('status').innerText="Criando "+sigla+"...";
  try{
    let logoUrl="";
    let f=document.getElementById('fileLogo').files[0];
    if(f){let ref=storage.ref("logos_clientes/"+sigla+"/"+Date.now()+"_"+f.name);let snap=await ref.put(f);logoUrl=await snap.ref.getDownloadURL();}
-   let base={criadoEm:Date.now(),clube:sigla,nome:nome};
-   await db.ref(sigla+"/_meta").set(base);
-   await db.ref("PATROCINADORES_FULL_"+sigla+"/_meta").set(base);
-   await db.ref("PATROCINADORES_RODAPE_"+sigla+"/_meta").set(base);
-   await db.ref("CONFIG_ANUNCIOS_"+sigla).set({headerH:11,linhaH:6.1,logoH:6.5,rodapeH:5.5,fontNome:2.3,fontTotal:3,fontProva:2.8,fontDetalhe:2.05,fontRelogio:2.1,escala:100,propPx:35,contPx:35,tempoRodape:7,tempoFull:11,intervaloFull:90,logoClube:logoUrl,logoMinu:"",clube:sigla,nomeClube:nome});
-   await db.ref("CONFIG_ANUNCIOS_"+sigla+"_TV1").set({clube:sigla});
-   await db.ref("CONFIG_ANUNCIOS_"+sigla+"_TV2").set({clube:sigla});
+   // ESTRUTURA NOVA ORGANIZADA
+   let baseMeta={clube:sigla,nome:nome,criadoEm:Date.now(),logo:logoUrl};
+   await db.ref(`CLUBES/${sigla}/_meta`).set(baseMeta);
+   await db.ref(`CLUBES/${sigla}/config`).set({headerH:11,linhaH:6.1,logoH:6.5,rodapeH:5.5,fontNome:2.3,fontTotal:3,fontProva:2.8,fontDetalhe:2.05,fontRelogio:2.1,escala:100,propPx:35,contPx:35,tempoRodape:7,tempoFull:11,intervaloFull:90,logoClube:logoUrl,logoMinu:"",clube:sigla,nomeClube:nome});
+   await db.ref(`CLUBES/${sigla}/config_TV1`).set({clube:sigla,ref:"TV1"});
+   await db.ref(`CLUBES/${sigla}/config_TV2`).set({clube:sigla,ref:"TV2"});
+   await db.ref(`CLUBES/${sigla}/full/_meta`).set({aviso:"patrocinadores locais deste clube"});
+   await db.ref(`CLUBES/${sigla}/rodape/_meta`).set({aviso:"rodapes locais"});
+   await db.ref(`CLUBES/${sigla}/atletas/_meta`).set({aviso:"atletas aqui"});
+   // Garante global existe
+   await db.ref(`PATROCINADORES_GLOBAIS/full/_meta`).set({criadoEm:Date.now()});
+   await db.ref(`PATROCINADORES_GLOBAIS/rodape/_meta`).set({criadoEm:Date.now()});
+   // Permissão
    let emailKey=email.replace(/\./g,',');
-   await db.ref("USUARIOS_PERMISSOES/"+emailKey).set({clube:sigla,master:false,pode:["controle","tv","celular","prova"],email:email});
-   try{let secondApp=firebase.initializeApp(firebaseConfig,"second");await secondApp.auth().createUserWithEmailAndPassword(email,senha);secondApp.delete();}catch(e){}
+   await db.ref("USUARIOS_PERMISSOES/"+emailKey).set({clube:sigla,master:false,pode:["prova"],email:email,nomeClube:nome,criadoEm:Date.now()});
+   try{let secondApp=firebase.initializeApp(firebaseConfig,"second");await secondApp.auth().createUserWithEmailAndPassword(email,senha);secondApp.delete();}catch(e){console.log(e.message);}
    let baseUrl=location.href.substring(0,location.href.lastIndexOf('/')+1);
-   document.getElementById('linksBox').innerHTML="<b>"+sigla+" CRIADO!</b><br><br>TV: "+baseUrl+"tv.html?clube="+sigla+"<br><br>CEL: "+baseUrl+"celular.html?clube="+sigla+"<br><br>CONTROLE: "+baseUrl+"controle.html";
+   document.getElementById('linksBox').innerHTML=`<b>✅ ${sigla} CRIADO COM SUCESSO!</b><br><br>
+   📂 No Firebase: CLUBES/${sigla}/<br><br>
+   <b>TV:</b><br>${baseUrl}tv.html?clube=${sigla}<br><br>
+   <b>TV1:</b><br>${baseUrl}tv.html?clube=${sigla}&tv=tv1<br><br>
+   <b>CELULAR:</b><br>${baseUrl}celular.html?clube=${sigla}<br><br>
+   <b>LANÇAMENTO:</b><br>${baseUrl}lancamento.html?clube=${sigla}<br><br>
+   <b>CONTROLE CLIENTE:</b><br>${baseUrl}controle.html<br>Email: ${email}<br><br>
+   <i>Patrocinadores globais em: PATROCINADORES_GLOBAIS/full (aparece pra todos)</i>`;
    document.getElementById('linksBox').style.display='block';
-   document.getElementById('status').innerText="Pronto!";
- }catch(err){alert(err.message);}
+   document.getElementById('status').innerText="✅ Pronto!";
+ }catch(err){document.getElementById('status').innerText="Erro: "+err.message;alert(err.message);}
 }
 </script></body></html>
