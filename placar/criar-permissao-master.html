@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html><head><meta charset="UTF-8"><title>Criar Master</title>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+</head><body style="font-family:Arial;background:#111;color:#fff;padding:30px">
+<h2>Criar Permissão Master</h2>
+<input id="email" value="thiago1.elb@gmail.com" style="width:100%;padding:12px">
+<input id="senha" type="password" placeholder="senha do controle" style="width:100%;padding:12px;margin-top:10px">
+<button onclick="go()" style="width:100%;padding:15px;margin-top:10px;background:#0f8;font-weight:bold">CRIAR AGORA</button>
+<div id="log" style="margin-top:20px"></div>
+<script>
+async function go(){
+  const email=document.getElementById('email').value.trim();
+  const senha=document.getElementById('senha').value.trim();
+  const log=(m)=>document.getElementById('log').innerHTML+=`<p>${m}</p>`;
+
+  // Pega config do seu controle.html
+  const txt=await fetch('controle.html').then(r=>r.text());
+  const apiKey=(txt.match(/apiKey:\s*"([^"]+)"/)||[])[1];
+  const authDomain=(txt.match(/authDomain:\s*"([^"]+)"/)||[])[1];
+  const databaseURL=(txt.match(/databaseURL:\s*"([^"]+)"/)||[])[1];
+  const projectId=(txt.match(/projectId:\s*"([^"]+)"/)||[])[1];
+
+  firebase.initializeApp({apiKey,authDomain,databaseURL,projectId});
+  log('Config encontrada: '+databaseURL);
+  try{ await firebase.auth().signInWithEmailAndPassword(email,senha); log('✅ Logado'); }catch(e){ log('Aviso login: '+e.message); }
+
+  const key=email.replace(/\./g,',');
+  await firebase.database().ref('USUARIOS_PERMISSOES/'+key).set({
+    clube:'FTERJ', email:email, master:true
+  });
+  log('✅ SUCESSO! Criado USUARIOS_PERMISSOES/'+key+'<br>Agora feche e abra o controle.html');
+}
+</script></body></html>
