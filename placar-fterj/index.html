@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html><head><meta charset="UTF-8"><title>V36.1 FTERJ - COM QUEM LANCOU</title>
+<html><head><meta charset="UTF-8"><title>V36.2 OFFLINE SAFE - SEM CSV AUTO</title>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
@@ -8,35 +8,35 @@
 #header{background:linear-gradient(90deg,#FF8C00,#FF6A00);padding:10px 12px;display:flex;justify-content:space-between;align-items:center;color:#000;font-weight:900;font-size:14px}
 #main{display:flex;height:calc(100vh - 44px)}#left{width:360px;background:#1e1e1e;margin:6px;padding:10px;border-radius:8px;overflow:auto}#right{flex:1;background:#1e1e1e;margin:6px 6px 6px 0;padding:8px;border-radius:8px;overflow:auto}
 input,select{width:100%;padding:7px;background:#000;color:#fff;border:1px solid #444;border-radius:5px;font-size:13px}.row{display:flex;gap:6px;margin-top:6px;position:relative}.linha-tiro{display:flex;gap:6px;align-items:center;margin-top:3px}.linha-tiro b{width:22px;color:#aaa;font-size:11px}
-.item{display:grid;grid-template-columns:45px 45px 1fr 55px 180px 120px 90px;gap:6px;align-items:center;background:#2a2a2a;padding:6px 8px;margin-bottom:4px;border-radius:6px;border-left:5px solid #FF8C00;font-size:11px;height:42px;white-space:nowrap;overflow:hidden}
-.item.offline{border-left-color:#ff2e2e;background:#3a1e1e}
-.btn{flex:1;padding:8px;border:none;border-radius:5px;font-weight:900;cursor:pointer;margin-top:5px;font-size:11px}.btn-salvar{background:#FF8C00;color:#000}.btn-nova{background:#444;color:#fff}.btn-editar{background:#FFD700;color:#000;padding:3px 6px;border:none;border-radius:3px;font-size:9px}.btn-excluir{background:#ff2e2e;color:#fff;padding:3px 6px;border:none;border-radius:3px;font-size:9px;margin-left:3px}
-.btn-csv{background:#00c853;color:#000;padding:5px 9px;border:none;border-radius:5px;font-weight:900;cursor:pointer;font-size:10px}
+.item{display:grid;grid-template-columns:50px 45px 1fr 60px 1fr 90px;gap:8px;align-items:center;background:#2a2a2a;padding:6px 8px;margin-bottom:4px;border-radius:6px;border-left:5px solid #FF8C00;font-size:12px;height:40px;white-space:nowrap}
+.item.offline{border-left-color:#ff2e2e;background:#3a1e1e}.item.syncing{border-left-color:#FFD700}
+.btn{flex:1;padding:10px;border:none;border-radius:5px;font-weight:900;cursor:pointer;margin-top:5px;font-size:11px}.btn-salvar{background:#FF8C00;color:#000}.btn-nova{background:#444;color:#fff}.btn-editar{background:#FFD700;color:#000;padding:3px 6px;border:none;border-radius:3px;font-size:9px}.btn-excluir{background:#ff2e2e;color:#fff;padding:3px 6px;border:none;border-radius:3px;font-size:9px;margin-left:3px}
+.btn-csv{background:#00c853;color:#000;padding:6px 10px;border:none;border-radius:5px;font-weight:900;cursor:pointer;font-size:10px}
 .total{color:#00BFFF;text-align:center;font-weight:900;margin:6px 0;font-size:14px}
 #telaLogin{position:fixed;inset:0;background:rgba(0,0,0,0.97);z-index:9999;display:flex;align-items:center;justify-content:center}
 #sugestoes{position:absolute;top:32px;left:0;background:#000;border:1px solid #FF8C00;max-height:180px;overflow:auto;width:100%;z-index:100;display:none;border-radius:5px}#sugestoes div{padding:8px;font-size:12px;cursor:pointer;border-bottom:1px solid #222;font-weight:700}#sugestoes div:hover{background:#FF8C00;color:#000}
-.badge{font-size:9px;padding:3px 6px;border-radius:10px;font-weight:900}
+.badge{font-size:9px;padding:3px 7px;border-radius:10px;font-weight:900}
 .badge-online{background:#00c853;color:#000}.badge-offline{background:#ff2e2e;color:#fff;animation:blink 1s infinite}.badge-pend{background:#FF8C00;color:#000}
-@keyframes blink{50%{opacity:0.5}}
-#statusBar{background:#111;border:1px solid #333;border-radius:6px;padding:6px 8px;margin-top:8px;font-size:10px}
+@keyframes blink{50%{opacity:0.4}}
+#statusBar{background:#111;border:1px solid #333;border-radius:6px;padding:8px;margin-top:8px;font-size:10px;line-height:1.4}
 </style></head><body>
-<div id="telaLogin"><div style="background:#1e1e1e;padding:20px;border-radius:12px;text-align:center;border:2px solid #FF8C00;min-width:340px"><h2 style="color:#FF8C00;font-size:16px">FTERJ - V36.1 QUEM LANÇOU</h2>
+<div id="telaLogin"><div style="background:#1e1e1e;padding:20px;border-radius:12px;text-align:center;border:2px solid #FF8C00;min-width:340px"><h2 style="color:#FF8C00;font-size:15px">FTERJ V36.2 OFFLINE SAFE</h2><p style="font-size:10px;color:#888;margin-top:4px">SEM CSV AUTO - SÓ LOCAL</p>
 <input id="emailLogin" type="email" placeholder="E-mail" value="thiago1.elb@gmail.com" style="text-align:center;margin-top:10px">
 <input id="senhaLogin" type="password" placeholder="Senha" style="text-align:center;margin-top:8px">
 <button onclick="fazerLogin()" style="width:100%;margin-top:10px;padding:10px;background:#FF8C00;color:#000;border:none;border-radius:6px;font-weight:900;cursor:pointer">ENTRAR</button>
 <p id="erroLogin" style="color:#ff5555;display:none;margin-top:10px;font-size:11px;white-space:pre-wrap;background:#2a0000;padding:6px;border-radius:4px"></p>
 </div></div>
-<div id="header"><div style="display:flex;gap:8px;align-items:center"><span>V36.1 | QUEM LANÇOU</span><span class="badge badge-online" id="badgeNet">ONLINE</span><span class="badge badge-pend" id="badgePend" style="display:none">0 PENDENTES</span></div><div style="display:flex;gap:6px;align-items:center"><button class="btn-csv" onclick="exportarCSV()">📥 CSV COM OPERADOR</button><button class="btn-csv" style="background:#FF8C00" onclick="forcarSync()">🔄 SYNC</button><span id="userEmail" style="font-size:10px;margin-left:4px"></span><button onclick="firebase.auth().signOut()" style="background:#000;color:#fff;border:1px solid #444;padding:3px 6px;border-radius:4px;cursor:pointer;font-size:10px">SAIR</button></div></div>
-<div id="main"><div id="left"><div class="row"><div style="flex:1;position:relative"><input id="nomeAtleta" placeholder="NOME" style="text-transform:uppercase" autocomplete="off" oninput="buscarNome(this.value)" onfocus="buscarNome(this.value)"><div id="sugestoes"></div></div><select id="provaSelect" style="width:80px"><option>C</option><option>R1</option><option>R2</option><option>R3</option><option>R4</option><option>R5</option><option>C/R</option></select></div><div id="tirosContainer"></div><div class="total">TOTAL: <span id="totalPontos">0.00</span></div><div style="display:flex;gap:5px"><button class="btn btn-salvar" onclick="salvarLancamento()">SALVAR [F2]</button><button class="btn btn-nova" onclick="novoLancamento()">NOVA [F3]</button></div>
+<div id="header"><div style="display:flex;gap:8px;align-items:center"><span>V36.2 SAFE</span><span class="badge badge-online" id="badgeNet">VERIFICANDO</span><span class="badge badge-pend" id="badgePend" style="display:none">0 PENDENTES</span></div><div style="display:flex;gap:6px;align-items:center"><button class="btn-csv" onclick="exportarCSV()">📥 BAIXAR CSV (MANUAL)</button><button class="btn-csv" style="background:#FF8C00" onclick="forcarSync()">🔄 SYNC QUANDO VOLTAR NET</button><span id="userEmail" style="font-size:10px;margin-left:4px"></span><button onclick="firebase.auth().signOut()" style="background:#000;color:#fff;border:1px solid #444;padding:3px 6px;border-radius:4px;cursor:pointer;font-size:10px">SAIR</button></div></div>
+<div id="main"><div id="left"><div class="row"><div style="flex:1;position:relative"><input id="nomeAtleta" placeholder="NOME" style="text-transform:uppercase" autocomplete="off" oninput="buscarNome(this.value)" onfocus="buscarNome(this.value)"><div id="sugestoes"></div></div><select id="provaSelect" style="width:80px"><option>C</option><option>R1</option><option>R2</option><option>R3</option><option>R4</option><option>R5</option><option>C/R</option></select></div><div id="tirosContainer"></div><div class="total">TOTAL: <span id="totalPontos">0.00</span></div><div style="display:flex;gap:5px"><button class="btn btn-salvar" onclick="salvarLancamento()">SALVAR [F2] - SÓ LOCAL</button><button class="btn btn-nova" onclick="novoLancamento()">NOVA [F3]</button></div>
 <div id="statusBar">
-<div style="display:flex;justify-content:space-between"><span>Logado:</span><span id="statusQuem" style="color:#FF8C00;font-weight:900">-</span></div>
-<div style="display:flex;justify-content:space-between"><span>Status:</span><span id="statusNet">Verificando...</span></div>
-<div style="display:flex;justify-content:space-between;margin-top:3px"><span>Local:</span><span id="statusLocal">0 provas</span></div>
-<div style="display:flex;justify-content:space-between;margin-top:3px"><span>Fila sync:</span><span id="statusFila">0 pendentes</span></div>
-<div style="margin-top:6px;font-size:9px;color:#888">Agora cada lançamento grava quem lançou</div>
+<div><b>Logado como:</b> <span id="statusQuem" style="color:#FF8C00">-</span> <span style="color:#666;font-size:9px">(login fica salvo mesmo offline)</span></div>
+<div style="margin-top:4px;display:flex;justify-content:space-between"><span>Internet:</span><span id="statusNet">Verificando...</span></div>
+<div style="display:flex;justify-content:space-between"><span>No navegador:</span><span id="statusLocal">0 provas</span></div>
+<div style="display:flex;justify-content:space-between"><span>Pra subir depois:</span><span id="statusFila">0 pendentes</span></div>
+<div style="margin-top:6px;color:#00ff88;font-size:9px">✓ F2 NÃO baixa CSV, só salva no navegador<br>✓ CSV só quando clicar no botão verde<br>✓ Sem internet não tenta subir nada pro Firebase</div>
 </div>
 <div style="margin-top:6px;font-size:10px;color:#666" id="infoLista"></div>
-</div><div id="right"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><span style="font-size:11px;color:#888" id="infoPlacar">Carregando...</span><span style="font-size:9px;color:#666">Última coluna = quem lançou</span></div><div id="listaLancamentos"></div></div></div>
+</div><div id="right"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><span style="font-size:11px;color:#888" id="infoPlacar">Carregando...</span><span style="font-size:9px;color:#666">Vermelho = só no seu PC</span></div><div id="listaLancamentos"></div></div></div>
 <script>
 const firebaseConfig={apiKey:"AIzaSyA6DCLCJ86Qoe2Ph3VuCF6_vYv6EARedKE",authDomain:"placar-minutera.firebaseapp.com",databaseURL:"https://placar-minutera-default-rtdb.firebaseio.com",projectId:"placar-minutera",storageBucket:"placar-minutera.firebasestorage.app",messagingSenderId:"689991648080",appId:"1:689991648080:web:9deeb958183eaeaa23e255"};
 firebase.initializeApp(firebaseConfig);const db=firebase.database();
@@ -54,24 +54,64 @@ function atualizarStatus(){
  let qtdLocal=Object.keys(local).filter(k=>k.startsWith('serie_')).length;
  let qtdFila=fila.length;
  document.getElementById('statusLocal').innerText=qtdLocal+" provas no navegador";
- document.getElementById('statusFila').innerText=qtdFila+" pendentes";
+ document.getElementById('statusFila').innerText=qtdFila+" pendentes pra subir";
  document.getElementById('badgePend').style.display=qtdFila>0?'inline-block':'none';
  document.getElementById('badgePend').innerText=qtdFila+" PENDENTES";
  if(currentUser) document.getElementById('statusQuem').innerText=currentUser.email;
- if(qtdFila>0) document.getElementById('statusNet').innerText="⚠️ "+qtdFila+" só no navegador";
- else if(isOnline) document.getElementById('statusNet').innerText="✅ Sincronizado";
- else document.getElementById('statusNet').innerText="📵 Offline";
+ if(!isOnline){
+   document.getElementById('statusNet').innerHTML='<span style="color:#ff5555;font-weight:900">📵 SEM INTERNET - só local</span>';
+ } else {
+   if(qtdFila>0) document.getElementById('statusNet').innerHTML='<span style="color:#FF8C00">⚠️ '+qtdFila+' provas só no seu PC, vão subir sozinhas</span>';
+   else document.getElementById('statusNet').innerHTML='<span style="color:#00ff88">✅ Online e sincronizado</span>';
+ }
 }
-function updateOnlineStatus(){ isOnline=navigator.onLine; let badge=document.getElementById('badgeNet'); if(isOnline){badge.innerText="ONLINE";badge.className="badge badge-online";} else{badge.innerText="OFFLINE";badge.className="badge badge-offline";} atualizarStatus(); if(isOnline){ forcarSync(); } }
-window.addEventListener('online', updateOnlineStatus); window.addEventListener('offline', updateOnlineStatus);
+function updateOnlineStatus(){
+ let antes=isOnline;
+ isOnline=navigator.onLine;
+ let badge=document.getElementById('badgeNet');
+ if(isOnline){ badge.innerText="ONLINE"; badge.className="badge badge-online"; if(!antes){ setTimeout(()=>{ forcarSyncAutomatico(); }, 1500); } }
+ else{ badge.innerText="OFFLINE - SÓ LOCAL"; badge.className="badge badge-offline"; }
+ atualizarStatus();
+}
+window.addEventListener('online', updateOnlineStatus);
+window.addEventListener('offline', updateOnlineStatus);
+
+function forcarSyncAutomatico(){
+ if(!isOnline) return;
+ let fila=getFila();
+ if(fila.length==0) return;
+ console.log("Voltou internet, sincronizando "+fila.length+"...");
+ let promessas=fila.map(item=>{ return db.ref("FTERJ/"+item.key).set(item.dados).then(()=>item.key).catch(e=>{ console.log("falha sync",e); return null; }); });
+ Promise.all(promessas).then(keys=>{
+  keys=keys.filter(k=>k);
+  if(keys.length>0){
+   let filaAtual=getFila();
+   let restantes=filaAtual.filter(f=>!keys.includes(f.key));
+   setFila(restantes);
+   console.log(keys.length+" sincronizadas");
+  }
+  atualizarStatus();
+ });
+}
+
 function forcarSync(){
- if(!isOnline){alert("Sem internet");return;}
- let fila=getFila(); if(fila.length==0){alert("Nada pendente");return;}
+ if(!isOnline){ alert("Ainda sem internet, não dá pra sincronizar. Fica tudo no navegador por enquanto."); return; }
+ let fila=getFila();
+ if(fila.length==0){ alert("Nada pendente, tudo já está no Firebase"); return; }
+ if(!confirm(`Subir ${fila.length} provas pendentes pro Firebase agora?`)) return;
  let promessas=fila.map(item=>{ return db.ref("FTERJ/"+item.key).set(item.dados).then(()=>item.key); });
- Promise.all(promessas).then(keys=>{ let filaAtual=getFila(); let restantes=filaAtual.filter(f=>!keys.includes(f.key)); setFila(restantes); alert(keys.length+" sincronizadas!"); atualizarStatus(); }).catch(e=>{alert("Erro sync: "+e.message);});
+ Promise.all(promessas).then(keys=>{
+  let filaAtual=getFila();
+  let restantes=filaAtual.filter(f=>!keys.includes(f.key));
+  setFila(restantes);
+  alert(keys.length+" provas subiram pro Firebase!");
+  atualizarStatus();
+ }).catch(e=>{ alert("Erro no sync: "+e.message); });
 }
+
 function fazerLogin(){let e=document.getElementById('emailLogin').value.trim(),s=document.getElementById('senhaLogin').value.trim(),er=document.getElementById('erroLogin');er.style.display='none';if(!e||!s){er.style.display='block';er.innerText="Preenche e-mail e senha";return;}firebase.auth().signInWithEmailAndPassword(e,s).catch(err=>{er.style.display='block';er.innerText=err.code+"\n"+err.message});}
 firebase.auth().onAuthStateChanged(u=>{if(u){currentUser=u;document.getElementById('telaLogin').style.display='none';document.getElementById('userEmail').innerText=u.email;iniciarApp();}else{document.getElementById('telaLogin').style.display='flex';}});
+
 function valorTiro(v){v=String(v).trim().toUpperCase();if(v=='X')return 12;let n=parseFloat(v);return isNaN(n)?0:n;}
 function calcTotal(){let s=0,x=0;for(let i=1;i<=10;i++){let el=document.getElementById('t'+i);if(!el)continue;let v=el.value.toUpperCase();if(v=='X')x++;s+=valorTiro(v);}document.getElementById('totalPontos').innerText=(s+x*0.01).toFixed(2);}
 function criar(){let c=document.getElementById('tirosContainer');c.innerHTML='';for(let i=1;i<=10;i++)c.innerHTML+=`<div class="linha-tiro"><b>${i}°</b><input id="t${i}" list="vals" oninput="calcTotal()" onblur="valida(this)"></div>`;c.innerHTML+=`<datalist id="vals"><option value="X"><option value="10"><option value="9"><option value="8"><option value="7"><option value="6"><option value="5"><option value="4"><option value="3"><option value="2"><option value="1"><option value="0"></datalist>`;}
@@ -103,9 +143,23 @@ function buscarNome(texto){
 }
 function selecionarNome(nome){ document.getElementById('nomeAtleta').value=nome; document.getElementById('sugestoes').style.display='none'; let prox=proximoRdisponivel(nome); garantirOpcao(prox); document.getElementById('provaSelect').value=prox; let t1=document.getElementById('t1'); if(t1) t1.focus(); }
 document.addEventListener('click',(e)=>{if(!e.target.closest('#nomeAtleta') &&!e.target.closest('#sugestoes')) document.getElementById('sugestoes').style.display='none';});
-function iniciarApp(){ criar(); updateOnlineStatus(); db.ref(LISTA_PATH).on('value',s=>{cacheLista=s.val()||{};}); db.ref("FTERJ").on('value',s=>{ cache=s.val()||{}; renderLista(); }); renderLista(); setInterval(atualizarStatus, 2000); }
+function iniciarApp(){
+ criar();
+ updateOnlineStatus();
+ db.ref(LISTA_PATH).on('value',s=>{cacheLista=s.val()||{};});
+ db.ref("FTERJ").on('value',s=>{
+  // se offline, ignora atualização do Firebase pra não sobrescrever local
+  if(!isOnline) return;
+  cache=s.val()||{};
+  renderLista();
+ });
+ renderLista();
+ setInterval(atualizarStatus, 2000);
+ setInterval(updateOnlineStatus, 5000);
+}
 function renderLista(){
- let local=getLocalData(); let filaKeys=new Set(getFila().map(f=>f.key));
+ let local=getLocalData();
+ let filaKeys=new Set(getFila().map(f=>f.key));
  let todas={...cache, ...local};
  let listaCompleta=Object.keys(todas).filter(k=>k.startsWith('serie_')).map(k=>{return {key:k,...todas[k], _pendente:filaKeys.has(k)};});
  let lista=listaCompleta.filter(v=>{return isLancamentoF2(v);});
@@ -115,13 +169,11 @@ function renderLista(){
  [...crescente].reverse().forEach(it=>{
   let ord=mapaOrdem[it.key];
   let cls=it._pendente?'item offline':'item';
-  let tag=it._pendente?' 🔴':'';
-  let quem=(it.operadorEmail||it.operador||'').split('@')[0]||'-';
-  let quemFull=it.operadorEmail||it.operador||'antigo';
-  html+=`<div class="${cls}"><div>${String(ord).padStart(3,'0')}</div><div><b>${it.prova}</b>${tag}</div><div>${it.nome}</div><div>${parseFloat(it.pontos||0).toFixed(2)}</div><div style="color:#aaa;font-size:10px">${(it.tiros||[]).join(' | ')}</div><div style="text-align:right"><button class="btn-editar" onclick="editar('${it.key}')">EDITAR</button><button class="btn-excluir" onclick="excluir('${it.key}')">X</button></div><div title="${quemFull}" style="font-size:9px;color:#FF8C00;font-weight:900;overflow:hidden;text-overflow:ellipsis">${quem}</div></div>`;
+  let tag=it._pendente?' 🔴 OFFLINE':'';
+  html+=`<div class="${cls}"><div>${String(ord).padStart(3,'0')}</div><div><b>${it.prova}</b>${tag}</div><div>${it.nome}</div><div>${parseFloat(it.pontos||0).toFixed(2)}</div><div style="color:#aaa;font-size:10px">${(it.tiros||[]).join(' | ')}</div><div style="text-align:right"><button class="btn-editar" onclick="editar('${it.key}')">EDITAR</button><button class="btn-excluir" onclick="excluir('${it.key}')">X</button></div></div>`;
  });
- document.getElementById('listaLancamentos').innerHTML=html||"<div style='color:#666;text-align:center;padding:16px;font-size:11px'>Nenhuma prova<br><small>V36.1 com auditoria</small></div>";
- document.getElementById('infoPlacar').innerText=lista.length+" lançamentos";
+ document.getElementById('listaLancamentos').innerHTML=html||"<div style='color:#666;text-align:center;padding:16px;font-size:11px'>Nenhuma prova<br><small>Tudo salvo no navegador</small></div>";
+ document.getElementById('infoPlacar').innerText=lista.length+" lançamentos (navegador + Firebase)";
 }
 function exportarCSV(){
   let todas={...cache, ...getLocalData()};
@@ -129,18 +181,18 @@ function exportarCSV(){
   let lista=listaCompleta.filter(v=>{return isLancamentoF2(v);});
   if(lista.length==0){alert("Nada");return;}
   let crescente=[...lista].sort((a,b)=>(a.data||0)-(b.data||0));
-  let header=["ORDEM","NOME","PROVA","PONTOS","T1","T2","T3","T4","T5","T6","T7","T8","T9","T10","DATA","KEY","OPERADOR_EMAIL","OPERADOR_UID","STATUS"];
+  let header=["ORDEM","NOME","PROVA","PONTOS","T1","T2","T3","T4","T5","T6","T7","T8","T9","T10","DATA","KEY","OPERADOR_EMAIL","STATUS"];
   let linhas=[header.join(";")];
   crescente.forEach((it,i)=>{
     let tiros=it.tiros||[]; let data = it.data ? new Date(it.data).toLocaleString('pt-BR') : "";
     let status = getFila().some(f=>f.key==it.key) ? "PENDENTE_OFFLINE" : "SYNC_FIREBASE";
-    let row=[i+1,'"'+(it.nome||'').replace(/"/g,'""')+'"',it.prova||'',parseFloat(it.pontos||0).toFixed(2),tiros[0]||'',tiros[1]||'',tiros[2]||'',tiros[3]||'',tiros[4]||'',tiros[5]||'',tiros[6]||'',tiros[7]||'',tiros[8]||'',tiros[9]||'',data,it.key,it.operadorEmail||it.operador||'',it.operadorUid||'',status];
+    let row=[i+1,'"'+(it.nome||'').replace(/"/g,'""')+'"',it.prova||'',parseFloat(it.pontos||0).toFixed(2),tiros[0]||'',tiros[1]||'',tiros[2]||'',tiros[3]||'',tiros[4]||'',tiros[5]||'',tiros[6]||'',tiros[7]||'',tiros[8]||'',tiros[9]||'',data,it.key,it.operadorEmail||'',status];
     linhas.push(row.join(";"));
   });
   let csvContent=linhas.join("\n");
   let blob=new Blob(["\ufeff"+csvContent],{type:"text/csv;charset=utf-8;"});
   let url=URL.createObjectURL(blob);
-  let a=document.createElement("a"); a.href=url; a.download="BKP_FTERJ_COM_OPERADOR_"+new Date().toISOString().slice(0,10)+"_"+lista.length+".csv";
+  let a=document.createElement("a"); a.href=url; a.download="BKP_FTERJ_"+new Date().toISOString().slice(0,10)+"_"+lista.length+".csv";
   document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
 }
 function salvarLancamento(){
@@ -150,22 +202,28 @@ function salvarLancamento(){
   let x=tiros.filter(t=>t=='X').length;
   let total=parseFloat((tiros.reduce((a,b)=>a+valorTiro(b),0)+x*0.01).toFixed(2));
   let key=editKey||"serie_"+Date.now();
-  // AQUI ESTÁ A AUDITORIA
   let obj={
    nome,prova,tiros,pontos:total,data:Date.now(),
-   operadorEmail: currentUser ? currentUser.email : "desconhecido",
-   operadorUid: currentUser ? currentUser.uid : "",
-   operador: currentUser ? currentUser.email : "desconhecido",
+   operadorEmail: currentUser ? currentUser.email : "offline",
+   operadorUid: currentUser ? currentUser.uid : "offline",
    atualizadoEm: Date.now()
   };
+  // 1 - SEMPRE salva no navegador primeiro
   let local=getLocalData(); local[key]=obj; setLocalData(local);
+  // 2 - Se ONLINE tenta Firebase, se OFFLINE só fila
   if(isOnline){
-   db.ref("FTERJ/"+key).set(obj).then(()=>{ let fila=getFila().filter(f=>f.key!=key); setFila(fila); }).catch(e=>{ let fila=getFila(); if(!fila.some(f=>f.key==key)) fila.push({key, dados:obj}); setFila(fila); });
+   db.ref("FTERJ/"+key).set(obj).then(()=>{
+    let fila=getFila().filter(f=>f.key!=key); setFila(fila);
+   }).catch(e=>{
+    console.log("Erro Firebase, vai pra fila", e);
+    let fila=getFila(); if(!fila.some(f=>f.key==key)) fila.push({key, dados:obj}); setFila(fila);
+   });
   }else{
+   // OFFLINE: só fila, não tenta Firebase
    let fila=getFila(); if(!fila.some(f=>f.key==key)) fila.push({key, dados:obj}); setFila(fila);
   }
   editKey=null;novoLancamento();renderLista();
-  setTimeout(()=>{ try{ exportarCSV(); }catch(e){} }, 400);
+  // REMOVIDO: não baixa CSV automático
 }
 function novoLancamento(){editKey=null;document.getElementById('nomeAtleta').value='';for(let i=1;i<=10;i++){let el=document.getElementById('t'+i);if(el)el.value='';}document.getElementById('totalPontos').innerText='0.00';document.getElementById('provaSelect').value='C';document.getElementById('sugestoes').style.display='none';document.getElementById('nomeAtleta').focus();}
 function editar(k){ let todas={...cache, ...getLocalData()}; let v=todas[k]; if(!v){alert("Não achou");return;} document.getElementById('nomeAtleta').value=v.nome;garantirOpcao(v.prova);document.getElementById('provaSelect').value=v.prova;(v.tiros||[]).forEach((t,i)=>{let el=document.getElementById('t'+(i+1));if(el)el.value=t;});calcTotal();editKey=k; }
