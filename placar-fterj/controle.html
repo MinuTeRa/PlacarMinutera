@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html><head><meta charset="UTF-8"><title>CONTROLE FTERJ V36.5 FINAL - FUNCIONANDO</title>
+<html><head><meta charset="UTF-8"><title>CONTROLE V36.6 FIX PERMISSION + APAGAR</title>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
@@ -23,21 +23,19 @@
 @keyframes blink{50%{opacity:0.5}}
 #telaLogin{position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:9999;display:flex;align-items:center;justify-content:center}
 .inputLogin{width:100%;padding:10px;border:1px solid #ccc;border-radius:6px;margin-top:8px}
-#statusFirebase{background:#111;color:#fff;padding:8px;border-radius:6px;font-size:10px;margin-top:10px;font-family:monospace;white-space:pre-wrap}
+#statusFirebase{background:#111;color:#fff;padding:8px;border-radius:6px;font-size:10px;margin-top:10px;font-family:monospace;white-space:pre-wrap;max-height:200px;overflow:auto}
 </style></head><body>
-<div id="telaLogin"><div style="background:#fff;padding:22px;border-radius:12px;text-align:center;min-width:320px"><h3 style="color:#FF8C00">CONTROLE FTERJ V36.5 FINAL</h3><p style="font-size:11px;color:#00aa00;font-weight:900">LISTA FIX + OFFLINE REAL</p>
+<div id="telaLogin"><div style="background:#fff;padding:22px;border-radius:12px;text-align:center;min-width:320px"><h3 style="color:#FF8C00">CONTROLE FTERJ V36.6 FIX</h3><p style="font-size:11px;color:#00aa00;font-weight:900">PERMISSION + APAGAR CORRIGIDO</p>
 <input id="emailLogin" class="inputLogin" type="email" placeholder="E-mail" value="thiago1.elb@gmail.com"><input id="senhaLogin" class="inputLogin" type="password" placeholder="Senha">
 <button onclick="fazerLogin()" style="width:100%;margin-top:12px;padding:11px;background:#FF8C00;color:#000;border:none;border-radius:6px;font-weight:900;cursor:pointer">ENTRAR</button>
 <p id="erroLogin" style="color:#ff5555;display:none;margin-top:10px;font-size:11px;white-space:pre-wrap;background:#ffe0e0;padding:6px;border-radius:4px"></p>
 </div></div>
-
-<div class="top">MinuT&Ra - FTERJ V36.5 FINAL <span id="badgeNet" class="badge badge-offline" style="margin-left:10px">VERIFICANDO FIREBASE</span></div>
+<div class="top">CONTROLE FTERJ V36.6 FIX <span id="badgeNet" class="badge badge-offline" style="margin-left:10px">VERIFICANDO</span></div>
 <div class="tabs"><div class="tab">📄 FULL</div><div class="tab">🔥 RODAPÉ</div><div class="tab active">🎮 PROVA</div><div class="tab">🎯 TV</div><div class="tab">🔗 LINKS</div></div>
-
 <div class="container">
 <div class="card">
-<h3>📁 Lista de Atletas - SEPARADA DO PLACAR <span id="qtdLista" style="color:#000">0 atletas</span></h3>
-<p class="sub">Essa lista fica em LISTA_ATLETAS_FTERJ e ensina nome no INDEX V36.5. Não suja o placar FTERJ.</p>
+<h3>📁 Lista de Atletas - <span id="qtdLista" style="color:#000">0 atletas</span></h3>
+<p class="sub" id="subLista">Aguardando Firebase...</p>
 <div class="preview" id="previewLista">Nenhum</div>
 <div class="row"><button class="btn btn-black" onclick="recarregarLista()">↻ RECARREGAR</button><button class="btn btn-red" onclick="apagarLista()">🗑️ APAGAR LISTA</button></div>
 <div style="margin-top:14px">
@@ -48,107 +46,67 @@
 </div>
 <p class="sub" id="nomeArquivo" style="margin-top:6px"></p>
 </div>
-<div id="statusFirebase">Verificando conexão Firebase...</div>
+<div id="statusFirebase">Verificando...</div>
 </div>
-
 <div class="card">
 <h3>🎮 Ações da Prova - SÓ PLACAR FTERJ <span id="qtdPlacar"></span></h3>
-<p class="sub">Só mexe no FTERJ oficial (placar da esquerda do INDEX)</p>
 <div class="row"><button class="btn btn-orange" onclick="zerarCR()">ZERAR C/R</button><button class="btn btn-red" onclick="apagarPlacar()">APAGAR PLACAR</button></div>
 <p class="sub" id="infoPlacar" style="margin-top:10px">Placar atual: 0 provas</p>
+<p class="sub" style="color:#ff5555;font-weight:700">Ao apagar, o INDEX V36.6 vai limpar o navegador dele também automaticamente.</p>
 <div class="row"><button class="btn btn-red" onclick="firebase.auth().signOut()" style="width:100%">SAIR</button></div>
 </div>
-
-<div class="card" style="border-color:#000">
-<h3 style="color:#000">✅ O que foi corrigido pra funcionar amanhã</h3>
-<p class="sub" style="color:#333;line-height:1.6">
-<b>1. Lista agora sobe de verdade:</b> Botão SUBIR LISTA com log e verificação de Firebase. Se falhar mostra erro.<br>
-<b>2. Offline real:</b> Usa .info/connected do Firebase, não navigator.onLine. Mostra FIREBASE ONLINE/OFFLINE no topo.<br>
-<b>3. Sem botão zerados:</b> Removido como pediu.<br>
-<b>4. INDEX V36.5 precisa estar junto:</b> Só o INDEX V36.5 lê essa lista LISTA_ATLETAS_FTERJ.<br><br>
-<b>Teste rápido antes de dormir:</b><br>
-- Cria TESTE.txt com 3 nomes (1 por linha)<br>
-- Clica SUBIR LISTA - tem que ir pra 3 atletas no quadro<br>
-- Abre INDEX V36.5 e digita as primeiras letras - tem que sugerir<br>
-- Desliga wifi, lança 1 prova no INDEX - tem que ficar vermelho OFFLINE<br>
-- Liga wifi - tem que subir sozinho
-</p>
 </div>
-</div>
-
 <script>
 const firebaseConfig={apiKey:"AIzaSyA6DCLCJ86Qoe2Ph3VuCF6_vYv6EARedKE",authDomain:"placar-minutera.firebaseapp.com",databaseURL:"https://placar-minutera-default-rtdb.firebaseio.com",projectId:"placar-minutera",storageBucket:"placar-minutera.firebasestorage.app",messagingSenderId:"689991648080",appId:"1:689991648080:web:9deeb958183eaeaa23e255"};
 firebase.initializeApp(firebaseConfig);const db=firebase.database();
 const LISTA_PATH="LISTA_ATLETAS_FTERJ";
-let cacheLista={}, cacheFTERJ={};
-let isFirebaseConnected=false;
-
-function logFirebase(msg){ let el=document.getElementById('statusFirebase'); el.innerText = "["+new Date().toLocaleTimeString()+"] "+msg + "\n" + el.innerText; console.log(msg); }
-
+let cacheLista={}, cacheFTERJ={}; let isFirebaseConnected=false;
+function log(msg){ let el=document.getElementById('statusFirebase'); el.innerText = "["+new Date().toLocaleTimeString()+"] "+msg+"\n" + el.innerText; console.log(msg); }
 function fazerLogin(){let e=document.getElementById('emailLogin').value.trim(),s=document.getElementById('senhaLogin').value.trim(),er=document.getElementById('erroLogin');er.style.display='none';if(!e||!s){er.style.display='block';er.innerText="Preenche";return;}firebase.auth().signInWithEmailAndPassword(e,s).catch(err=>{er.style.display='block';er.innerText=err.code+"\n"+err.message});}
 firebase.auth().onAuthStateChanged(u=>{if(u){document.getElementById('telaLogin').style.display='none'; iniciar();}else{document.getElementById('telaLogin').style.display='flex';}});
-
 function iniciar(){
- logFirebase("Logado como "+firebase.auth().currentUser.email+" - monitorando Firebase .info/connected");
- // Monitora conexão REAL Firebase
+ log("Iniciando - logado");
  db.ref(".info/connected").on("value", snap=>{
    isFirebaseConnected = snap.val()===true;
    let badge=document.getElementById('badgeNet');
-   if(isFirebaseConnected){ badge.innerText="FIREBASE ONLINE"; badge.className="badge badge-online"; logFirebase("✅ Firebase conectado - pode subir lista e placar"); }
-   else { badge.innerText="FIREBASE OFFLINE"; badge.className="badge badge-offline"; logFirebase("📵 Firebase desconectado - sem internet real"); }
+   if(isFirebaseConnected){ badge.innerText="FIREBASE ONLINE"; badge.className="badge badge-online"; document.getElementById('subLista').innerText="Firebase ONLINE - pode subir lista (se der PERMISSION_DENIED precisa arrumar regras)"; }
+   else { badge.innerText="FIREBASE OFFLINE"; badge.className="badge badge-offline"; document.getElementById('subLista').innerText="Firebase OFFLINE - não dá pra subir lista agora"; }
  });
-
- db.ref(LISTA_PATH).on('value',s=>{ cacheLista=s.val()||{}; logFirebase("LISTA carregada: "+Object.keys(cacheLista).length+" registros"); renderLista(); }, err=>{ logFirebase("ERRO ler LISTA: "+err.message); });
+ // Tenta ler lista - se der permission_denied avisa
+ db.ref(LISTA_PATH).on('value',s=>{ cacheLista=s.val()||{}; renderLista(); log("LISTA OK: "+Object.keys(cacheLista).length+" registros"); }, err=>{
+   log("❌ ERRO PERMISSION_DENIED em LISTA_ATLETAS_FTERJ: "+err.message);
+   log("⚠️ SOLUÇÃO: Vai no Firebase Console > Realtime Database > Regras e adiciona:");
+   log("\"LISTA_ATLETAS_FTERJ\": {\".read\": \"auth != null\", \".write\": \"auth != null\"}");
+   document.getElementById('subLista').innerHTML="<span style='color:red;font-weight:900'>❌ PERMISSION_DENIED - precisa liberar LISTA_ATLETAS_FTERJ nas regras do Firebase</span>";
+   alert("PERMISSION_DENIED na LISTA_ATLETAS_FTERJ\n\nVai no Firebase Console > Realtime Database > Regras e cola:\n\"LISTA_ATLETAS_FTERJ\": {\".read\": \"auth != null\", \".write\": \"auth != null\"}\n\nSenão a lista nunca vai subir!");
+ });
  db.ref("FTERJ").on('value',s=>{ cacheFTERJ=s.val()||{}; renderPlacar(); });
  document.getElementById('arquivoLista').addEventListener('change', function(){ let f=this.files[0]; document.getElementById('nomeArquivo').innerText= f ? "Selecionado: "+f.name+" ("+f.size+" bytes)" : ""; });
 }
-
-function renderLista(){
- let nomes=Object.values(cacheLista).map(v=>typeof v==='string'?v:(v.nome||v)).filter(Boolean);
- document.getElementById('qtdLista').innerText=`${nomes.length} atletas`;
- document.getElementById('previewLista').innerHTML = nomes.length==0 ? "Nenhum" : nomes.slice(0,100).join('<br>');
-}
-function renderPlacar(){
- let lista=Object.keys(cacheFTERJ).filter(k=>k.startsWith('serie_')).map(k=>cacheFTERJ[k]);
- document.getElementById('qtdPlacar').innerText=`(${lista.length} provas)`;
- document.getElementById('infoPlacar').innerText=`Placar atual: ${lista.length} provas no FTERJ`;
-}
-function recarregarLista(){ logFirebase("Recarregando lista..."); db.ref(LISTA_PATH).once('value').then(s=>{ cacheLista=s.val()||{}; renderLista(); logFirebase("Recarregada: "+Object.keys(cacheLista).length); }); }
-function apagarLista(){ if(!confirm("Apagar LISTA_ATLETAS_FTERJ toda?")) return; logFirebase("Apagando lista..."); db.ref(LISTA_PATH).remove().then(()=>{ logFirebase("Lista apagada"); }).catch(e=>logFirebase("ERRO apagar: "+e.message)); }
-
+function renderLista(){ let nomes=Object.values(cacheLista).map(v=>typeof v==='string'?v:(v.nome||v)).filter(Boolean); document.getElementById('qtdLista').innerText=`${nomes.length} atletas`; document.getElementById('previewLista').innerHTML = nomes.length==0 ? "Nenhum" : nomes.slice(0,100).join('<br>'); }
+function renderPlacar(){ let lista=Object.keys(cacheFTERJ).filter(k=>k.startsWith('serie_')).map(k=>cacheFTERJ[k]); document.getElementById('qtdPlacar').innerText=`(${lista.length} provas)`; document.getElementById('infoPlacar').innerText=`Placar atual: ${lista.length} provas no FTERJ`; }
+function recarregarLista(){ db.ref(LISTA_PATH).once('value').then(s=>{ cacheLista=s.val()||{}; renderLista(); log("Recarregada: "+Object.keys(cacheLista).length); }).catch(e=>log("ERRO recarregar: "+e.message)); }
+function apagarLista(){ if(!confirm("Apagar LISTA_ATLETAS_FTERJ?")) return; db.ref(LISTA_PATH).remove().then(()=>log("Lista apagada")).catch(e=>{log("ERRO apagar lista: "+e.message); alert(e.message);}); }
 function subirLista(){
  let file=document.getElementById('arquivoLista').files[0];
- if(!file){ alert("Escolhe arquivo primeiro"); return; }
- if(!isFirebaseConnected){ alert("Firebase offline, não dá pra subir lista agora. Liga a internet."); logFirebase("Tentativa subir lista com Firebase offline - bloqueado"); return; }
- logFirebase("Lendo arquivo: "+file.name);
+ if(!file){ alert("Escolhe arquivo"); return; }
+ if(!isFirebaseConnected){ alert("Firebase offline, não dá pra subir agora"); return; }
  let reader=new FileReader();
  reader.onload=function(e){
   let texto=e.target.result.replace(/^\uFEFF/,'');
   let linhas=texto.split(/\r?\n/).map(l=>l.trim()).filter(l=>l.length>0);
-  logFirebase("Linhas lidas: "+linhas.length);
-  let nomes=linhas.map(l=>{
-   let nome=l.split(/[;,]/)[0].trim().replace(/^["']|["']$/g,'').trim().toUpperCase();
-   return nome;
-  }).filter(l=>l.length>=2 && !l.match(/^\d+$/) && l!="NOME");
+  let nomes=linhas.map(l=>l.split(/[;,]/)[0].trim().replace(/^["']|["']$/g,'').trim().toUpperCase()).filter(l=>l.length>=2 && !l.match(/^\d+$/) && l!="NOME");
   nomes=[...new Set(nomes)];
-  logFirebase("Nomes válidos: "+nomes.length+" -> "+JSON.stringify(nomes.slice(0,3)));
-  if(nomes.length==0){ alert("Nenhum nome válido"); logFirebase("ERRO: nenhum nome válido"); return; }
-  if(!confirm(`Subir ${nomes.length} nomes pra LISTA_ATLETAS_FTERJ?`)) return;
+  if(nomes.length==0){ alert("Nenhum nome válido"); return; }
+  if(!confirm(`Subir ${nomes.length} nomes?`)) return;
   let updates={}; let base=Date.now();
-  nomes.forEach((nome,i)=>{ updates["atleta_"+base+"_"+i]={nome: nome, data: base+i}; });
-  logFirebase("Enviando "+Object.keys(updates).length+" pro Firebase...");
-  db.ref(LISTA_PATH).set(updates).then(()=>{
-   logFirebase("✅ SUCESSO! "+nomes.length+" atletas em "+LISTA_PATH);
-   alert(`✅ ${nomes.length} atletas subidos! Agora abre o INDEX V36.5 e testa digitar`);
-   document.getElementById('arquivoLista').value='';
-  }).catch(err=>{
-   logFirebase("❌ ERRO Firebase: "+err.code+" "+err.message);
-   alert("Erro: "+err.message);
-  });
+  nomes.forEach((nome,i)=>{ updates["atleta_"+base+"_"+i]={nome, data: base+i}; });
+  log("Enviando "+Object.keys(updates).length+"...");
+  db.ref(LISTA_PATH).set(updates).then(()=>{ log("✅ "+nomes.length+" subidos!"); alert(nomes.length+" subidos!"); document.getElementById('arquivoLista').value=''; }).catch(err=>{ log("❌ ERRO: "+err.code+" "+err.message); alert("ERRO: "+err.message+"\n\nSe for PERMISSION_DENIED, arruma as regras do Firebase"); });
  };
  reader.readAsText(file, 'UTF-8');
 }
-function apagarPlacar(){ if(!confirm("Apagar FTERJ todo?")) return; if(!confirm("Confirma?")) return; if(!isFirebaseConnected){ alert("Firebase offline, não pode apagar"); return; } db.ref("FTERJ").remove().then(()=>{ logFirebase("Placar apagado"); alert("Apagado"); }); }
-function zerarCR(){ if(!isFirebaseConnected){ alert("Firebase offline"); return; } if(!confirm("Zerar C/R?")) return; db.ref("FTERJ").once('value').then(s=>{ let val=s.val()||{}; let toDelete=[]; Object.keys(val).forEach(k=>{ if(k.startsWith('serie_') && val[k].prova && val[k].prova.toUpperCase().includes('C/R')) toDelete.push(k); }); Promise.all(toDelete.map(k=>db.ref("FTERJ/"+k).remove())).then(()=>{ logFirebase(toDelete.length+" C/R apagados"); alert(toDelete.length+" apagados"); }); }); }
+function apagarPlacar(){ if(!confirm("Apagar FTERJ todo?")) return; if(!confirm("Confirma? O INDEX vai limpar o navegador também.")) return; if(!isFirebaseConnected){ alert("Firebase offline, não pode apagar agora"); return; } db.ref("FTERJ").remove().then(()=>{ log("✅ Placar FTERJ apagado - INDEX V36.6 vai limpar local automático"); alert("Placar apagado! O INDEX vai limpar o navegador dele também."); }).catch(e=>{ log("ERRO apagar placar: "+e.message); alert(e.message); }); }
+function zerarCR(){ if(!isFirebaseConnected){ alert("Firebase offline"); return; } if(!confirm("Zerar C/R?")) return; db.ref("FTERJ").once('value').then(s=>{ let val=s.val()||{}; let toDelete=[]; Object.keys(val).forEach(k=>{ if(k.startsWith('serie_') && val[k].prova && val[k].prova.toUpperCase().includes('C/R')) toDelete.push(k); }); Promise.all(toDelete.map(k=>db.ref("FTERJ/"+k).remove())).then(()=>{ log(toDelete.length+" C/R apagados"); alert(toDelete.length+" apagados"); }); }); }
 </script>
 </body></html>
