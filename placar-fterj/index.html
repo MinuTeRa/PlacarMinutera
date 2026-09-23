@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html><head><meta charset="UTF-8"><title>V35.5 FTERJ - LANCAMENTO - CORRIGIDO</title>
+<html><head><meta charset="UTF-8"><title>V35.7 FTERJ - LANCAMENTO CORRIGIDO</title>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
@@ -14,9 +14,17 @@ input,select{width:100%;padding:8px;background:#000;color:#fff;border:1px solid 
 #telaLogin{position:fixed;inset:0;background:rgba(0,0,0,0.97);z-index:9999;display:flex;align-items:center;justify-content:center}
 #sugestoes{position:absolute;top:36px;left:0;background:#000;border:1px solid #FF8C00;max-height:200px;overflow:auto;width:100%;z-index:100;display:none;border-radius:5px}#sugestoes div{padding:10px 8px;font-size:13px;cursor:pointer;border-bottom:1px solid #222;font-weight:700}#sugestoes div:hover{background:#FF8C00;color:#000}
 </style></head><body>
-<div id="telaLogin"><div style="background:#1e1e1e;padding:24px;border-radius:12px;text-align:center;border:2px solid #FF8C00;min-width:320px"><h2 style="color:#FF8C00">FTERJ - LOGIN V35.5</h2><input id="emailLogin" type="email" placeholder="E-mail" value="thiago1.elb@gmail.com" style="text-align:center;margin-top:12px"><input id="senhaLogin" type="password" placeholder="Senha" style="text-align:center;margin-top:10px"><button onclick="fazerLogin()" style="width:100%;margin-top:12px;padding:10px;background:#FF8C00;color:#000;border:none;border-radius:6px;font-weight:900">ENTRAR</button><p id="erroLogin" style="color:#f44;display:none;margin-top:10px;font-size:13px"></p></div></div>
-<div id="header"><span>MÓDULO DE LANÇAMENTO | FTERJ | V35.5 CHAVE NOVA</span><span style="font-size:12px"><span id="userEmail" style="margin-right:10px"></span><button onclick="firebase.auth().signOut()" style="background:#000;color:#fff;border:1px solid #444;padding:4px 8px;border-radius:4px;cursor:pointer">SAIR</button></span></div>
-<div id="main"><div id="left"><div class="row"><div style="flex:1;position:relative"><input id="nomeAtleta" placeholder="NOME" style="text-transform:uppercase" autocomplete="off" oninput="buscarNome(this.value)" onfocus="buscarNome(this.value)"><div id="sugestoes"></div></div><select id="provaSelect" style="width:90px"><option>C</option><option>R1</option><option>R2</option><option>R3</option><option>R4</option><option>R5</option><option>C/R</option></select></div><div id="tirosContainer"></div><div class="total">TOTAL: <span id="totalPontos">0.00</span></div><div style="display:flex;gap:6px"><button class="btn btn-salvar" onclick="salvarLancamento()">SALVAR </button><button class="btn btn-nova" onclick="novoLancamento()">NOVA </button></div></div><div id="right"><div id="listaLancamentos"></div></div></div>
+<div id="telaLogin"><div style="background:#1e1e1e;padding:24px;border-radius:12px;text-align:center;border:2px solid #FF8C00;min-width:350px;max-width:90vw"><h2 style="color:#FF8C00">FTERJ - LOGIN V35.7</h2>
+<input id="emailLogin" type="email" placeholder="E-mail" value="thiago1.elb@gmail.com" style="text-align:center;margin-top:12px">
+<input id="senhaLogin" type="password" placeholder="Senha" style="text-align:center;margin-top:10px">
+<button onclick="fazerLogin()" style="width:100%;margin-top:12px;padding:12px;background:#FF8C00;color:#000;border:none;border-radius:6px;font-weight:900;cursor:pointer;font-size:16px">ENTRAR</button>
+<button onclick="resetarSenha()" style="width:100%;margin-top:8px;padding:8px;background:transparent;color:#FF8C00;border:1px solid #FF8C00;border-radius:6px;font-weight:700;cursor:pointer">ESQUECI A SENHA</button>
+<p id="erroLogin" style="color:#ff5555;display:none;margin-top:12px;font-size:12px;white-space:pre-wrap;background:#2a0000;padding:8px;border-radius:4px"></p>
+<p id="logDebug" style="color:#888;display:block;margin-top:8px;font-size:10px;text-align:left;word-break:break-all"></p>
+<div style="margin-top:12px;border-top:1px solid #333;padding-top:8px"><button onclick="entrarSemLogin()" style="background:#222;color:#888;border:1px dashed #555;padding:6px 10px;border-radius:4px;font-size:11px;cursor:pointer">ENTRAR SEM LOGIN (MODO EMERGÊNCIA)</button></div>
+</div></div>
+<div id="header"><span>MÓDULO DE LANÇAMENTO | FTERJ | V35.7 CORRIGIDO</span><span style="font-size:12px"><span id="userEmail" style="margin-right:10px"></span><button onclick="firebase.auth().signOut()" style="background:#000;color:#fff;border:1px solid #444;padding:4px 8px;border-radius:4px;cursor:pointer">SAIR</button></span></div>
+<div id="main"><div id="left"><div class="row"><div style="flex:1;position:relative"><input id="nomeAtleta" placeholder="NOME" style="text-transform:uppercase" autocomplete="off" oninput="buscarNome(this.value)" onfocus="buscarNome(this.value)"><div id="sugestoes"></div></div><select id="provaSelect" style="width:90px"><option>C</option><option>R1</option><option>R2</option><option>R3</option><option>R4</option><option>R5</option><option>C/R</option></select></div><div id="tirosContainer"></div><div class="total">TOTAL: <span id="totalPontos">0.00</span></div><div style="display:flex;gap:6px"><button class="btn btn-salvar" onclick="salvarLancamento()">SALVAR [F2]</button><button class="btn btn-nova" onclick="novoLancamento()">NOVA [F3]</button></div></div><div id="right"><div id="listaLancamentos"></div></div></div>
 <script>
 const firebaseConfig = {
   apiKey: "AIzaSyA6DCLCJ86Qoe2Ph3VuCF6_vYv6EARedKE",
@@ -29,15 +37,40 @@ const firebaseConfig = {
 };
 firebase.initializeApp(firebaseConfig);const db=firebase.database();
 let editKey=null,cache={};const PERMITIDOS=['X','10','9','8','7','6','5','4','3','2','1','0'];
+
+function logD(t){let el=document.getElementById('logDebug'); if(el){ el.innerText = t + "\n" + el.innerText; } console.log(t); }
+
 function fazerLogin(){
   let e=document.getElementById('emailLogin').value.trim();
   let s=document.getElementById('senhaLogin').value.trim();
-  document.getElementById('erroLogin').style.display='none';
-  firebase.auth().signInWithEmailAndPassword(e,s).catch(err=>{
-    document.getElementById('erroLogin').style.display='block';
-    document.getElementById('erroLogin').innerText=err.code + " - " + err.message;
+  let errEl=document.getElementById('erroLogin');
+  errEl.style.display='none';
+  errEl.innerText='';
+  logD("Tentando logar: "+e);
+  if(!e || !s){ errEl.style.display='block'; errEl.innerText="Preenche e-mail e senha"; return; }
+  firebase.auth().signInWithEmailAndPassword(e,s)
+  .then(()=>{ logD("SUCESSO LOGADO"); })
+  .catch(err=>{
+    logD("ERRO LOGIN: "+err.code);
+    errEl.style.display='block';
+    errEl.innerText = err.code + "\n" + err.message + "\n\nDica: Se for unauthorized-domain, precisa abrir pelo minutera.com.br e adicionar o dominio no Firebase > Authentication > Authorized domains";
   });
 }
+function resetarSenha(){
+  let e=document.getElementById('emailLogin').value.trim();
+  if(!e) return alert("Digita o e-mail primeiro");
+  firebase.auth().sendPasswordResetEmail(e)
+  .then(()=>{ alert("Link de reset enviado para: "+e+"\nOlha inbox e SPAM"); logD("Reset enviado para "+e); })
+  .catch(err=>{ alert(err.code+" - "+err.message); logD("Erro reset: "+err.code); });
+}
+function entrarSemLogin(){
+  if(confirm("Entrar sem login? Só use em emergência, não é seguro deixar assim em produção.")){
+    document.getElementById('telaLogin').style.display='none';
+    document.getElementById('userEmail').innerText="MODO EMERGÊNCIA";
+    iniciarApp();
+  }
+}
+
 firebase.auth().onAuthStateChanged(user=>{
   if(user){
     document.getElementById('telaLogin').style.display='none';
@@ -45,26 +78,32 @@ firebase.auth().onAuthStateChanged(user=>{
     iniciarApp();
   } else {
     document.getElementById('telaLogin').style.display='flex';
+    logD("Firebase Auth iniciado. Aguardando login...");
+    logD("Dominio atual: "+window.location.hostname);
   }
 });
+
 function valorTiro(v){v=String(v).trim().toUpperCase();if(v=='X') return 12;let n=parseFloat(v);return isNaN(n)?0:n;}
-function calcTotal(){let s=0,x=0;for(let i=1;i<=10;i++){let v=document.getElementById('t'+i).value.toUpperCase();if(v=='X') x++;s+=valorTiro(v);}document.getElementById('totalPontos').innerText=(s+x*0.01).toFixed(2);}
+function calcTotal(){let s=0,x=0;for(let i=1;i<=10;i++){let el=document.getElementById('t'+i); if(!el) continue; let v=el.value.toUpperCase();if(v=='X') x++;s+=valorTiro(v);}document.getElementById('totalPontos').innerText=(s+x*0.01).toFixed(2);}
 function criar(){let c=document.getElementById('tirosContainer');c.innerHTML='';for(let i=1;i<=10;i++) c.innerHTML+=`<div class="linha-tiro"><b>${i}°</b><input id="t${i}" list="vals" oninput="calcTotal()" onblur="valida(this)"></div>`;c.innerHTML+=`<datalist id="vals"><option value="X"><option value="10"><option value="9"><option value="8"><option value="7"><option value="6"><option value="5"><option value="4"><option value="3"><option value="2"><option value="1"><option value="0"></datalist>`;}
-function valida(el){let v=el.value.trim().toUpperCase();if(!v) return true;if(!PERMITIDOS.includes(v)){alert("Inválido");el.value='';return false;}el.value=v;return true;}
+function valida(el){let v=el.value.trim().toUpperCase();if(!v) return true;if(!PERMITIDOS.includes(v)){alert("Inválido: "+v);el.value='';return false;}el.value=v;return true;}
+
 function proximoRdisponivel(nome){
  nome=nome.toUpperCase().trim(); if(!nome) return 'C';
- let provas=Object.values(cache).filter(s=>s.nome && s.nome.toUpperCase().trim()==nome).map(s=>s.prova.toUpperCase().trim());
+ let listaSerie = Object.entries(cache).filter(([k,v])=>k.startsWith('serie_')).map(([k,v])=>v);
+ let provas=listaSerie.filter(s=>s.nome && s.nome.toUpperCase().trim()==nome).map(s=>s.prova.toUpperCase().trim());
  if(provas.length==0) return 'C';
  let nums=provas.filter(p=>p.startsWith('R')).map(p=>{let n=parseInt(p.replace(/[^0-9]/g,''));return isNaN(n)?0:n;});
  let maxR=nums.length?Math.max(...nums):0;
  return 'R'+(maxR+1);
 }
 function garantirOpcao(prova){let sel=document.getElementById('provaSelect');if(![...sel.options].some(o=>o.value==prova)){let opt=document.createElement('option');opt.value=prova;opt.textContent=prova;sel.appendChild(opt);}}
+
 function buscarNome(texto){
  texto=texto.toUpperCase().trim();
  let div=document.getElementById('sugestoes');
- let nomes=[...new Set(Object.values(cache).filter(k=>k.nome).map(x=>x.nome.toUpperCase().trim()))].sort();
- // CORREÇÃO: só troca a prova se o nome for EXATO
+ let listaSerie = Object.entries(cache).filter(([k,v])=>k.startsWith('serie_')).map(([k,v])=>v);
+ let nomes=[...new Set(listaSerie.filter(k=>k.nome).map(x=>x.nome.toUpperCase().trim()))].sort();
  if(texto.length>=1 &&!editKey){
    if(nomes.includes(texto)){
      let prox=proximoRdisponivel(texto);
@@ -84,9 +123,10 @@ function selecionarNome(nome){
  let prox=proximoRdisponivel(nome);
  garantirOpcao(prox);
  document.getElementById('provaSelect').value=prox;
- document.getElementById('t1').focus();
+ let t1=document.getElementById('t1'); if(t1) t1.focus();
 }
 document.addEventListener('click',(e)=>{if(!e.target.closest('#nomeAtleta') &&!e.target.closest('#sugestoes')) document.getElementById('sugestoes').style.display='none';});
+
 function iniciarApp(){
  criar();
  db.ref("FTERJ").on('value',s=>{
@@ -102,9 +142,9 @@ function iniciarApp(){
   document.getElementById('listaLancamentos').innerHTML=html;
  });
 }
-function salvarLancamento(){let nome=document.getElementById('nomeAtleta').value.toUpperCase().trim();if(!nome) return alert("NOME");let prova=document.getElementById('provaSelect').value;let tiros=[];for(let i=1;i<=10;i++){let el=document.getElementById('t'+i);let v=el.value.trim();if(!v){alert("Tiro "+i+" branco");return;}v=v.toUpperCase();if(!PERMITIDOS.includes(v)) return alert("Inválido");tiros.push(v);}if(!editKey){if(Object.values(cache).some(s=>s.nome && s.nome.toUpperCase().trim()==nome && s.prova==prova)) return alert("Já existe "+prova+" pra "+nome);}let x=tiros.filter(t=>t=='X').length;let total=parseFloat((tiros.reduce((a,b)=>a+valorTiro(b),0)+x*0.01).toFixed(2));let obj={nome,prova,tiros,pontos:total,data:[STRIPPED] db.ref("FTERJ/"+editKey).set(obj).then(()=>{editKey=null;novoLancamento();});else db.ref("FTERJ/serie_"+Date.now()).set(obj).then(()=>novoLancamento());}
-function novoLancamento(){editKey=null;document.getElementById('nomeAtleta').value='';for(let i=1;i<=10;i++) document.getElementById('t'+i).value='';document.getElementById('totalPontos').innerText='0.00';document.getElementById('provaSelect').value='C';document.getElementById('sugestoes').style.display='none';document.getElementById('nomeAtleta').focus();}
-function editar(k){db.ref("FTERJ/"+k).once('value',s=>{let v=s.val();document.getElementById('nomeAtleta').value=v.nome;garantirOpcao(v.prova);document.getElementById('provaSelect').value=v.prova;(v.tiros||[]).forEach((t,i)=>{document.getElementById('t'+(i+1)).value=t;});calcTotal();editKey=k;});}
+function salvarLancamento(){let nome=document.getElementById('nomeAtleta').value.toUpperCase().trim();if(!nome) return alert("NOME");let prova=document.getElementById('provaSelect').value;let tiros=[];for(let i=1;i<=10;i++){let el=document.getElementById('t'+i);let v=el.value.trim();if(!v){alert("Tiro "+i+" branco");return;}v=v.toUpperCase();if(!PERMITIDOS.includes(v)) return alert("Inválido: "+v);tiros.push(v);}if(!editKey){if(Object.entries(cache).filter(([k])=>k.startsWith('serie_')).map(([k,v])=>v).some(s=>s.nome && s.nome.toUpperCase().trim()==nome && s.prova==prova)) return alert("Já existe "+prova+" pra "+nome);}let x=tiros.filter(t=>t=='X').length;let total=parseFloat((tiros.reduce((a,b)=>a+valorTiro(b),0)+x*0.01).toFixed(2));let obj={nome,prova,tiros,pontos:total,data:Date.now()};if(editKey) db.ref("FTERJ/"+editKey).set(obj).then(()=>{editKey=null;novoLancamento();});else db.ref("FTERJ/serie_"+Date.now()).set(obj).then(()=>novoLancamento());}
+function novoLancamento(){editKey=null;document.getElementById('nomeAtleta').value='';for(let i=1;i<=10;i++){let el=document.getElementById('t'+i); if(el) el.value='';}document.getElementById('totalPontos').innerText='0.00';document.getElementById('provaSelect').value='C';document.getElementById('sugestoes').style.display='none';document.getElementById('nomeAtleta').focus();}
+function editar(k){db.ref("FTERJ/"+k).once('value',s=>{let v=s.val();document.getElementById('nomeAtleta').value=v.nome;garantirOpcao(v.prova);document.getElementById('provaSelect').value=v.prova;(v.tiros||[]).forEach((t,i)=>{let el=document.getElementById('t'+(i+1)); if(el) el.value=t;});calcTotal();editKey=k;});}
 function excluir(k){if(confirm("Excluir?")) db.ref("FTERJ/"+k).remove();}
 document.addEventListener('keydown',e=>{if(e.key=='F2'){e.preventDefault();salvarLancamento();}if(e.key=='F3'){e.preventDefault();novoLancamento();}});
 </script></body></html>
