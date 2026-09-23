@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>CONTROLE FTERJ - V29.2 - 3 TVs + TAG</title>
+<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>CONTROLE FTERJ - V29.3 - FIX LISTA SEPARADA</title>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script><script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script><script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script><script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}body{background:#f5f5f7;font-family:Inter,Arial;color:#1d1d1f}
@@ -27,18 +27,18 @@ input,select{width:100%;padding:12px;background:#f5f5f7;border:1px solid #e5e5e5
 .tvBtn{flex:1;padding:10px;border-radius:10px;border:2px solid #ddd;background:#f5f5f7;font-weight:900;cursor:pointer;text-align:center;font-size:12px}
 .tvBtn.ativo{background:#FF8C00;border-color:#FF8C00;color:#000}
 </style></head><body>
-<div id="login"><h2 style="color:#FF8C00">🔒 CONTROLE FTERJ V29.2</h2><p style="font-size:11px;color:#888">3 TVs + TAG opcional</p><input id="emailLogin" type="email" value="thiago1.elb@gmail.com"><input id="senhaInput" type="password" value="minutera2025"><button onclick="checarSenha()">ENTRAR</button><div id="senhaErro" style="color:#f44;font-size:11px;margin-top:8px;display:none"></div></div>
-<div class="header">MinuT&Ra - FTERJ V29.2 - 3 TVs</div>
+<div id="login"><h2 style="color:#FF8C00">🔒 CONTROLE FTERJ V29.3</h2><p style="font-size:11px;color:#888">FIX LISTA SEPARADA - 3 TVs + TAG</p><input id="emailLogin" type="email" value="thiago1.elb@gmail.com"><input id="senhaInput" type="password" value="minutera2025"><button onclick="checarSenha()">ENTRAR</button><div id="senhaErro" style="color:#f44;font-size:11px;margin-top:8px;display:none"></div></div>
+<div class="header">MinuT&Ra - FTERJ V29.3 FIX LISTA</div>
 <div class="tabs">
-<div class="tab active" onclick="aba('full',this)">🖥️ FULL</div>
+<div class="tab active" onclick="aba('full',this)">🖥 FULL</div>
 <div class="tab" onclick="aba('rodape',this)">🔥 RODAPÉ</div>
 <div class="tab" onclick="aba('controle',this)">🎮 PROVA</div>
-<div class="tab" onclick="aba('admintv',this)">⚙️ TV</div>
+<div class="tab" onclick="aba('admintv',this)">⚙ TV</div>
 <div class="tab" onclick="aba('links',this)">🔗 LINKS</div>
 </div>
-<div id="painel-full" class="painel active"><div class="card"><h3>Novo Anúncio Tela Cheia - com GRUPO ⏱️</h3><div class="grid2"><div><label>Nome</label><input id="fullNome" placeholder="Ex: Loja X"></div><div><label>GRUPO (1 a 99)</label><input id="fullGrupo" type="number" min="1" max="99" value="1"></div></div><div class="grid2"><div><label>Tempo exclusivo (seg)</label><input id="fullTempo" type="number" value="11"></div><div><label>URL (opcional)</label><input id="fullUrl" placeholder="https://..."></div></div><label style="border:2px dashed #FF8C00;border-radius:12px;padding:16px;text-align:center;background:#fff8f0;margin-top:8px;cursor:pointer" for="fullFile">📁 CLIQUE PARA ENVIAR IMAGEM<input type="file" id="fullFile" accept="image/*" hidden onchange="previewFile()"></label><div id="preview" style="display:none;margin-top:10px"><img id="imgPrev" style="width:100%;border-radius:10px;max-height:180px;object-fit:contain"></div><button class="btn btn-preto" onclick="addFull()">+ ADICIONAR NO GRUPO</button></div><div class="card"><h3>Anúncios Ativos - por GRUPO ⏱️ (IGUAL PARA 3 TVs)</h3><div id="resumoGrupos" style="font-size:12px;font-weight:800;color:#FF6A00;margin-bottom:10px"></div><div id="listaFull">Carregando...</div></div></div>
+<div id="painel-full" class="painel active"><div class="card"><h3>Novo Anúncio Tela Cheia - com GRUPO ⏱</h3><div class="grid2"><div><label>Nome</label><input id="fullNome" placeholder="Ex: Loja X"></div><div><label>GRUPO (1 a 99)</label><input id="fullGrupo" type="number" min="1" max="99" value="1"></div></div><div class="grid2"><div><label>Tempo exclusivo (seg)</label><input id="fullTempo" type="number" value="11"></div><div><label>URL (opcional)</label><input id="fullUrl" placeholder="https://..."></div></div><label style="border:2px dashed #FF8C00;border-radius:12px;padding:16px;text-align:center;background:#fff8f0;margin-top:8px;cursor:pointer" for="fullFile">📁 CLIQUE PARA ENVIAR IMAGEM<input type="file" id="fullFile" accept="image/*" hidden onchange="previewFile()"></label><div id="preview" style="display:none;margin-top:10px"><img id="imgPrev" style="width:100%;border-radius:10px;max-height:180px;object-fit:contain"></div><button class="btn btn-preto" onclick="addFull()">+ ADICIONAR NO GRUPO</button></div><div class="card"><h3>Anúncios Ativos - por GRUPO ⏱ (IGUAL PARA 3 TVs)</h3><div id="resumoGrupos" style="font-size:12px;font-weight:800;color:#FF6A00;margin-bottom:10px"></div><div id="listaFull">Carregando...</div></div></div>
 <div id="painel-rodape" class="painel"><div class="card"><h3>Novo Rodapé</h3><label>Texto</label><input id="rdProp"><label>Contato</label><input id="rdCont"><button class="btn btn-laranja" onclick="addRodape()">+ ADICIONAR</button></div><div class="card"><h3>Rodapés Ativos</h3><div id="listaRodape"></div></div></div>
-<div id="painel-controle" class="painel"><div class="card"><h3>📁 Lista de Atletas</h3><span id="lblCount">0 atletas</span><div id="boxAtletas" style="background:#f5f5f7;border:1px solid #e5e5e5;border-radius:10px;padding:10px;max-height:180px;overflow:auto;font-size:11px;white-space:pre-wrap;margin-top:8px">Nenhum</div><div style="display:flex;gap:8px;margin-top:8px"><button class="btn btn-preto" onclick="carregar()" style="flex:1">🔄 RECARREGAR</button><button class="btn btn-vermelho" onclick="apagarLista()" style="flex:1">🗑️ APAGAR</button></div><label>Importar TXT/CSV</label><input type="file" id="fileAtletas" accept=".txt,.csv"></div><div class="card"><h3>🎮 Ações da Prova</h3><div style="display:flex;gap:8px"><button class="btn btn-laranja" onclick="zerarCR()" style="flex:1">ZERAR C/R</button><button class="btn btn-vermelho" onclick="apagarPlacar()" style="flex:1">APAGAR PLACAR</button></div><button class="btn btn-vermelho" style="margin-top:12px" onclick="sair()">SAIR</button></div></div>
+<div id="painel-controle" class="painel"><div class="card" style="border:2px solid #FF8C00"><h3>📁 Lista de Atletas - SEPARADA DO PLACAR</h3><p style="font-size:11px;color:#666">Essa lista agora fica em LISTA_ATLETAS_FTERJ e não suja mais o FTERJ com R2 0.00</p><span id="lblCount">0 atletas</span><div id="boxAtletas" style="background:#f5f5f7;border:1px solid #e5e5e5;border-radius:10px;padding:10px;max-height:180px;overflow:auto;font-size:11px;white-space:pre-wrap;margin-top:8px">Nenhum</div><div style="display:flex;gap:8px;margin-top:8px"><button class="btn btn-preto" onclick="carregar()" style="flex:1">🔄 RECARREGAR</button><button class="btn btn-vermelho" onclick="apagarLista()" style="flex:1">🗑 APAGAR LISTA</button></div><label>Importar TXT/CSV (NOME por linha)</label><input type="file" id="fileAtletas" accept=".txt,.csv"><div id="statusImport" style="font-size:11px;color:#0a0;margin-top:6px"></div></div><div class="card"><h3>🎮 Ações da Prova - SÓ PLACAR FTERJ</h3><p style="font-size:11px;color:#666;margin-bottom:8px">Esses botões mexem só no FTERJ oficial (placar da esquerda)</p><div style="display:flex;gap:8px"><button class="btn btn-laranja" onclick="zerarCR()" style="flex:1">ZERAR C/R</button><button class="btn btn-vermelho" onclick="apagarPlacar()" style="flex:1">APAGAR PLACAR</button></div><button class="btn btn-preto" onclick="limparZerados()" style="margin-top:12px;background:#222">🧹 LIMPAR SÓ ZERADOS (R2 0.00)</button><div style="margin-top:8px;font-size:11px;color:#888">Placar atual: <span id="lblPlacar">0 provas</span></div><button class="btn btn-vermelho" style="margin-top:12px" onclick="sair()">SAIR</button></div></div>
 <div id="painel-admintv" class="painel">
 <div class="card" style="border:2px solid #FF8C00">
 <h3>📺 QUAL TV VOCÊ QUER REGULAR?</h3>
@@ -50,15 +50,16 @@ input,select{width:100%;padding:12px;background:#f5f5f7;border:1px solid #e5e5e5
 <div id="statusPerfil" style="font-size:12px;font-weight:900;color:#FF6A00;text-align:center">Editando: TV PADRÃO</div>
 <button class="btn btn-preto" onclick="copiarDaPrincipal()">📋 Copiar da TV PADRÃO para esta TV</button>
 </div>
-<div class="card"><h3>⚙️ TAMANHOS - <span id="lblPerfil">TV</span></h3><div class="grid2"><div><label>CABEÇALHO vh</label><input type="number" id="headerH" step="0.1"></div><div><label>LINHAS vh</label><input type="number" id="linhaH" step="0.1"></div><div><label>LOGO vh</label><input type="number" id="logoH" step="0.1"></div><div><label>RODAPÉ vh</label><input type="number" id="rodapeH" step="0.1"></div><div><label>NOME vh</label><input type="number" id="fontNome" step="0.1"></div><div><label>TOTAL vh</label><input type="number" id="fontTotal" step="0.1"></div><div><label>PROVA P: vh</label><input type="number" id="fontProva" step="0.1"></div><div><label>DETALHE vh</label><input type="number" id="fontDetalhe" step="0.1"></div><div><label>RELÓGIO vh</label><input type="number" id="fontRelogio" step="0.1"></div><div><label>ESCALA %</label><input type="number" id="escala" step="5"></div><div><label>PROP RODAPÉ px</label><input type="number" id="propPx" step="1"></div><div><label>CONTATO px</label><input type="number" id="contPx" step="1"></div><div><label>TEMPO RODAPÉ seg</label><input type="number" id="cfgTempoRodape" step="1"></div><div><label>TEMPO FULL padrão seg</label><input type="number" id="cfgTempoFull" step="1"></div></div>
+<div class="card"><h3>⚙ TAMANHOS - <span id="lblPerfil">TV</span></h3><div class="grid2"><div><label>CABEÇALHO vh</label><input type="number" id="headerH" step="0.1"></div><div><label>LINHAS vh</label><input type="number" id="linhaH" step="0.1"></div><div><label>LOGO vh</label><input type="number" id="logoH" step="0.1"></div><div><label>RODAPÉ vh</label><input type="number" id="rodapeH" step="0.1"></div><div><label>NOME vh</label><input type="number" id="fontNome" step="0.1"></div><div><label>TOTAL vh</label><input type="number" id="fontTotal" step="0.1"></div><div><label>PROVA P: vh</label><input type="number" id="fontProva" step="0.1"></div><div><label>DETALHE vh</label><input type="number" id="fontDetalhe" step="0.1"></div><div><label>RELÓGIO vh</label><input type="number" id="fontRelogio" step="0.1"></div><div><label>ESCALA %</label><input type="number" id="escala" step="5"></div><div><label>PROP RODAPÉ px</label><input type="number" id="propPx" step="1"></div><div><label>CONTATO px</label><input type="number" id="contPx" step="1"></div><div><label>TEMPO RODAPÉ seg</label><input type="number" id="cfgTempoRodape" step="1"></div><div><label>TEMPO FULL padrão seg</label><input type="number" id="cfgTempoFull" step="1"></div></div>
 <label>INTERVALO FULL seg</label><input type="number" id="cfgIntervalo" step="1">
 <label style="display:flex;align-items:center;gap:8px;background:#fff3e0;padding:10px;border-radius:10px;border:1px dashed #FF8C00;margin-top:12px"><input type="checkbox" id="mostrarTag" style="width:20px;height:20px"> Mostrar TAG TV/TV1/TV2 na TV (útil pra teste)</label>
-<button class="btn btn-laranja" onclick="salvarTudoTV()">💾 SALVAR NA <span class="lblPerfilBtn">TV</span></button><div id="statusTV" style="text-align:center;color:#0a0;font-weight:900;margin-top:8px"></div></div><div class="card"><h3>🖼️ Logos - <span id="lblPerfil2">TV</span></h3><label>URL Logo Clube</label><input id="logoClube"><label>URL Logo MinuT&Ra</label><input id="logoMinu"><div class="grid2"><button class="btn btn-preto" onclick="salvarLogos()">SALVAR LOGOS NA <span class="lblPerfilBtn2">TV</span></button><button class="btn btn-laranja" onclick="restaurarLogos()">RESTAURAR</button></div></div></div>
+<button class="btn btn-laranja" onclick="salvarTudoTV()">💾 SALVAR NA <span class="lblPerfilBtn">TV</span></button><div id="statusTV" style="text-align:center;color:#0a0;font-weight:900;margin-top:8px"></div></div><div class="card"><h3>🖼 Logos - <span id="lblPerfil2">TV</span></h3><label>URL Logo Clube</label><input id="logoClube"><label>URL Logo MinuT&Ra</label><input id="logoMinu"><div class="grid2"><button class="btn btn-preto" onclick="salvarLogos()">SALVAR LOGOS NA <span class="lblPerfilBtn2">TV</span></button><button class="btn btn-laranja" onclick="restaurarLogos()">RESTAURAR</button></div></div></div>
 <div id="painel-links" class="painel"><div class="card"><h3>🔗 LINKS DAS 3 TVs</h3><div style="font-size:13px;line-height:22px"><b>TV PADRÃO:</b><br><span id="linkTV" style="color:#FF6A00"></span><br><br><b>TV1:</b><br><span id="linkTV1" style="color:#FF6A00"></span><br><br><b>TV2:</b><br><span id="linkTV2" style="color:#FF6A00"></span><br><br><b>Celular:</b><br><span id="linkCel" style="color:#888"></span></div></div></div>
 <script>
 const firebaseConfig={apiKey:"AIzaSyA6DCLCJ86Qoe2Ph3VuCF6_vYv6EARedKE",authDomain:"placar-minutera.firebaseapp.com",databaseURL:"https://placar-minutera-default-rtdb.firebaseio.com",projectId:"placar-minutera",storageBucket:"placar-minutera.firebasestorage.app",messagingSenderId:"689991648080",appId:"1:689991648080:web:9deeb958183eaeaa23e255"};
 firebase.initializeApp(firebaseConfig);const db=firebase.database();const storage=firebase.storage();
 let PERFIL_ATUAL="TV"; let CONFIG_PATH="CONFIG_ANUNCIOS_FTERJ";
+const LISTA_PATH="LISTA_ATLETAS_FTERJ";
 function trocaTV(p){
  PERFIL_ATUAL=p;
  document.querySelectorAll('.tvBtn').forEach(b=>b.classList.remove('ativo'));
@@ -90,11 +91,63 @@ function checarSenha(){let e=document.getElementById('emailLogin').value.trim(),
 firebase.auth().onAuthStateChanged(u=>{if(u){document.getElementById('login').style.display='none';carregar();carregaConfigTV();montaLinks();}else{document.getElementById('login').style.display='flex';}});
 function sair(){firebase.auth().signOut().then(()=>{localStorage.clear();location.reload();});}
 function aba(nome,el){document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));document.querySelectorAll('.painel').forEach(p=>p.classList.remove('active'));document.getElementById('painel-'+nome).classList.add('active');if(el)el.classList.add('active');}
-function carregar(){db.ref("FTERJ").once('value').then(s=>{let d=s.val()||{};let ks=Object.keys(d).filter(k=>k.startsWith("serie_"));document.getElementById('lblCount').innerText=ks.length+" atletas";document.getElementById('boxAtletas').innerText=ks.map(k=>d[k].nome).join("\n")||"VAZIO";});}
-function apagarLista(){if(confirm("Apagar lista?"))db.ref("FTERJ").remove().then(carregar);}
-function zerarCR(){if(!confirm("ZERAR C/R?"))return;db.ref("FTERJ").once('value').then(s=>{let d=s.val()||{};Object.keys(d).forEach(k=>{if(k.startsWith("serie_"))db.ref("FTERJ/"+k).update({pontos:0,tiros:[]});});alert("Zerado");});}
-function apagarPlacar(){if(confirm("APAGAR PLACAR?"))db.ref("FTERJ").remove().then(carregar);}
-document.getElementById('fileAtletas').addEventListener('change',e=>{let f=e.target.files[0];if(!f)return;let r=new FileReader();r.onload=ev=>{let ls=ev.target.result.split('\n').map(l=>l.trim()).filter(l=>l);let b={};ls.forEach((n,i)=>{b["serie_"+String(Date.now()+i).slice(-6)]={nome:n.toUpperCase(),prova:"R2",pontos:0,tiros:[]};});db.ref("FTERJ").update(b).then(()=>{carregar();alert(ls.length+" importados");});};r.readAsText(f);});
+function carregar(){
+  db.ref(LISTA_PATH).once('value').then(s=>{
+    let d=s.val()||{};
+    let nomes=Object.values(d).map(v=>v.nome||v).filter(Boolean);
+    document.getElementById('lblCount').innerText=nomes.length+" atletas na LISTA (separada)";
+    document.getElementById('boxAtletas').innerText=nomes.join("\n")||"VAZIO - importe TXT";
+  });
+  db.ref("FTERJ").once('value').then(s=>{
+    let d=s.val()||{};
+    let ks=Object.keys(d).filter(k=>k.startsWith("serie_"));
+    let zerados=ks.filter(k=>{let v=d[k]; return (parseFloat(v.pontos||0)==0) && (!v.tiros || v.tiros.length==0 || v.tiros.every(t=>!t))});
+    document.getElementById('lblPlacar').innerText=ks.length+" provas no FTERJ ("+zerados.length+" zerados)";
+  });
+}
+function apagarLista(){
+  if(!confirm("Apagar só a LISTA_ATLETAS_FTERJ? O placar FTERJ oficial NÃO será apagado."))return;
+  db.ref(LISTA_PATH).remove().then(carregar).then(()=>alert("Lista separada apagada. Placar mantido."));
+}
+function limparZerados(){
+  if(!confirm("Limpar só os R2 0.00 zerados do FTERJ? Isso vai apagar só quem tem pontos 0 e sem tiros."))return;
+  db.ref("FTERJ").once('value').then(s=>{
+    let d=s.val()||{};
+    let toDel=[];
+    Object.keys(d).forEach(k=>{
+      if(!k.startsWith("serie_"))return;
+      let v=d[k];
+      let isZerado = (parseFloat(v.pontos||0)==0) && (!v.tiros || v.tiros.length==0 || v.tiros.join('').trim()=='');
+      if(isZerado) toDel.push(k);
+    });
+    if(toDel.length==0) return alert("Nenhum zerado encontrado.");
+    if(!confirm("Encontrados "+toDel.length+" zerados. Apagar?"))return;
+    let p=[];
+    toDel.forEach(k=>p.push(db.ref("FTERJ/"+k).remove()));
+    Promise.all(p).then(()=>{alert(toDel.length+" zerados apagados."); carregar();});
+  });
+}
+function zerarCR(){if(!confirm("ZERAR C/R no FTERJ?"))return;db.ref("FTERJ").once('value').then(s=>{let d=s.val()||{};Object.keys(d).forEach(k=>{if(k.startsWith("serie_"))db.ref("FTERJ/"+k).update({pontos:0,tiros:[]});});alert("Zerado FTERJ");});}
+function apagarPlacar(){if(!confirm("APAGAR PLACAR FTERJ TODO? Isso NÃO apaga a LISTA_ATLETAS."))return; if(!confirm("CONFIRMA APAGAR FTERJ?"))return; db.ref("FTERJ").remove().then(carregar);}
+document.getElementById('fileAtletas').addEventListener('change',e=>{
+  let f=e.target.files[0];if(!f)return;
+  let r=new FileReader();
+  r.onload=ev=>{
+    let ls=ev.target.result.split('\n').map(l=>l.trim()).filter(l=>l);
+    if(ls.length==0) return alert("Arquivo vazio");
+    let updates={};
+    ls.forEach(n=>{
+      let key=db.ref(LISTA_PATH).push().key;
+      updates[key]={nome:n.toUpperCase(),ativo:true,data:Date.now()};
+    });
+    db.ref(LISTA_PATH).update(updates).then(()=>{
+      carregar();
+      document.getElementById('statusImport').innerText=ls.length+" importados em LISTA_ATLETAS_FTERJ (não cria mais R2 0.00)";
+      alert(ls.length+" importados na lista separada. Agora o módulo de lançamento já sugere sem sujar o placar.");
+    });
+  };
+  r.readAsText(f);
+});
 function previewFile(){let f=document.getElementById('fullFile').files[0];if(!f)return;let r=new FileReader();r.onload=e=>{document.getElementById('imgPrev').src=e.target.result;document.getElementById('preview').style.display='block';};r.readAsDataURL(f);}
 async function addFull(){
   let nome=document.getElementById('fullNome').value||"Patrocinador";
@@ -121,7 +174,7 @@ db.ref("PATROCINADORES_FULL_FTERJ").on('value',s=>{
   Object.keys(d).forEach(k=>{
     let r=d[k]; let on=r.ativo!==false; let tempo=r.tempo||11; let grupo=r.grupo||1;
     contagem[grupo]=(contagem[grupo]||0)+1;
-    h+=`<div class="item"><img src="${r.arte}"><div class="item-info"><b>${r.nome}</b> <span class="badge grupo">G${grupo}</span><br><span class="badge ${on?'on':'off'}">${on?'ATIVO':'OFF'}</span><div style="display:flex;gap:4px;margin-top:4px"><div class="tempo-box" style="flex:1">⏱️<input type="number" value="${tempo}" onchange="setTempoFull('${k}',this.value)">s</div><div class="tempo-box" style="flex:1">G<input type="number" min="1" max="99" value="${grupo}" onchange="setGrupoFull('${k}',this.value)"></div></div></div><button class="icon-btn ativar" onclick="db.ref('PATROCINADORES_FULL_FTERJ/${k}').update({ativo:${!on}})">${on?'||':'▶'}</button><button class="icon-btn apagar" onclick="if(confirm('Apagar?'))db.ref('PATROCINADORES_FULL_FTERJ/${k}').remove()">✕</button></div>`
+    h+=`<div class="item"><img src="${r.arte}"><div class="item-info"><b>${r.nome}</b> <span class="badge grupo">G${grupo}</span><br><span class="badge ${on?'on':'off'}">${on?'ATIVO':'OFF'}</span><div style="display:flex;gap:4px;margin-top:4px"><div class="tempo-box" style="flex:1">⏱<input type="number" value="${tempo}" onchange="setTempoFull('${k}',this.value)">s</div><div class="tempo-box" style="flex:1">G<input type="number" min="1" max="99" value="${grupo}" onchange="setGrupoFull('${k}',this.value)"></div></div></div><button class="icon-btn ativar" onclick="db.ref('PATROCINADORES_FULL_FTERJ/${k}').update({ativo:${!on}})">${on?'||':'▶'}</button><button class="icon-btn apagar" onclick="if(confirm('Apagar?'))db.ref('PATROCINADORES_FULL_FTERJ/${k}').remove()">✕</button></div>`
   });
   let resumo=""; Object.keys(contagem).sort((a,b)=>a-b).forEach(g=>{resumo+=` G${g}: ${contagem[g]} |`;});
   document.getElementById('resumoGrupos').innerText = resumo? "Resumo:"+resumo+" Total grupos: "+Object.keys(contagem).length : "";
