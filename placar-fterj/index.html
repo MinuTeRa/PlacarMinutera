@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html><head><meta charset="UTF-8"><title>V35.5 FTERJ - LANCAMENTO</title>
+<html><head><meta charset="UTF-8"><title>V35.5 FTERJ - LANCAMENTO - CORRIGIDO</title>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
@@ -16,7 +16,7 @@ input,select{width:100%;padding:8px;background:#000;color:#fff;border:1px solid 
 </style></head><body>
 <div id="telaLogin"><div style="background:#1e1e1e;padding:24px;border-radius:12px;text-align:center;border:2px solid #FF8C00;min-width:320px"><h2 style="color:#FF8C00">FTERJ - LOGIN V35.5</h2><input id="emailLogin" type="email" placeholder="E-mail" value="thiago1.elb@gmail.com" style="text-align:center;margin-top:12px"><input id="senhaLogin" type="password" placeholder="Senha" style="text-align:center;margin-top:10px"><button onclick="fazerLogin()" style="width:100%;margin-top:12px;padding:10px;background:#FF8C00;color:#000;border:none;border-radius:6px;font-weight:900">ENTRAR</button><p id="erroLogin" style="color:#f44;display:none;margin-top:10px;font-size:13px"></p></div></div>
 <div id="header"><span>MÓDULO DE LANÇAMENTO | FTERJ | V35.5 CHAVE NOVA</span><span style="font-size:12px"><span id="userEmail" style="margin-right:10px"></span><button onclick="firebase.auth().signOut()" style="background:#000;color:#fff;border:1px solid #444;padding:4px 8px;border-radius:4px;cursor:pointer">SAIR</button></span></div>
-<div id="main"><div id="left"><div class="row"><div style="flex:1;position:relative"><input id="nomeAtleta" placeholder="NOME" style="text-transform:uppercase" autocomplete="off" oninput="buscarNome(this.value)" onfocus="buscarNome(this.value)"><div id="sugestoes"></div></div><select id="provaSelect" style="width:90px"><option>C</option><option>R1</option><option>R2</option><option>R3</option><option>R4</option><option>R5</option><option>C/R</option></select></div><div id="tirosContainer"></div><div class="total">TOTAL: <span id="totalPontos">0.00</span></div><div style="display:flex;gap:6px"><button class="btn btn-salvar" onclick="salvarLancamento()">SALVAR [F2]</button><button class="btn btn-nova" onclick="novoLancamento()">NOVA [F3]</button></div></div><div id="right"><div id="listaLancamentos"></div></div></div>
+<div id="main"><div id="left"><div class="row"><div style="flex:1;position:relative"><input id="nomeAtleta" placeholder="NOME" style="text-transform:uppercase" autocomplete="off" oninput="buscarNome(this.value)" onfocus="buscarNome(this.value)"><div id="sugestoes"></div></div><select id="provaSelect" style="width:90px"><option>C</option><option>R1</option><option>R2</option><option>R3</option><option>R4</option><option>R5</option><option>C/R</option></select></div><div id="tirosContainer"></div><div class="total">TOTAL: <span id="totalPontos">0.00</span></div><div style="display:flex;gap:6px"><button class="btn btn-salvar" onclick="salvarLancamento()">SALVAR </button><button class="btn btn-nova" onclick="novoLancamento()">NOVA </button></div></div><div id="right"><div id="listaLancamentos"></div></div></div>
 <script>
 const firebaseConfig = {
   apiKey: "AIzaSyA6DCLCJ86Qoe2Ph3VuCF6_vYv6EARedKE",
@@ -64,9 +64,13 @@ function buscarNome(texto){
  texto=texto.toUpperCase().trim();
  let div=document.getElementById('sugestoes');
  let nomes=[...new Set(Object.values(cache).filter(k=>k.nome).map(x=>x.nome.toUpperCase().trim()))].sort();
+ // CORREÇÃO: só troca a prova se o nome for EXATO
  if(texto.length>=1 &&!editKey){
-   let alvo=nomes.includes(texto)?texto:(nomes.filter(n=>n.includes(texto)).length==1?nomes.filter(n=>n.includes(texto))[0]:null);
-   if(alvo){let prox=proximoRdisponivel(alvo);garantirOpcao(prox);document.getElementById('provaSelect').value=prox;}
+   if(nomes.includes(texto)){
+     let prox=proximoRdisponivel(texto);
+     garantirOpcao(prox);
+     document.getElementById('provaSelect').value=prox;
+   }
  }
  if(texto.length<1 || editKey){div.style.display='none';return;}
  let filtrados=nomes.filter(n=>n.includes(texto)).slice(0,8);
@@ -98,7 +102,7 @@ function iniciarApp(){
   document.getElementById('listaLancamentos').innerHTML=html;
  });
 }
-function salvarLancamento(){let nome=document.getElementById('nomeAtleta').value.toUpperCase().trim();if(!nome) return alert("NOME");let prova=document.getElementById('provaSelect').value;let tiros=[];for(let i=1;i<=10;i++){let el=document.getElementById('t'+i);let v=el.value.trim();if(!v){alert("Tiro "+i+" branco");return;}v=v.toUpperCase();if(!PERMITIDOS.includes(v)) return alert("Inválido");tiros.push(v);}if(!editKey){if(Object.values(cache).some(s=>s.nome && s.nome.toUpperCase().trim()==nome && s.prova==prova)) return alert("Já existe "+prova+" pra "+nome);}let x=tiros.filter(t=>t=='X').length;let total=parseFloat((tiros.reduce((a,b)=>a+valorTiro(b),0)+x*0.01).toFixed(2));let obj={nome,prova,tiros,pontos:total,data:Date.now()};if(editKey) db.ref("FTERJ/"+editKey).set(obj).then(()=>{editKey=null;novoLancamento();});else db.ref("FTERJ/serie_"+Date.now()).set(obj).then(()=>novoLancamento());}
+function salvarLancamento(){let nome=document.getElementById('nomeAtleta').value.toUpperCase().trim();if(!nome) return alert("NOME");let prova=document.getElementById('provaSelect').value;let tiros=[];for(let i=1;i<=10;i++){let el=document.getElementById('t'+i);let v=el.value.trim();if(!v){alert("Tiro "+i+" branco");return;}v=v.toUpperCase();if(!PERMITIDOS.includes(v)) return alert("Inválido");tiros.push(v);}if(!editKey){if(Object.values(cache).some(s=>s.nome && s.nome.toUpperCase().trim()==nome && s.prova==prova)) return alert("Já existe "+prova+" pra "+nome);}let x=tiros.filter(t=>t=='X').length;let total=parseFloat((tiros.reduce((a,b)=>a+valorTiro(b),0)+x*0.01).toFixed(2));let obj={nome,prova,tiros,pontos:total,data:[STRIPPED] db.ref("FTERJ/"+editKey).set(obj).then(()=>{editKey=null;novoLancamento();});else db.ref("FTERJ/serie_"+Date.now()).set(obj).then(()=>novoLancamento());}
 function novoLancamento(){editKey=null;document.getElementById('nomeAtleta').value='';for(let i=1;i<=10;i++) document.getElementById('t'+i).value='';document.getElementById('totalPontos').innerText='0.00';document.getElementById('provaSelect').value='C';document.getElementById('sugestoes').style.display='none';document.getElementById('nomeAtleta').focus();}
 function editar(k){db.ref("FTERJ/"+k).once('value',s=>{let v=s.val();document.getElementById('nomeAtleta').value=v.nome;garantirOpcao(v.prova);document.getElementById('provaSelect').value=v.prova;(v.tiros||[]).forEach((t,i)=>{document.getElementById('t'+(i+1)).value=t;});calcTotal();editKey=k;});}
 function excluir(k){if(confirm("Excluir?")) db.ref("FTERJ/"+k).remove();}
