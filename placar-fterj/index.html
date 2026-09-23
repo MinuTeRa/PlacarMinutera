@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html><head><meta charset="UTF-8"><title>V36.4 FIX SYNC OFFLINE REAL</title>
+<html><head><meta charset="UTF-8"><title>V36.5 FIX OFFLINE REAL - FIREBASE CONNECTED</title>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
@@ -9,49 +9,50 @@
 #main{display:flex;height:calc(100vh - 44px)}#left{width:360px;background:#1e1e1e;margin:6px;padding:10px;border-radius:8px;overflow:auto}#right{flex:1;background:#1e1e1e;margin:6px 6px 6px 0;padding:8px;border-radius:8px;overflow:auto}
 input,select{width:100%;padding:7px;background:#000;color:#fff;border:1px solid #444;border-radius:5px;font-size:13px}.row{display:flex;gap:6px;margin-top:6px;position:relative}.linha-tiro{display:flex;gap:6px;align-items:center;margin-top:3px}.linha-tiro b{width:22px;color:#aaa;font-size:11px}
 .item{display:grid;grid-template-columns:45px 45px 1fr 60px 1fr 90px;gap:6px;align-items:center;background:#2a2a2a;padding:6px 8px;margin-bottom:4px;border-radius:6px;border-left:5px solid #FF8C00;font-size:11px;height:40px}
-.item.offline{border-left-color:#ff2e2e;background:#3a1e1e;animation:pulse 1.5s infinite}.item.syncing{border-left-color:#FFD700}
-@keyframes pulse{0%{opacity:1}50%{opacity:0.7}100%{opacity:1}}
+.item.offline{border-left-color:#ff2e2e;background:#3a1e1e}.item.syncing{border-left-color:#FFD700}
 .btn{flex:1;padding:10px;border:none;border-radius:5px;font-weight:900;cursor:pointer;margin-top:5px;font-size:11px}.btn-salvar{background:#FF8C00;color:#000}.btn-nova{background:#444;color:#fff}.btn-editar{background:#FFD700;color:#000;padding:3px 6px;border:none;border-radius:3px;font-size:9px}.btn-excluir{background:#ff2e2e;color:#fff;padding:3px 6px;border:none;border-radius:3px;font-size:9px;margin-left:3px}
 .btn-csv{background:#00c853;color:#000;padding:6px 10px;border:none;border-radius:5px;font-weight:900;cursor:pointer;font-size:10px}
 .total{color:#00BFFF;text-align:center;font-weight:900;margin:6px 0;font-size:14px}
 #telaLogin{position:fixed;inset:0;background:rgba(0,0,0,0.97);z-index:9999;display:flex;align-items:center;justify-content:center}
 #sugestoes{position:absolute;top:32px;left:0;background:#000;border:1px solid #FF8C00;max-height:180px;overflow:auto;width:100%;z-index:100;display:none;border-radius:5px}#sugestoes div{padding:8px;font-size:12px;cursor:pointer;border-bottom:1px solid #222;font-weight:700}#sugestoes div:hover{background:#FF8C00;color:#000}
-.badge{font-size:9px;padding:3px 7px;border-radius:10px;font-weight:900}
-.badge-online{background:#00c853;color:#000}.badge-offline{background:#ff2e2e;color:#fff}.badge-pend{background:#FF8C00;color:#000}
+.badge{font-size:10px;padding:4px 8px;border-radius:10px;font-weight:900}
+.badge-online{background:#00c853;color:#000}.badge-offline{background:#ff2e2e;color:#fff;animation:blink 1s infinite}.badge-pend{background:#FF8C00;color:#000}
+@keyframes blink{50%{opacity:0.4}}
 #statusBar{background:#111;border:1px solid #333;border-radius:6px;padding:8px;margin-top:8px;font-size:10px;line-height:1.4}
-#logSync{background:#000;border:1px solid #333;border-radius:4px;padding:6px;margin-top:6px;font-size:9px;font-family:monospace;max-height:100px;overflow:auto;white-space:pre-wrap;display:none}
+#logSync{background:#000;border:1px solid #333;border-radius:4px;padding:6px;margin-top:6px;font-size:9px;font-family:monospace;max-height:120px;overflow:auto;white-space:pre-wrap}
 </style></head><body>
-<div id="telaLogin"><div style="background:#1e1e1e;padding:20px;border-radius:12px;text-align:center;border:2px solid #FF8C00;min-width:340px"><h2 style="color:#FF8C00;font-size:15px">FTERJ V36.4 FIX SYNC</h2><p style="font-size:10px;color:#00ff88;margin-top:4px">CORRIGE OFFLINE QUE NÃO SOBE</p>
+<div id="telaLogin"><div style="background:#1e1e1e;padding:20px;border-radius:12px;text-align:center;border:2px solid #FF8C00;min-width:340px"><h2 style="color:#FF8C00;font-size:15px">FTERJ V36.5 FIX OFFLINE REAL</h2><p style="font-size:10px;color:#00ff88;margin-top:4px">DETECÇÃO PELO FIREBASE</p>
 <input id="emailLogin" type="email" placeholder="E-mail" value="thiago1.elb@gmail.com" style="text-align:center;margin-top:10px">
 <input id="senhaLogin" type="password" placeholder="Senha" style="text-align:center;margin-top:8px">
 <button onclick="fazerLogin()" style="width:100%;margin-top:10px;padding:10px;background:#FF8C00;color:#000;border:none;border-radius:6px;font-weight:900;cursor:pointer">ENTRAR</button>
 <p id="erroLogin" style="color:#ff5555;display:none;margin-top:10px;font-size:11px;white-space:pre-wrap;background:#2a0000;padding:6px;border-radius:4px"></p>
 </div></div>
-<div id="header"><div style="display:flex;gap:8px;align-items:center"><span>V36.4 FIX SYNC</span><span class="badge badge-online" id="badgeNet">VERIFICANDO</span><span class="badge badge-pend" id="badgePend" style="display:none">0 PENDENTES</span></div><div style="display:flex;gap:5px;align-items:center"><button class="btn-csv" onclick="exportarCSV()">📥 CSV</button><button class="btn-csv" style="background:#FFD700" onclick="forcarSync(true)">🔄 FORÇAR SUBIR AGORA</button><span id="userEmail" style="font-size:9px;margin-left:4px"></span><button onclick="firebase.auth().signOut()" style="background:#000;color:#fff;border:1px solid #444;padding:3px 6px;border-radius:4px;cursor:pointer;font-size:10px">SAIR</button></div></div>
+<div id="header"><div style="display:flex;gap:8px;align-items:center"><span>V36.5 REAL OFFLINE</span><span class="badge badge-offline" id="badgeNet">VERIFICANDO FIREBASE</span><span class="badge badge-pend" id="badgePend" style="display:none">0 PENDENTES</span></div><div style="display:flex;gap:5px;align-items:center"><button class="btn-csv" onclick="exportarCSV()">📥 CSV</button><button class="btn-csv" style="background:#FFD700" onclick="forcarSync(true)">🔄 FORÇAR SUBIR AGORA</button><span id="userEmail" style="font-size:9px;margin-left:4px"></span><button onclick="firebase.auth().signOut()" style="background:#000;color:#fff;border:1px solid #444;padding:3px 6px;border-radius:4px;cursor:pointer;font-size:10px">SAIR</button></div></div>
 <div id="main"><div id="left"><div class="row"><div style="flex:1;position:relative"><input id="nomeAtleta" placeholder="NOME" style="text-transform:uppercase" autocomplete="off" oninput="buscarNome(this.value)" onfocus="buscarNome(this.value)"><div id="sugestoes"></div></div><select id="provaSelect" style="width:80px"><option>C</option><option>R1</option><option>R2</option><option>R3</option><option>R4</option><option>R5</option><option>C/R</option></select></div><div id="tirosContainer"></div><div class="total">TOTAL: <span id="totalPontos">0.00</span></div><div style="display:flex;gap:5px"><button class="btn btn-salvar" onclick="salvarLancamento()">SALVAR [F2] - SÓ LOCAL</button><button class="btn btn-nova" onclick="novoLancamento()">NOVA [F3]</button></div>
 <div id="statusBar">
 <div><b>Logado:</b> <span id="statusQuem" style="color:#FF8C00">-</span></div>
-<div style="display:flex;justify-content:space-between"><span>Internet:</span><span id="statusNet">Verificando...</span></div>
+<div style="display:flex;justify-content:space-between"><span>Firebase:</span><span id="statusNet">Verificando Firebase...</span></div>
 <div style="display:flex;justify-content:space-between"><span>No navegador:</span><span id="statusLocal">0</span></div>
 <div style="display:flex;justify-content:space-between"><span>Fila pra subir:</span><span id="statusFila" style="color:#FF8C00;font-weight:900">0</span></div>
 <div id="logSync"></div>
-<div style="margin-top:6px;color:#888;font-size:9px">F2 = só local. CSV só no botão. Sync automático quando voltar net.</div>
 </div>
 <div style="margin-top:6px;font-size:10px;color:#666" id="infoLista"></div>
-</div><div id="right"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><span style="font-size:11px;color:#888" id="infoPlacar">Carregando...</span><span style="font-size:9px;color:#ff5555">Vermelho = só no seu PC, não subiu ainda</span></div><div id="listaLancamentos"></div></div></div>
+</div><div id="right"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><span style="font-size:11px;color:#888" id="infoPlacar">Carregando...</span><span style="font-size:9px;color:#ff5555">Vermelho = só no seu PC</span></div><div id="listaLancamentos"></div></div></div>
 <script>
 const firebaseConfig={apiKey:"AIzaSyA6DCLCJ86Qoe2Ph3VuCF6_vYv6EARedKE",authDomain:"placar-minutera.firebaseapp.com",databaseURL:"https://placar-minutera-default-rtdb.firebaseio.com",projectId:"placar-minutera",storageBucket:"placar-minutera.firebasestorage.app",messagingSenderId:"689991648080",appId:"1:689991648080:web:9deeb958183eaeaa23e255"};
 firebase.initializeApp(firebaseConfig);const db=firebase.database();
 let editKey=null,cache={},cacheLista={},LISTA_PATH="LISTA_ATLETAS_FTERJ";
-let isOnline=navigator.onLine; let currentUser=null;
+let isFirebaseConnected=false; let isNavigatorOnline=navigator.onLine; let currentUser=null;
+let isOnline=false; // online real = Firebase conectado
 const PERMITIDOS=['X','10','9','8','7','6','5','4','3','2','1','0'];
 const LS_KEY="FTERJ_OFFLINE_V36";
 const LS_FILA="FTERJ_FILA_SYNC_V36";
-function logSync(msg){ let el=document.getElementById('logSync'); el.style.display='block'; el.innerText+= "["+new Date().toLocaleTimeString()+"] "+msg+"\n"; el.scrollTop=el.scrollHeight; console.log(msg); }
+function logSync(msg){ let el=document.getElementById('logSync'); el.innerText+= "["+new Date().toLocaleTimeString()+"] "+msg+"\n"; el.scrollTop=el.scrollHeight; console.log(msg); }
 function getLocalData(){ try{return JSON.parse(localStorage.getItem(LS_KEY)||'{}');}catch(e){return {};} }
 function setLocalData(d){ localStorage.setItem(LS_KEY, JSON.stringify(d)); atualizarStatus(); }
 function getFila(){ try{return JSON.parse(localStorage.getItem(LS_FILA)||'[]');}catch(e){return [];} }
 function setFila(f){ localStorage.setItem(LS_FILA, JSON.stringify(f)); atualizarStatus(); }
+
 function atualizarStatus(){
  let local=getLocalData(); let fila=getFila();
  document.getElementById('statusLocal').innerText=Object.keys(local).filter(k=>k.startsWith('serie_')).length+" provas";
@@ -59,69 +60,74 @@ function atualizarStatus(){
  document.getElementById('badgePend').style.display=fila.length>0?'inline-block':'none';
  document.getElementById('badgePend').innerText=fila.length+" PENDENTES";
  if(currentUser) document.getElementById('statusQuem').innerText=currentUser.email;
- if(!isOnline){ document.getElementById('statusNet').innerHTML='<span style="color:#ff5555;font-weight:900">📵 SEM INTERNET</span>'; }
- else { if(fila.length>0) document.getElementById('statusNet').innerHTML='<span style="color:#FF8C00">⚠️ '+fila.length+' só no PC</span>'; else document.getElementById('statusNet').innerHTML='<span style="color:#00ff88">✅ Online</span>'; }
-}
-function updateOnlineStatus(){
- let antes=isOnline; isOnline=navigator.onLine;
+ 
+ isOnline = isFirebaseConnected; // SÓ CONSIDERA ONLINE SE FIREBASE DISSE QUE ESTÁ CONECTADO
  let badge=document.getElementById('badgeNet');
- if(isOnline){ badge.innerText="ONLINE"; badge.className="badge badge-online"; logSync("Internet voltou (navigator.onLine=true) - tentando sync automatico em 2s"); if(!antes){ setTimeout(()=>{ forcarSync(false); }, 2000); } }
- else{ badge.innerText="OFFLINE"; badge.className="badge badge-offline"; logSync("Ficou OFFLINE - salvando só local"); }
- atualizarStatus();
+ let status=document.getElementById('statusNet');
+ if(isOnline){
+   badge.innerText="FIREBASE ONLINE"; badge.className="badge badge-online";
+   status.innerHTML='<span style="color:#00ff88;font-weight:900">✅ Firebase conectado - pode subir</span>';
+ } else {
+   badge.innerText="FIREBASE OFFLINE - SÓ LOCAL"; badge.className="badge badge-offline";
+   if(!isNavigatorOnline){
+     status.innerHTML='<span style="color:#ff5555;font-weight:900">📵 Sem internet (navegador offline)</span>';
+   } else {
+     status.innerHTML='<span style="color:#ff5555;font-weight:900">📵 Firebase desconectado - sem internet real</span>';
+   }
+ }
 }
-window.addEventListener('online', updateOnlineStatus);
-window.addEventListener('offline', updateOnlineStatus);
 
-// TESTE REAL DE CONEXÃO COM FIREBASE (não só navigator.onLine)
-function testarConexaoFirebase(){
- return db.ref(".info/connected").once('value').then(s=>s.val()).catch(()=>false);
+// Monitora conexão REAL do Firebase (é ele que importa)
+function monitorarFirebase(){
+ db.ref(".info/connected").on("value", snap=>{
+   isFirebaseConnected = snap.val()===true;
+   logSync("Firebase .info/connected = "+snap.val()+" -> isOnline="+isFirebaseConnected);
+   atualizarStatus();
+   if(isFirebaseConnected && getFila().length>0){
+     logSync("Firebase reconectou! Tentando subir fila em 1s...");
+     setTimeout(()=>forcarSync(false), 1000);
+   }
+ });
+ // Monitora navigator também só pra info
+ window.addEventListener('online', ()=>{ isNavigatorOnline=true; logSync("navigator online=true"); atualizarStatus(); });
+ window.addEventListener('offline', ()=>{ isNavigatorOnline=false; logSync("navigator offline=false"); atualizarStatus(); });
 }
 
 function forcarSync(manual){
  let fila=getFila();
- if(fila.length==0){ if(manual) alert("Nada pendente, tudo já está no Firebase"); logSync("Sync: nada pendente"); return; }
- logSync("Iniciando sync de "+fila.length+" provas - manual="+manual);
- if(manual) logSync("Tentando subir mesmo se navigator disser offline - teste real Firebase");
- 
- // verifica se usuario ainda está logado no Firebase Auth
+ if(fila.length==0){ if(manual) alert("Nada pendente"); logSync("Sync: nada pendente"); return; }
+ if(!isFirebaseConnected && !manual){
+   logSync("Sync automático ignorado - Firebase offline");
+   return;
+ }
+ logSync("Iniciando sync de "+fila.length+" provas (manual="+manual+", firebaseOnline="+isFirebaseConnected+")");
  let user=firebase.auth().currentUser;
- if(!user){ logSync("ERRO: sem usuario logado no Auth, não pode subir"); alert("Você foi deslogado, faz login de novo"); return; }
+ if(!user){ logSync("ERRO: sem usuario Auth"); alert("Deslogado, loga de novo"); return; }
  user.getIdToken(true).then(token=>{
-   logSync("Token renovado, tentando subir "+fila.length);
+   logSync("Token ok, subindo "+fila.length);
    let promessas=fila.map(item=>{
-     return db.ref("FTERJ/"+item.key).set(item.dados).then(()=>{ logSync("✅ Subiu: "+item.key+" - "+item.dados.nome); return item.key; }).catch(e=>{ logSync("❌ Falhou "+item.key+": "+e.code+" "+e.message); return null; });
+     return db.ref("FTERJ/"+item.key).set(item.dados).then(()=>{ logSync("✅ Subiu: "+item.dados.nome+" "+item.dados.prova); return item.key; }).catch(e=>{ logSync("❌ Falhou "+item.key+": "+e.code+" "+e.message); return null; });
    });
    return Promise.all(promessas);
  }).then(keys=>{
    keys=keys.filter(k=>k);
-   logSync("Resultado sync: "+keys.length+"/"+fila.length+" subiram");
+   logSync("Sync resultado: "+keys.length+"/"+fila.length);
    if(keys.length>0){
      let restantes=getFila().filter(f=>!keys.includes(f.key));
      setFila(restantes);
-     logSync("Fila agora: "+restantes.length+" restantes");
      renderLista();
-     if(manual) alert(keys.length+" de "+fila.length+" provas subiram pro Firebase! Faltam "+restantes.length);
+     if(manual) alert(keys.length+" subiram! Faltam "+restantes.length);
    } else {
-     if(manual) alert("Nenhuma subiu - veja log abaixo\n"+document.getElementById('logSync').innerText.slice(-500));
+     if(manual) alert("Nenhuma subiu - veja log");
    }
    atualizarStatus();
- }).catch(e=>{
-   logSync("ERRO GERAL SYNC: "+e.message);
-   if(manual) alert("Erro sync: "+e.message);
- });
+ }).catch(e=>{ logSync("ERRO GERAL: "+e.message); if(manual) alert("Erro: "+e.message); });
 }
 
 function fazerLogin(){let e=document.getElementById('emailLogin').value.trim(),s=document.getElementById('senhaLogin').value.trim(),er=document.getElementById('erroLogin');er.style.display='none';if(!e||!s){er.style.display='block';er.innerText="Preenche";return;}firebase.auth().signInWithEmailAndPassword(e,s).catch(err=>{er.style.display='block';er.innerText=err.code+"\n"+err.message});}
 firebase.auth().onAuthStateChanged(u=>{
- if(u){
-  currentUser=u;
-  document.getElementById('telaLogin').style.display='none';
-  document.getElementById('userEmail').innerText=u.email;
-  logSync("Logado como "+u.email);
-  iniciarApp();
- }else{
-  document.getElementById('telaLogin').style.display='flex';
- }
+ if(u){ currentUser=u; document.getElementById('telaLogin').style.display='none'; document.getElementById('userEmail').innerText=u.email; logSync("Logado "+u.email); iniciarApp(); }
+ else{ document.getElementById('telaLogin').style.display='flex'; }
 });
 
 function valorTiro(v){v=String(v).trim().toUpperCase();if(v=='X')return 12;let n=parseFloat(v);return isNaN(n)?0:n;}
@@ -136,23 +142,17 @@ function selecionarNome(nome){ document.getElementById('nomeAtleta').value=nome;
 document.addEventListener('click',(e)=>{if(!e.target.closest('#nomeAtleta') &&!e.target.closest('#sugestoes')) document.getElementById('sugestoes').style.display='none';});
 function iniciarApp(){
  criar();
- updateOnlineStatus();
+ monitorarFirebase();
  db.ref(LISTA_PATH).on('value',s=>{cacheLista=s.val()||{};});
- db.ref("FTERJ").on('value',s=>{
-  // se tiver pendentes, não sobrescreve local com cache antigo pra não sumir vermelho
-  cache=s.val()||{};
-  renderLista();
- });
+ db.ref("FTERJ").on('value',s=>{ cache=s.val()||{}; renderLista(); });
  renderLista();
- setInterval(atualizarStatus, 2000);
- // tenta sync a cada 10s se tiver fila e estiver online
- setInterval(()=>{ if(isOnline && getFila().length>0){ forcarSync(false); } }, 10000);
- logSync("App iniciado - "+getFila().length+" pendentes na fila");
+ setInterval(atualizarStatus, 3000);
+ logSync("App iniciado - fila: "+getFila().length);
 }
 function renderLista(){
  let local=getLocalData(); let filaKeys=new Set(getFila().map(f=>f.key));
  let todas={...cache, ...local};
- let listaCompleta=Object.keys(todas).filter(k=>k.startsWith('serie_')).map(k=>{return {key:k,...todas[k], _pendente:filaKeys.has(k)};});
+ let listaCompleta=Object.keys(todas).filter(k=>k.startsWith('serie_')).map(k=>{return {key:k,...todas[k], _pendente:filaKeys.has(k) || (!cache[k] && !isFirebaseConnected)};});
  let lista=listaCompleta.filter(v=>{return isLancamentoF2(v);});
  let crescente=[...lista].sort((a,b)=>(a.data||0)-(b.data||0));
  let mapaOrdem={};crescente.forEach((it,i)=>mapaOrdem[it.key]=i+1);
@@ -160,7 +160,7 @@ function renderLista(){
  [...crescente].reverse().forEach(it=>{
   let ord=mapaOrdem[it.key];
   let cls=it._pendente?'item offline':'item';
-  let tag=it._pendente?' 🔴 OFFLINE - CLIQUE SYNC':'';
+  let tag=it._pendente?' 🔴 OFFLINE':'';
   html+=`<div class="${cls}"><div>${String(ord).padStart(3,'0')}</div><div><b>${it.prova}</b>${tag}</div><div>${it.nome}</div><div>${parseFloat(it.pontos||0).toFixed(2)}</div><div style="color:#aaa;font-size:10px">${(it.tiros||[]).join(' | ')}</div><div style="text-align:right"><button class="btn-editar" onclick="editar('${it.key}')">EDITAR</button><button class="btn-excluir" onclick="excluir('${it.key}')">X</button></div></div>`;
  });
  document.getElementById('listaLancamentos').innerHTML=html||"<div style='color:#666;text-align:center;padding:16px'>Nenhuma prova</div>";
@@ -195,16 +195,25 @@ function salvarLancamento(){
   let key=editKey||"serie_"+Date.now();
   let obj={ nome,prova,tiros,pontos:total,data:Date.now(), operadorEmail: currentUser ? currentUser.email : "offline", operadorUid: currentUser ? currentUser.uid : "offline", atualizadoEm: Date.now() };
   let local=getLocalData(); local[key]=obj; setLocalData(local);
-  logSync("Salvo local: "+key+" "+nome);
-  if(isOnline){
-   db.ref("FTERJ/"+key).set(obj).then(()=>{ let fila=getFila().filter(f=>f.key!=key); setFila(fila); logSync("Subiu direto online: "+key); }).catch(e=>{ logSync("Falha subir direto, vai pra fila: "+e.message); let fila=getFila(); if(!fila.some(f=>f.key==key)) fila.push({key, dados:obj}); setFila(fila); });
-  }else{
-   let fila=getFila(); if(!fila.some(f=>f.key==key)) fila.push({key, dados:obj}); setFila(fila); logSync("Offline - ficou na fila: "+key);
+  logSync("Salvo local: "+nome+" - Fila antes: "+getFila().length);
+  // SEMPRE coloca na fila se Firebase não está conectado
+  if(!isFirebaseConnected){
+    let fila=getFila(); if(!fila.some(f=>f.key==key)) fila.push({key, dados:obj}); setFila(fila);
+    logSync("Firebase OFFLINE - ficou na fila: "+key+" - fila agora "+fila.length);
+  } else {
+    // Firebase conectado, tenta subir direto
+    db.ref("FTERJ/"+key).set(obj).then(()=>{
+      let fila=getFila().filter(f=>f.key!=key); setFila(fila);
+      logSync("Subiu direto (Firebase online): "+key);
+    }).catch(e=>{
+      logSync("Falha subir direto, vai pra fila: "+e.message);
+      let fila=getFila(); if(!fila.some(f=>f.key==key)) fila.push({key, dados:obj}); setFila(fila);
+    });
   }
   editKey=null;novoLancamento();renderLista();
 }
 function novoLancamento(){editKey=null;document.getElementById('nomeAtleta').value='';for(let i=1;i<=10;i++){let el=document.getElementById('t'+i);if(el)el.value='';}document.getElementById('totalPontos').innerText='0.00';document.getElementById('provaSelect').value='C';document.getElementById('sugestoes').style.display='none';document.getElementById('nomeAtleta').focus();}
 function editar(k){ let todas={...cache, ...getLocalData()}; let v=todas[k]; if(!v){alert("Não achou");return;} document.getElementById('nomeAtleta').value=v.nome;garantirOpcao(v.prova);document.getElementById('provaSelect').value=v.prova;(v.tiros||[]).forEach((t,i)=>{let el=document.getElementById('t'+(i+1));if(el)el.value=t;});calcTotal();editKey=k; }
-function excluir(k){ if(!confirm("Excluir?"))return; let local=getLocalData();delete local[k];setLocalData(local); let fila=getFila().filter(f=>f.key!=k);setFila(fila); if(isOnline){db.ref("FTERJ/"+k).remove();} renderLista(); logSync("Excluido: "+k); }
+function excluir(k){ if(!confirm("Excluir?"))return; let local=getLocalData();delete local[k];setLocalData(local); let fila=getFila().filter(f=>f.key!=k);setFila(fila); if(isFirebaseConnected){db.ref("FTERJ/"+k).remove();} renderLista(); logSync("Excluido: "+k); }
 document.addEventListener('keydown',e=>{if(e.key=='F2'){e.preventDefault();salvarLancamento();}if(e.key=='F3'){e.preventDefault();novoLancamento();}});
 </script></body></html>
