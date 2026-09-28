@@ -1,0 +1,78 @@
+<!DOCTYPE html><html lang="pt-BR"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RESULTADO OFICIAL - SEM ANÚNCIO - V37 DESEMPATE COMPLETO</title>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}body{background:#f5f5f7;color:#111;font-family:Arial,Inter;padding:0}
+.header{background:#000;color:#FF8C00;padding:14px 18px;display:flex;justify-content:space-between;align-items:center;font-weight:900;position:sticky;top:0;z-index:10}
+.header h1{font-size:16px}
+.controles{background:#fff;padding:10px 14px;border-bottom:1px solid #ddd;display:flex;gap:8px;flex-wrap:wrap;align-items:center;position:sticky;top:50px;z-index:9}
+.controles select, .controles input{padding:8px;border:1px solid #ddd;border-radius:8px;font-size:13px}
+.btn{padding:8px 14px;border:none;border-radius:8px;font-weight:900;cursor:pointer}
+.btn-laranja{background:#FF8C00;color:#000}.btn-preto{background:#000;color:#fff}
+.tabela-wrap{padding:14px;max-height:calc(100vh - 110px);overflow:auto}
+.tabela{width:100%;border-collapse:collapse;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.08)}
+.tabela th{background:#000;color:#FF8C00;padding:10px 6px;font-size:11px;position:sticky;top:0;text-align:center}
+.tabela td{padding:9px 6px;font-size:12px;border-bottom:1px solid #eee;text-align:center}
+.tabela .nome{text-align:left;font-weight:800;max-width:240px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-transform:uppercase}
+.pos1{background:linear-gradient(90deg,#FFD700,#FFB700)}.pos2{background:linear-gradient(90deg,#E8E8E8,#C0C0C0)}.pos3{background:linear-gradient(90deg,#FF8C00,#CD7F32);color:#fff}
+.desempate{font-size:10px;color:#666;background:#fff3e0;padding:3px 6px;border-radius:6px;display:inline-block}
+.badge{font-size:9px;background:#000;color:#FFD700;padding:2px 6px;border-radius:8px;margin-left:6px}
+@media print{ .controles, .header{ display:none } .tabela-wrap{max-height:none} }
+</style></head><body>
+<div class="header"><h1>🏆 RESULTADO OFICIAL FTERJ V37 - SEM ANÚNCIOS - DESEMPATE X>10>9>8...</h1><div style="font-size:11px;color:#aaa" id="infoQtd">Carregando...</div></div>
+<div class="controles">
+<select id="filtroProva" onchange="render()"><option value="TODAS">TODAS AS PROVAS</option><option value="C">C</option><option value="R1">R1</option><option value="R2">R2</option><option value="R3">R3</option><option value="R4">R4</option><option value="R5">R5</option><option value="C/R">C/R</option></select>
+<input id="filtroNome" placeholder="Filtrar por nome..." oninput="render()" style="min-width:200px">
+<select id="filtroAgrupar" onchange="render()"><option value="todos">Todos lançamentos</option><option value="melhorPorNome" selected>Melhor por atleta (classificação oficial)</option></select>
+<button class="btn btn-laranja" onclick="exportarCSV()">📥 CSV RESULTADO</button>
+<button class="btn btn-preto" onclick="window.print()">🖨️ IMPRIMIR</button>
+<span style="font-size:10px;color:#888;margin-left:8px">Critério: PTS → X → 10 → 9 → 8 → 7 → 6 → 5 → 4 → 3 → 2 → 1 → 0</span>
+</div>
+<div class="tabela-wrap">
+<table class="tabela" id="tabela"><thead><tr><th>#</th><th>ATLETA</th><th>PROVA</th><th>PTS</th><th>X</th><th>10</th><th>9</th><th>8</th><th>7</th><th>6</th><th>5</th><th>4</th><th>3</th><th>2</th><th>1</th><th>0</th><th>DETALHE</th><th>TIROS</th></tr></thead><tbody id="tbody"><tr><td colspan="18">Carregando Firebase...</td></tr></tbody></table>
+</div>
+<script>
+const firebaseConfig={apiKey:"AIzaSyA6DCLCJ86Qoe2Ph3VuCF6_vYv6EARedKE",authDomain:"placar-minutera.firebaseapp.com",databaseURL:"https://placar-minutera-default-rtdb.firebaseio.com",projectId:"placar-minutera",storageBucket:"placar-minutera.firebasestorage.app",messagingSenderId:"689991648080",appId:"1:689991648080:web:9deeb958183eaeaa23e255"};
+firebase.initializeApp(firebaseConfig);const db=firebase.database();
+const ORDEM=['X','10','9','8','7','6','5','4','3','2','1','0'];
+function getContagem(tiros){ let c={X:0,'10':0,'9':0,'8':0,'7':0,'6':0,'5':0,'4':0,'3':0,'2':0,'1':0,'0':0}; (tiros||[]).forEach(t=>{let k=String(t).toUpperCase().trim(); if(c.hasOwnProperty(k)) c[k]++;}); return c; }
+function comparar(a,b){ let pa=parseFloat(a.pontos||0), pb=parseFloat(b.pontos||0); if(pb!==pa) return pb-pa; let ca=getContagem(a.tiros), cb=getContagem(b.tiros); for(let v of ORDEM){ if(cb[v]!==ca[v]) return cb[v]-ca[v]; } return (a.data||0)-(b.data||0); }
+let cache={};
+const urlParams=new URLSearchParams(window.location.search);
+let provaUrl=(urlParams.get('prova')||'').toUpperCase();
+if(provaUrl){ setTimeout(()=>{ let sel=document.getElementById('filtroProva'); if([...sel.options].some(o=>o.value===provaUrl)) sel.value=provaUrl; render(); },500); }
+db.ref("FTERJ").on('value',snap=>{ cache=snap.val()||{}; render(); });
+function render(){
+ let todos=Object.keys(cache).filter(k=>k.startsWith('serie_')).map(k=>({key:k, ...cache[k]}));
+ let filtroProva=document.getElementById('filtroProva').value;
+ let filtroNome=(document.getElementById('filtroNome').value||'').toUpperCase().trim();
+ let agrupar=document.getElementById('filtroAgrupar').value;
+ let lista=todos;
+ if(filtroProva!=='TODAS') lista=lista.filter(x=> (x.prova||'')===filtroProva);
+ if(filtroNome) lista=lista.filter(x=> (x.nome||'').toUpperCase().includes(filtroNome));
+ lista.sort(comparar);
+ if(agrupar==='melhorPorNome'){ let mapa={}; lista.forEach(it=>{ let n=(it.nome||'').trim().toUpperCase(); if(!mapa[n]) mapa[n]=it; }); lista=Object.values(mapa).sort(comparar); }
+ let tbody=document.getElementById('tbody');
+ let html='';
+ lista.forEach((it,i)=>{
+   let c=getContagem(it.tiros);
+   let cls=i==0?'pos1':i==1?'pos2':i==2?'pos3':'';
+   let detalhe=`X:${c.X} 10:${c['10']} 9:${c['9']} 8:${c['8']}`;
+   let tirosStr=(it.tiros||[]).join(' | ');
+   html+=`<tr class="${cls}"><td>${i+1}º</td><td class="nome">${it.nome||''}</td><td>${it.prova||''}</td><td><b>${parseFloat(it.pontos||0).toFixed(2)}</b></td><td>${c.X}</td><td>${c['10']}</td><td>${c['9']}</td><td>${c['8']}</td><td>${c['7']}</td><td>${c['6']}</td><td>${c['5']}</td><td>${c['4']}</td><td>${c['3']}</td><td>${c['2']}</td><td>${c['1']}</td><td>${c['0']}</td><td><span class="desempate">${detalhe}</span></td><td style="font-size:10px">${tirosStr}</td></tr>`;
+ });
+ tbody.innerHTML=html||'<tr><td colspan="18">Nenhum lançamento</td></tr>';
+ document.getElementById('infoQtd').innerText=lista.length+' classificados - '+new Date().toLocaleString('pt-BR');
+}
+function exportarCSV(){
+ let todos=Object.keys(cache).filter(k=>k.startsWith('serie_')).map(k=>({key:k, ...cache[k]})); todos.sort(comparar);
+ let agrupar=document.getElementById('filtroAgrupar').value;
+ if(agrupar==='melhorPorNome'){ let mapa={}; todos.forEach(it=>{ let n=(it.nome||'').trim().toUpperCase(); if(!mapa[n]) mapa[n]=it; }); todos=Object.values(mapa).sort(comparar); }
+ let header=["POS","NOME","PROVA","PONTOS","X","10","9","8","7","6","5","4","3","2","1","0","TIROS","DATA"];
+ let linhas=[header.join(";")];
+ todos.forEach((it,i)=>{ let c=getContagem(it.tiros); let data=it.data?new Date(it.data).toLocaleString('pt-BR'):""; let row=[i+1,'"'+(it.nome||'').replace(/"/g,'""')+'"',it.prova||'',parseFloat(it.pontos||0).toFixed(2),c.X,c['10'],c['9'],c['8'],c['7'],c['6'],c['5'],c['4'],c['3'],c['2'],c['1'],c['0'],'"'+(it.tiros||[]).join(' | ')+'"',data]; linhas.push(row.join(";")); });
+ let blob=new Blob(["\ufeff"+linhas.join("\n")],{type:"text/csv"}); let url=URL.createObjectURL(blob); let a=document.createElement("a"); a.href=url; a.download="RESULTADO_OFICIAL_FTERJ_V37_"+new Date().toISOString().slice(0,10)+".csv"; a.click(); URL.revokeObjectURL(url);
+}
+</script></body></html>

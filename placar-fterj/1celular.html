@@ -1,0 +1,93 @@
+<!DOCTYPE html><html lang="pt-BR"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>CELULAR V37 - DESEMPATE X>10>9>8...</title>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#000;color:#fff;font-family:Arial Black,Arial;height:100vh;overflow:hidden}
+.header{height:56px;background:#000;border-bottom:4px solid #FF8C00;display:flex;align-items:center;padding:0 10px;gap:8px}
+.header img{height:28px;background:#fff;border-radius:4px;padding:2px 4px}
+.placar{height:calc(100vh - 56px);overflow:auto;padding:6px;display:flex;flex-direction:column;gap:7px}
+.linha{display:flex;align-items:center;background:#1e1e1e;border:2px solid #333;border-left:8px solid #555;padding:10px 12px;border-radius:8px;gap:10px}
+.linha.pos1{border-color:#FFD700;background:linear-gradient(90deg,#FFD700,#FFB700);color:#000}
+.linha.pos2{border-color:#E8E8E8;background:linear-gradient(90deg,#E8E8E8,#C0C0C0);color:#000}
+.linha.pos3{border-color:#FF8C00;background:linear-gradient(90deg,#FF8C00,#CD7F32);color:#fff}
+.pos{font-size:22px;font-weight:900;min-width:38px;text-align:center}
+.conteudo{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+.linha-top{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.nome{font-size:16px;font-weight:900;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1}
+.pts{font-size:18px;font-weight:900;flex-shrink:0}
+.tiros{font-size:12px;font-family:Arial;font-weight:800;opacity:0.9;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.desempate{font-size:9px;background:#fff3e0;color:#000;padding:2px 6px;border-radius:6px;margin-left:6px}
+.badge-subiu{display:inline-block;background:#00FF6A;color:#000;font-size:9px;font-weight:900;padding:2px 6px;border-radius:8px;margin-left:6px}
+#full{position:fixed;inset:0;background:#000;z-index:999;display:none;justify-content:center;align-items:center}
+#full img{width:100%;height:100%;object-fit:contain}
+</style></head><body>
+<div class="header">
+  <img id="logoMinu" src="logo-minha.png"><span style="color:#FFD700;font-weight:900">MinuT&Ra V37</span>
+  <img id="logoClube" src="logo-clube.png"><span style="font-weight:900">FTERJ - X>10>9...</span>
+</div>
+<div class="placar" id="lista">CARREGANDO V37...</div>
+<div id="full" onclick="this.style.display='none'"><img id="fullImg"></div>
+<script>
+const firebaseConfig={apiKey:"AIzaSyA6DCLCJ86Qoe2Ph3VuCF6_vYv6EARedKE",authDomain:"placar-minutera.firebaseapp.com",databaseURL:"https://placar-minutera-default-rtdb.firebaseio.com",projectId:"placar-minutera",storageBucket:"placar-minutera.firebasestorage.app",messagingSenderId:"689991648080",appId:"1:689991648080:web:9deeb958183eaeaa23e255"};
+firebase.initializeApp(firebaseConfig);const db=firebase.database();
+let fulls=[],fIdx=0,tempoFull=11,intervaloFull=90,grupoCelularIdx=0;
+const ORDEM=['X','10','9','8','7','6','5','4','3','2','1','0'];
+function getContagem(tiros){ let c={X:0,'10':0,'9':0,'8':0,'7':0,'6':0,'5':0,'4':0,'3':0,'2':0,'1':0,'0':0}; (tiros||[]).forEach(t=>{let k=String(t).toUpperCase().trim(); if(c.hasOwnProperty(k)) c[k]++;}); return c; }
+function comparar(a,b){ let pa=parseFloat(a.pontos||0), pb=parseFloat(b.pontos||0); if(pb!==pa) return pb-pa; let ca=getContagem(a.tiros), cb=getContagem(b.tiros); for(let v of ORDEM){ if(cb[v]!==ca[v]) return cb[v]-ca[v]; } return (a.data||0)-(b.data||0); }
+db.ref("CONFIG_ANUNCIOS_FTERJ").on('value',s=>{
+  let c=s.val()||{}; tempoFull=c.tempoFull||11; intervaloFull=c.intervaloFull||90;
+  logoClube.src=(c.logoClube&&c.logoClube.startsWith('http'))?c.logoClube:'logo-clube.png';
+  logoMinu.src=(c.logoMinu&&c.logoMinu.startsWith('http'))?c.logoMinu:'logo-minha.png';
+});
+db.ref("FTERJ").on('value',s=>{render(s.val()||{});});
+db.ref("PATROCINADORES_FULL_FTERJ").on('value',s=>{
+  let d=s.val()||{}; fulls=Object.values(d).filter(x=>x.ativo!==false).map(f=>({...f,tempo:f.tempo||tempoFull,grupo:parseInt(f.grupo)||1}));
+});
+function fmt(p){return (Math.round((parseFloat(p)||0)*100)/100).toFixed(2)}
+function render(dados){
+  let arr=Object.keys(dados).filter(k=>k.startsWith("serie_")).map(k=>({key:k,...dados[k]}));
+  arr.sort(comparar);
+  let posicaoBruta={}; arr.forEach((at,i)=>{posicaoBruta[at.key]=i+1});
+  let top5=[], usadosNome=new Set(), usadosKey=new Set();
+  for(let at of arr){ if(top5.length>=5) break; let nk=(at.nome||'').trim().toUpperCase(); if(!nk) continue; if(!usadosNome.has(nk)){usadosNome.add(nk);usadosKey.add(at.key);top5.push(at.key);} }
+  let resto=arr.filter(at=>!usadosKey.has(at.key)).map(at=>at.key);
+  let lista=[...top5,...resto].map(k=>dados[k]?{key:k,...dados[k]}:null).filter(Boolean);
+  lista=[...top5.map(k=>({key:k,...dados[k]})), ...resto.map(k=>({key:k,...dados[k]}))];
+  // reordenar para exibir com melhor por nome primeiro mas mantendo desempate
+  let melhoresMap={};
+  arr.forEach(it=>{ let n=(it.nome||'').trim().toUpperCase(); if(!melhoresMap[n]) melhoresMap[n]=it; });
+  let melhores=Object.values(melhoresMap).sort(comparar);
+  let listaFinal=[...melhores, ...arr.filter(it=> !melhores.some(m=>m.key===it.key && m.nome===it.nome))];
+  // simplificado: exibe melhores ordenados, resto abaixo
+  let unicos=melhores;
+  let restoFinal=arr.filter(it=> !melhores.some(m=>m.key===it.key));
+  let exibicao=[...unicos, ...restoFinal].slice(0,100);
+  let h="";
+  exibicao.forEach((at,i)=>{
+    let pts=fmt(at.pontos); let tiros=(at.tiros||[]).join('/').toUpperCase();
+    let c=getContagem(at.tiros);
+    let detalhe=`X${c.X}·10:${c['10']}·9:${c['9']}`;
+    let cls=i==0?'pos1':i==1?'pos2':i==2?'pos3':'';
+    h+=`<div class="linha ${cls}"><div class="pos">${i+1}º</div><div class="conteudo"><div class="linha-top"><div class="nome">${at.nome} <span class="desempate">${detalhe}</span></div><div class="pts">${pts}</div></div><div class="tiros">${at.prova||'C'} • ${tiros}</div></div></div>`;
+  });
+  document.getElementById('lista').innerHTML=h||'Aguardando...';
+}
+function getGruposCel(){let g=[...new Set(fulls.map(f=>parseInt(f.grupo)||1))].sort((a,b)=>a-b); return g.length?g:[1];}
+function loopFull(){
+  if(fulls.length==0){setTimeout(loopFull,intervaloFull*1000);return;}
+  let grupos=getGruposCel();
+  if(grupoCelularIdx>=grupos.length) grupoCelularIdx=0;
+  let gAtual=grupos[grupoCelularIdx];
+  let lista=fulls.filter(f=>(parseInt(f.grupo)||1)==gAtual);
+  if(lista.length==0){grupoCelularIdx=(grupoCelularIdx+1)%grupos.length; setTimeout(loopFull,1000); return;}
+  if(fIdx>=lista.length){fIdx=0; grupoCelularIdx=(grupoCelularIdx+1)%grupos.length; setTimeout(loopFull,intervaloFull*1000); return;}
+  let f=lista[fIdx];
+  fullImg.src=f.arte||f.url;
+  full.style.display='flex';
+  setTimeout(()=>{full.style.display='none';fIdx++;loopFull();},(f.tempo||tempoFull)*1000);
+}
+setTimeout(loopFull,5000);
+</script></body></html>

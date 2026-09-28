@@ -1,0 +1,137 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>TV FTERJ V37 - DESEMPATE X>10>9>8...</title>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{ --header-h:11vh; --linha-h:6.1vh; --rodape-h:5.5vh; --font-nome:2.3vh; --font-total:3vh; --font-prova:2.8vh; --font-detalhe:2.05vh; --font-relogio:2.1vh; --logo-h:6.5vh; --font-header:6.5vh; }
+html,body{height:100vh;overflow:hidden}
+body{background:#000;color:#fff;font-family:Arial;display:flex;flex-direction:column}
+#header{height:var(--header-h);background:#FF8C00;display:flex;align-items:center;justify-content:center;position:relative}
+#header h1{font-size:var(--font-header);color:#000;font-weight:900;text-transform:uppercase}
+.logo{position:absolute;top:50%;transform:translateY(-50%);height:var(--logo-h);background:#fff;border-radius:6px;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.logo img{height:100%;width:auto;max-width:14vw;object-fit:contain;padding:3px 8px}
+#logoEsq{left:.8vw}#logoDir{right:.8vw}
+#relogioTopo{position:absolute;right:15.5vw;top:50%;transform:translateY(-50%);background:#000;border-radius:20px;padding:4px 16px;color:#FFD700;font-size:var(--font-relogio);font-weight:900}
+#perfilTag{position:absolute;left:16vw;top:4px;background:#000;color:#FFD700;font-size:1.2vh;padding:3px 10px;border-radius:10px;font-weight:900;display:none;z-index:10}
+#perfilTag.on{display:block}
+#ranking{flex:1;display:flex;flex-direction:column;gap:.4vh;padding:.4vh.6vw;overflow:hidden;justify-content:space-between}
+.linha{display:flex;align-items:center;background:#1a1a1a;border-radius:8px;padding:0 0.8vw;height:var(--linha-h)}
+.linha.ouro{background:#FFD700} 
+.linha.prata{background:#C0C0C0} 
+.linha.bronze{background:#CD7F32}
+.linha.ouro .pos, .linha.ouro .nome, .linha.ouro .prova, .linha.ouro .total, .linha.ouro .detalhe,
+.linha.prata .pos, .linha.prata .nome, .linha.prata .prova, .linha.prata .total, .linha.prata .detalhe,
+.linha.bronze .pos, .linha.bronze .nome, .linha.bronze .prova, .linha.bronze .total, .linha.bronze .detalhe{color:#000 !important;}
+.pos{width:3.5vw;font-weight:900;text-align:center;font-size:var(--font-nome)}
+.nome{flex:1;font-size:var(--font-nome);font-weight:800;text-transform:uppercase;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:flex;align-items:center;gap:.6vw}
+.prova{width:8vw;text-align:center;font-size:var(--font-prova);font-weight:900;color:#00E5FF}
+.total{width:10vw;text-align:center;font-size:var(--font-total);font-weight:900;color:#FFD700}
+.detalhe{width:34vw;text-align:right;font-size:var(--font-detalhe);font-weight:800;white-space:nowrap;overflow:hidden;color:#fff}
+.badge-subiu{font-size:1.4vh;background:#00FF00;color:#000;padding:2px 6px;border-radius:10px;font-weight:900}
+#rodape{height:var(--rodape-h);background:#000;border-top:2px solid #FF8C00;display:flex;align-items:center;justify-content:center;overflow:hidden}
+#textoRodape{color:#FFD700;font-weight:900;text-align:center;opacity:0;transition:opacity.8s;white-space:nowrap;width:100%}
+#textoRodape.show{opacity:1}
+#full{position:fixed;inset:0;background:#000;display:none;align-items:center;justify-content:center;z-index:9999}
+#full img{width:100vw;height:100vh;object-fit:contain;background:#000}
+</style></head><body>
+<div id="header"><div id="perfilTag"></div><div id="logoEsq" class="logo"><img id="imgLogoMinu" src="logo-minha.png"></div><h1>3x7 MinuT&Ra - FTERJ</h1><div id="relogioTopo"><span id="dhTopo">--:--:--</span></div><div id="logoDir" class="logo"><img id="imgLogoClube" src="logo-clube.png"></div></div>
+<div id="ranking">CARREGANDO V37 DESEMPATE...</div>
+<div id="rodape"><div id="textoRodape"></div></div>
+<div id="full"><img id="imgFull"></div>
+<script>
+const firebaseConfig={apiKey:"AIzaSyA6DCLCJ86Qoe2Ph3VuCF6_vYv6EARedKE",authDomain:"placar-minutera.firebaseapp.com",databaseURL:"https://placar-minutera-default-rtdb.firebaseio.com",projectId:"placar-minutera",storageBucket:"placar-minutera.firebasestorage.app",messagingSenderId:"689991648080",appId:"1:689991648080:web:9deeb958183eaeaa23e255"};
+firebase.initializeApp(firebaseConfig);const db=firebase.database();
+const urlParams=new URLSearchParams(window.location.search);
+let tvParam=(urlParams.get('tv')||'').toLowerCase();
+let CONFIG_PATH="CONFIG_ANUNCIOS_FTERJ";
+let tvNome="TV";
+if(tvParam=="tv1"||tvParam=="1"){CONFIG_PATH="CONFIG_ANUNCIOS_FTERJ_TV1"; tvNome="TV1";}
+else if(tvParam=="tv2"||tvParam=="2"){CONFIG_PATH="CONFIG_ANUNCIOS_FTERJ_TV2"; tvNome="TV2";}
+const ORDEM_DESEMPATE=['X','10','9','8','7','6','5','4','3','2','1','0'];
+function toArr(d){if(!d)return[];if(Array.isArray(d))return d.filter(x=>x);return Object.values(d).filter(x=>x)}
+let RODAPES=[],FULL=[];
+let CFG={propPx:35,contPx:35,escala:100,headerH:11,linhaH:6.1,rodapeH:5.5,fontNome:2.3,fontTotal:3,fontProva:2.8,fontDetalhe:2.05,fontRelogio:2.1,logoH:6.5,intervaloFull:90,tempoFull:11,tempoRodape:7,logoMinu:"",logoClube:"",mostrarTag:false};
+let rodapeIndex=0,rodapeTimer=null;
+let TEMPO_RODAPE=7000,TEMPO_FULL=11000,INTERVALO_FULL=90000;
+function atualizaTag(){ let tag=document.getElementById('perfilTag'); if(!tag) return; if(CFG.mostrarTag){tag.innerText=tvNome; tag.classList.add('on');} else {tag.classList.remove('on');}}
+function applyConfig(){
+  document.body.style.zoom=(CFG.escala||100)/100;
+  document.documentElement.style.setProperty('--header-h',(CFG.headerH||11)+'vh');
+  document.documentElement.style.setProperty('--linha-h',(CFG.linhaH||6.1)+'vh');
+  document.documentElement.style.setProperty('--rodape-h',(CFG.rodapeH||5.5)+'vh');
+  document.documentElement.style.setProperty('--font-nome',(CFG.fontNome||2.3)+'vh');
+  document.documentElement.style.setProperty('--font-total',(CFG.fontTotal||3)+'vh');
+  document.documentElement.style.setProperty('--font-prova',(CFG.fontProva||2.8)+'vh');
+  document.documentElement.style.setProperty('--font-detalhe',(CFG.fontDetalhe||2.05)+'vh');
+  document.documentElement.style.setProperty('--font-relogio',(CFG.fontRelogio||2.1)+'vh');
+  document.documentElement.style.setProperty('--logo-h',(CFG.logoH||6.5)+'vh');
+  if(CFG.logoMinu && CFG.logoMinu.trim().startsWith('http')){document.getElementById('imgLogoMinu').src=CFG.logoMinu;} else {document.getElementById('imgLogoMinu').src='logo-minha.png';}
+  if(CFG.logoClube && CFG.logoClube.trim().startsWith('http')){document.getElementById('imgLogoClube').src=CFG.logoClube;} else {document.getElementById('imgLogoClube').src='logo-clube.png';}
+  TEMPO_RODAPE=(CFG.tempoRodape||7)*1000; TEMPO_FULL=(CFG.tempoFull||11)*1000; INTERVALO_FULL=(CFG.intervaloFull||90)*1000;
+  atualizaTag(); renderRodape(); agendaBlocoFull();
+}
+function renderRodape(){
+  let el=document.getElementById('textoRodape');
+  if(RODAPES.length==0){el.innerHTML='ADQUIRA JA SUA MinuT&Ra';el.classList.add('show');return}
+  if(rodapeTimer)clearInterval(rodapeTimer);
+  function mostraProximo(){
+    el.classList.remove('show');
+    setTimeout(()=>{
+      let r=RODAPES[rodapeIndex];
+      let prop=r.prop||r.nome||''; let cont=r.contato||'';
+      if(prop&&cont){el.innerHTML=`<span style="font-size:${CFG.propPx||35}px">${prop}</span><span style="font-size:${CFG.contPx||35}px;color:#fff"> | ${cont}</span>`;}
+      else{el.innerHTML=`<span style="font-size:${CFG.propPx||35}px">${prop} ${cont}</span>`;}
+      el.classList.add('show'); rodapeIndex=(rodapeIndex+1)%RODAPES.length
+    },800)
+  }
+  mostraProximo(); rodapeTimer=setInterval(mostraProximo,TEMPO_RODAPE);
+}
+function getContagem(tiros){ let c={X:0,'10':0,'9':0,'8':0,'7':0,'6':0,'5':0,'4':0,'3':0,'2':0,'1':0,'0':0}; (tiros||[]).forEach(t=>{let k=String(t).toUpperCase().trim(); if(c.hasOwnProperty(k)) c[k]++;}); return c; }
+function compararAtletas(a,b){
+  let pa=parseFloat(a.pontos||0), pb=parseFloat(b.pontos||0);
+  if(pb!==pa) return pb-pa;
+  let ca=getContagem(a.tiros), cb=getContagem(b.tiros);
+  for(let v of ORDEM_DESEMPATE){ if(cb[v]!==ca[v]) return cb[v]-ca[v]; }
+  return (a.data||0)-(b.data||0);
+}
+function contaTirosXa0(tiros){ let c=getContagem(tiros); return `X:${c.X} |10:${c['10']} |9:${c['9']} |8:${c['8']} |7:${c['7']} |6:${c['6']} |5:${c['5']} |4:${c['4']}` }
+function filtraTop5Unico(listaOrdenada){
+ let vistosTop5=new Set();let top5=[];let resto=[];
+ for(let i=0;i<listaOrdenada.length;i++){let at=listaOrdenada[i];let nomeNorm=(at.nome||'').trim().toUpperCase();if(top5.length<5){if(!vistosTop5.has(nomeNorm)){vistosTop5.add(nomeNorm);top5.push({...at,subiu:i>top5.length});}else{resto.push({...at,subiu:false});}}else{resto.push({...at,subiu:false});}}
+ return [...top5,...resto];
+}
+db.ref("PATROCINADORES_RODAPE_FTERJ").on('value',s=>{RODAPES=toArr(s.val()).filter(r=>{if(r.hasOwnProperty('ativo'))return r.ativo==true||r.ativo=="true";return true});renderRodape()});
+db.ref("PATROCINADORES_FULL_FTERJ").on('value',s=>{FULL=toArr(s.val()).filter(r=>{if(r.hasOwnProperty('ativo'))return r.ativo==true||r.ativo=="true";return true}).map(i=>typeof i==='string'?{arte:i}:i).filter(f=>f.arte||f.url||f.imagem).map(f=>({...f,tempo:f.tempo||11,grupo:parseInt(f.grupo)||1}))});
+db.ref(CONFIG_PATH).on('value',s=>{let v=s.val();if(!v){if(CONFIG_PATH!="CONFIG_ANUNCIOS_FTERJ"){db.ref("CONFIG_ANUNCIOS_FTERJ").once('value',snap=>{let vb=snap.val();if(vb){CFG={...CFG,...vb};applyConfig();}});return;}return;} CFG={...CFG,...v}; applyConfig();});
+db.ref("FTERJ").on('value',snap=>{
+let data=snap.val();if(!data)return;let lista=[];
+Object.keys(data).forEach(k=>{if(k.startsWith("serie_")){let s=data[k];let tiros=s.tiros||[];lista.push({nome:s.nome||'TESTE',prova:s.prova||'R2',pontos:parseFloat(s.pontos||0),tiros:tiros,data:s.data||0})}});
+lista.sort(compararAtletas);
+let listaFinal=filtraTop5Unico(lista);
+let html="";listaFinal.slice(0,10).forEach((at,i)=>{let cls=i==0?'ouro':i==1?'prata':i==2?'bronze':'';let badge=at.subiu?`<span class="badge-subiu">🔼 SUBIU</span>`:'';html+=`<div class="linha ${cls}"><div class="pos">${i+1}º</div><div class="nome">${at.nome} ${badge}</div><div class="prova">P:${at.prova}</div><div class="total">${at.pontos.toFixed(2)}</div><div class="detalhe">${contaTirosXa0(at.tiros)}</div></div>`});
+document.getElementById('ranking').innerHTML=html;
+});
+setInterval(()=>{let txt=new Date().toLocaleString('pt-BR');let el=document.getElementById('dhTopo');if(el)el.innerText=txt},1000);
+let emBloco=false;let timerFullBloco=null;let grupoAtualIdx=0;
+function getGruposDisponiveis(){let grupos=[...new Set(FULL.map(f=>parseInt(f.grupo)||1))].sort((a,b)=>a-b);return grupos.length?grupos:[1];}
+async function mostraBlocoFull(){
+  if(FULL.length==0||emBloco) return;
+  emBloco=true;
+  let grupos=getGruposDisponiveis();
+  if(grupoAtualIdx>=grupos.length) grupoAtualIdx=0;
+  let grupoDaVez=grupos[grupoAtualIdx];
+  let listaGrupo=FULL.filter(f=>(parseInt(f.grupo)||1)==grupoDaVez);
+  for(let i=0;i<listaGrupo.length;i++){
+    let f=listaGrupo[i];let url=f.arte||f.url||f.imagem||'';if(!url) continue;
+    document.getElementById('imgFull').src=url;
+    document.getElementById('full').style.display='flex';
+    let tempoUsado=(f.tempo||CFG.tempoFull||11)*1000;
+    await new Promise(r=>setTimeout(r,tempoUsado));
+  }
+  document.getElementById('full').style.display='none';emBloco=false;
+  grupoAtualIdx=(grupoAtualIdx+1)%grupos.length;
+  agendaBlocoFull();
+}
+function agendaBlocoFull(){if(timerFullBloco) clearTimeout(timerFullBloco);timerFullBloco=setTimeout(mostraBlocoFull,INTERVALO_FULL);}
+setTimeout(mostraBlocoFull,15000);applyConfig();
+</script></body></html>

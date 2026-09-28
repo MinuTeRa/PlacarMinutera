@@ -1,0 +1,174 @@
+<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>GERADOR 150 LANÇAMENTOS - TESTE FTERJ</title>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script><script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script><script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}body{background:#0a0a0a;color:#fff;font-family:Inter,Arial;padding:16px;max-width:900px;margin:0 auto}
+h1{color:#FF8C00;font-size:22px;margin-bottom:6px}h2{color:#FF8C00;font-size:14px;margin:12px 0 6px}
+.card{background:#1a1a1a;border:1px solid #333;border-radius:12px;padding:14px;margin-bottom:12px}
+input,select{width:100%;padding:10px;background:#000;color:#fff;border:1px solid #444;border-radius:8px;margin-top:6px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.btn{width:100%;padding:12px;border:none;border-radius:10px;font-weight:900;cursor:pointer;margin-top:8px;font-size:13px}
+.btn-laranja{background:#FF8C00;color:#000}.btn-preto{background:#222;color:#fff;border:1px solid #444}.btn-vermelho{background:#ff2e2e;color:#fff}.btn-verde{background:#00c853;color:#000}
+.badge{font-size:10px;padding:4px 8px;border-radius:10px;font-weight:900}
+.badge-online{background:#00c853;color:#000}.badge-offline{background:#ff2e2e;color:#fff}
+#log{background:#000;border:1px solid #333;border-radius:8px;padding:10px;font-family:monospace;font-size:11px;max-height:320px;overflow:auto;white-space:pre-wrap}
+.progress{height:8px;background:#222;border-radius:10px;overflow:hidden;margin-top:8px}
+.progress-bar{height:100%;background:#FF8C00;width:0%;transition:width 0.2s}
+.stat{display:flex;justify-content:space-between;font-size:12px;margin-top:4px;color:#aaa}
+.stat b{color:#fff}
+</style></head><body>
+<h1>🧪 GERADOR DE LANÇAMENTOS - TESTE 150 FTERJ</h1>
+<p style="font-size:11px;color:#888">Gera lançamentos falsos pra testar TV, INDEX, CONTROLE e rolagem. Usa a mesma estrutura do F2 real.</p>
+
+<div id="telaLogin" style="position:fixed;inset:0;background:#000;z-index:9999;display:flex;align-items:center;justify-content:center"><div style="background:#1a1a1a;padding:20px;border-radius:12px;border:2px solid #FF8C00;text-align:center;min-width:340px"><h2 style="color:#FF8C00">LOGIN GERADOR</h2><input id="emailLogin" type="email" value="thiago1.elb@gmail.com" style="text-align:center"><input id="senhaLogin" type="password" placeholder="Senha" style="text-align:center;margin-top:8px"><button class="btn btn-laranja" onclick="login()">ENTRAR</button><p id="erroLogin" style="color:#f55;font-size:11px;margin-top:8px;display:none"></p></div></div>
+
+<div class="card">
+<div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:12px">Firebase: <span id="badgeNet" class="badge badge-offline">OFFLINE</span> | FTERJ atual: <span id="qtdAtual" style="font-weight:900;color:#FF8C00">0</span></span><span id="userEmail" style="font-size:10px;color:#888"></span></div>
+<div class="stat"><span>No banco FTERJ:</span><b id="statFterj">0</b></div>
+<div class="stat"><span>Na LISTA_ATLETAS_FTERJ:</span><b id="statLista">0</b></div>
+</div>
+
+<div class="card">
+<h2>⚙️ Configuração do teste</h2>
+<div class="grid2">
+<div><label>Quantidade (1 a 500)</label><input id="qtd" type="number" value="150" min="1" max="500"></div>
+<div><label>Prova inicial</label><select id="provaBase"><option value="aleatorio">Aleatório C / R1-R5 / C/R</option><option value="C">Só C</option><option value="R1">Só R1</option><option value="R">Só R1 a R5 sequencial</option></select></div>
+</div>
+<div class="grid2">
+<div><label>Usar nomes da LISTA_ATLETAS_FTERJ?</label><select id="usarLista"><option value="sim">Sim - se tiver lista, usa ela</option><option value="nao">Não - nomes falsos aleatórios</option></select></div>
+<div><label>Qualidade dos tiros</label><select id="qualidade"><option value="realista">Realista (70% X e 10, 30% resto)</option><option value="top">Só X e 10 (testar topo)</option><option value="aleatorio">Totalmente aleatório</option></select></div>
+</div>
+<label><input type="checkbox" id="comDelay" checked style="width:auto"> Gerar com delay de 80ms entre cada (evita travar Firebase)</label>
+</div>
+
+<div class="card">
+<h2>🚀 Ações</h2>
+<button class="btn btn-laranja" onclick="gerar()">⚡ GERAR <span id="btnQtd">150</span> LANÇAMENTOS AGORA</button>
+<div class="progress"><div id="progBar" class="progress-bar"></div></div>
+<div style="display:flex;gap:8px;margin-top:8px"><button class="btn btn-preto" onclick="gerar(10)">+10 rápido</button><button class="btn btn-preto" onclick="gerar(1)">+1 teste</button><button class="btn btn-verde" onclick="exportarCSVTeste()">📥 CSV do teste</button></div>
+<button class="btn btn-vermelho" onclick="apagarTudo()">🗑️ APAGAR TODO FTERJ (limpa teste + real) - CUIDADO</button>
+<p style="font-size:10px;color:#ff7777;margin-top:6px">⚠️ Apagar FTERJ apaga TUDO, inclusive lançamentos reais. No INDEX V36.6+ isso limpa o navegador também. Só use pra limpar teste.</p>
+</div>
+
+<div class="card">
+<h2>📜 Log</h2>
+<div id="log">Aguardando login...\n</div>
+</div>
+
+<script>
+const firebaseConfig={apiKey:"AIzaSyA6DCLCJ86Qoe2Ph3VuCF6_vYv6EARedKE",authDomain:"placar-minutera.firebaseapp.com",databaseURL:"https://placar-minutera-default-rtdb.firebaseio.com",projectId:"placar-minutera",storageBucket:"placar-minutera.firebasestorage.app",messagingSenderId:"689991648080",appId:"1:689991648080:web:9deeb958183eaeaa23e255"};
+firebase.initializeApp(firebaseConfig);const db=firebase.database();
+const PERMITIDOS=['X','10','9','8','7','6','5','4','3','2','1','0'];
+const NOMES_FALSOS=["JOÃO SILVA","MARIA OLIVEIRA","CARLOS SOUZA","ANA SANTOS","PEDRO COSTA","LUCAS LIMA","FERNANDA ROCHA","RICARDO ALMEIDA","JULIANA MENDES","THIAGO BORGES","RUAM CAMPOS","THAYRO OLIVEIRA","GABRIEL FREITAS","RAFAEL BARBOSA","BEATRIZ NUNES","FELIPE RIBEIRO","DANIEL ARAUJO","PATRÍCIA GOMES","ROBERTO MARTINS","CAMILA FERREIRA","EDUARDO CARVALHO","LARISSA PEREIRA","BRUNO RODRIGUES","VANESSA LOPES","ANDRÉ CASTRO","SIMONE MELO","MARCOS VIEIRA","ALINE TEIXEIRA","DIEGO FONSECA","SANDRA MORAES"];
+let cacheLista={}, cacheFterj={}, currentUser=null, isFirebaseConnected=false;
+function log(msg){ let el=document.getElementById('log'); el.innerText="["+new Date().toLocaleTimeString()+"] "+msg+"\n"+el.innerText; }
+function login(){ let e=document.getElementById('emailLogin').value.trim(),s=document.getElementById('senhaLogin').value.trim(),er=document.getElementById('erroLogin'); er.style.display='none'; if(!e||!s){er.style.display='block';er.innerText="Preenche";return;} firebase.auth().signInWithEmailAndPassword(e,s).catch(err=>{er.style.display='block';er.innerText=err.message;});}
+firebase.auth().onAuthStateChanged(u=>{ if(u){ currentUser=u; document.getElementById('telaLogin').style.display='none'; document.getElementById('userEmail').innerText=u.email; log("✅ Logado como "+u.email); iniciar(); } else { document.getElementById('telaLogin').style.display='flex'; } });
+function iniciar(){
+ db.ref(".info/connected").on("value",snap=>{ isFirebaseConnected=snap.val()===true; document.getElementById('badgeNet').innerText=isFirebaseConnected?"ONLINE":"OFFLINE"; document.getElementById('badgeNet').className="badge "+(isFirebaseConnected?"badge-online":"badge-offline"); });
+ db.ref("FTERJ").on('value',s=>{ cacheFterj=s.val()||{}; let c=Object.keys(cacheFterj).filter(k=>k.startsWith('serie_')).length; document.getElementById('qtdAtual').innerText=c; document.getElementById('statFterj').innerText=c+" provas"; });
+ db.ref("LISTA_ATLETAS_FTERJ").on('value',s=>{ cacheLista=s.val()||{}; document.getElementById('statLista').innerText=Object.keys(cacheLista).length+" atletas"; log("LISTA_ATLETAS_FTERJ: "+Object.keys(cacheLista).length+" nomes"); });
+ document.getElementById('qtd').addEventListener('input',e=>{ document.getElementById('btnQtd').innerText=e.target.value; });
+}
+function valorTiro(v){ v=String(v).toUpperCase(); if(v=='X') return 12; let n=parseFloat(v); return isNaN(n)?0:n; }
+function geraTiros(qualidade){
+ let tiros=[];
+ for(let i=0;i<10;i++){
+   let v;
+   if(qualidade=='top'){ v=Math.random()<0.6?'X':'10'; }
+   else if(qualidade=='realista'){ let r=Math.random(); if(r<0.35) v='X'; else if(r<0.7) v='10'; else if(r<0.85) v='9'; else if(r<0.92) v='8'; else v=String(Math.floor(Math.random()*8)); }
+   else { v=PERMITIDOS[Math.floor(Math.random()*PERMITIDOS.length)]; }
+   tiros.push(v);
+ }
+ return tiros;
+}
+function geraProva(tipo, nome, contadorPorNome){
+ if(tipo=='C') return 'C';
+ if(tipo=='R1') return 'R1';
+ if(tipo=='R'){
+   // sequencial por nome: R1, R2...
+   let c=contadorPorNome[nome]||0; c++; contadorPorNome[nome]=c; return 'R'+c;
+ }
+ // aleatorio
+ let ops=['C','R1','R2','R3','R4','R5','C/R']; return ops[Math.floor(Math.random()*ops.length)];
+}
+function pegaNomes(qtd, usarLista){
+ let nomesLista=Object.values(cacheLista).map(v=>v.nome||v).filter(Boolean);
+ let pool=[];
+ if(usarLista=='sim' && nomesLista.length>0){
+   pool=nomesLista;
+   log("Usando "+pool.length+" nomes da LISTA_ATLETAS_FTERJ");
+ }else{
+   pool=NOMES_FALSOS;
+   log("Usando nomes falsos (LISTA vazia ou opção não)");
+ }
+ let nomes=[];
+ for(let i=0;i<qtd;i++){
+   let base=pool[Math.floor(Math.random()*pool.length)];
+   // adiciona número pra não colidir tanto
+   let sufixo=Math.floor(1000+Math.random()*9000);
+   let nome=base+" "+sufixo;
+   if(usarLista=='sim' && nomesLista.length>0 && i < nomesLista.length){
+     // usa nome puro sem sufixo nos primeiros pra testar busca
+     nome=pool[i % pool.length];
+   }
+   nomes.push(nome.toUpperCase());
+ }
+ return nomes;
+}
+async function gerar(qtdOverride){
+ let qtd=qtdOverride||parseInt(document.getElementById('qtd').value)||150;
+ let provaBase=document.getElementById('provaBase').value;
+ let usarLista=document.getElementById('usarLista').value;
+ let qualidade=document.getElementById('qualidade').value;
+ let comDelay=document.getElementById('comDelay').checked;
+ let nomes=pegaNomes(qtd, usarLista);
+ let contadorPorNome={};
+ let updates={};
+ let baseTime=Date.now();
+ log("🚀 Iniciando geração de "+qtd+" lançamentos - provaBase="+provaBase+" qualidade="+qualidade);
+ document.getElementById('progBar').style.width='0%';
+ for(let i=0;i<qtd;i++){
+   let nome=nomes[i];
+   let prova=geraProva(provaBase, nome, contadorPorNome);
+   let tiros=geraTiros(qualidade);
+   let x=tiros.filter(t=>t=='X').length;
+   let total=parseFloat((tiros.reduce((a,b)=>a+valorTiro(b),0)+x*0.01).toFixed(2));
+   let key="serie_"+(baseTime+i)+"_"+Math.random().toString(36).substr(2,4);
+   updates[key]={ nome, prova, tiros, pontos: total, data: baseTime+i, operadorEmail: currentUser?currentUser.email+" (GERADOR TESTE)":"GERADOR TESTE", operadorUid: currentUser?currentUser.uid:"teste", atualizadoEm: Date.now(), teste: true };
+   if(!comDelay && i%50==0){
+     document.getElementById('progBar').style.width=Math.round((i/qtd)*100)+'%';
+     await new Promise(r=>setTimeout(r,10));
+   }
+ }
+ if(comDelay){
+   let keys=Object.keys(updates);
+   let done=0;
+   for(let k of keys){
+     await db.ref("FTERJ/"+k).set(updates[k]);
+     done++;
+     document.getElementById('progBar').style.width=Math.round((done/keys.length)*100)+'%';
+     if(done%20==0) log("✅ "+done+"/"+keys.length+" subidos...");
+     await new Promise(r=>setTimeout(r,80));
+   }
+   log("✅ FINALIZADO - "+qtd+" lançamentos gerados com delay");
+ }else{
+   await db.ref("FTERJ").update(updates);
+   document.getElementById('progBar').style.width='100%';
+   log("✅ FINALIZADO - "+qtd+" lançamentos gerados em lote");
+ }
+ alert(qtd+" lançamentos de TESTE gerados! Vai no INDEX e na TV pra ver como ficou.");
+}
+function apagarTudo(){
+ if(!confirm("APAGAR TODO FTERJ? Isso apaga teste E real! Confirma?")) return;
+ if(!confirm("ÚLTIMA CONFIRMAÇÃO - APAGAR FTERJ TODO?")) return;
+ db.ref("FTERJ").remove().then(()=>{ log("🗑️ FTERJ apagado completamente"); alert("FTERJ apagado. INDEX V36.6+ vai limpar local também."); });
+}
+function exportarCSVTeste(){
+ let lista=Object.keys(cacheFterj).filter(k=>k.startsWith('serie_')).map(k=>({key:k, ...cacheFterj[k]})).sort((a,b)=>(a.data||0)-(b.data||0));
+ if(lista.length==0){ alert("Nada"); return; }
+ let header=["ORDEM","NOME","PROVA","PONTOS","T1","T2","T3","T4","T5","T6","T7","T8","T9","T10","DATA","TESTE"];
+ let linhas=[header.join(";")];
+ lista.forEach((it,i)=>{ let t=it.tiros||[]; let data=it.data?new Date(it.data).toLocaleString('pt-BR'):""; let row=[i+1,'"'+(it.nome||'').replace(/"/g,'""')+'"',it.prova||'',it.pontos||'',t[0]||'',t[1]||'',t[2]||'',t[3]||'',t[4]||'',t[5]||'',t[6]||'',t[7]||'',t[8]||'',t[9]||'',data,it.teste?"TESTE":"REAL"]; linhas.push(row.join(";")); });
+ let blob=new Blob(["\ufeff"+linhas.join("\n")],{type:"text/csv"}); let url=URL.createObjectURL(blob); let a=document.createElement("a"); a.href=url; a.download="TESTE_FTERJ_"+new Date().toISOString().slice(0,10)+"_"+lista.length+".csv"; a.click(); URL.revokeObjectURL(url); log("CSV exportado com "+lista.length+" linhas");
+}
+</script></body></html>
