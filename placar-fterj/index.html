@@ -1,0 +1,331 @@
+<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FTERJ V38 UNIFICADO - GITHUB PAGES - SEM ?=</title>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--laranja:#FF8C00}
+body{background:#121212;color:#fff;font-family:Arial,Inter;overflow:hidden;height:100vh}
+.view{display:none;height:100vh;flex-direction:column}.view.active{display:flex}
+/* INDEX */
+#index-view{background:#121212}
+#index-view #header{background:linear-gradient(90deg,#FF8C00,#FF6A00);padding:10px 12px;display:flex;justify-content:space-between;align-items:center;color:#000;font-weight:900;font-size:13px}
+#index-view #main{display:flex;height:calc(100vh - 44px)}#left{width:360px;background:#1e1e1e;margin:6px;padding:10px;border-radius:8px;overflow:auto}#right{flex:1;background:#1e1e1e;margin:6px 6px 6px 0;padding:8px;border-radius:8px;overflow:auto}
+input,select{width:100%;padding:7px;background:#000;color:#fff;border:1px solid #444;border-radius:5px;font-size:13px}.row{display:flex;gap:6px;margin-top:6px;position:relative}.linha-tiro{display:flex;gap:6px;align-items:center;margin-top:3px}.linha-tiro b{width:22px;color:#aaa;font-size:11px}
+.item{display:grid;grid-template-columns:45px 45px 1fr 60px 1fr 90px;gap:6px;align-items:center;background:#2a2a2a;padding:6px 8px;margin-bottom:4px;border-radius:6px;border-left:5px solid #FF8C00;font-size:11px;height:40px}
+.item.offline{border-left-color:#ff2e2e;background:#3a1e1e}
+.btn{flex:1;padding:10px;border:none;border-radius:5px;font-weight:900;cursor:pointer;margin-top:5px;font-size:11px}.btn-salvar{background:#FF8C00;color:#000}.btn-nova{background:#444;color:#fff}.btn-editar{background:#FFD700;color:#000;padding:3px 6px;border:none;border-radius:3px;font-size:9px}.btn-excluir{background:#ff2e2e;color:#fff;padding:3px 6px;border:none;border-radius:3px;font-size:9px;margin-left:3px}
+.btn-csv{background:#00c853;color:#000;padding:6px 10px;border:none;border-radius:5px;font-weight:900;cursor:pointer;font-size:10px}
+.total{color:#00BFFF;text-align:center;font-weight:900;margin:6px 0;font-size:14px}
+#telaLogin{position:fixed;inset:0;background:rgba(0,0,0,0.97);z-index:9999;display:flex;align-items:center;justify-content:center}
+#sugestoes{position:absolute;top:32px;left:0;background:#000;border:1px solid #FF8C00;max-height:180px;overflow:auto;width:100%;z-index:100;display:none;border-radius:5px}#sugestoes div{padding:8px;font-size:12px;cursor:pointer;border-bottom:1px solid #222;font-weight:700}#sugestoes div:hover{background:#FF8C00;color:#000}
+.badge{font-size:10px;padding:4px 8px;border-radius:10px;font-weight:900}.badge-online{background:#00c853;color:#000}.badge-offline{background:#ff2e2e;color:#fff;animation:blink 1s infinite}.badge-pend{background:#FF8C00;color:#000}@keyframes blink{50%{opacity:0.5}}
+#statusBar{background:#111;border:1px solid #333;border-radius:6px;padding:8px;margin-top:8px;font-size:10px;line-height:1.4}#logSync{background:#000;border:1px solid #333;border-radius:4px;padding:6px;margin-top:6px;font-size:9px;font-family:monospace;max-height:120px;overflow:auto;white-space:pre-wrap}
+/* TV */
+#tv-view{background:#000}
+#tv-view #tvHeader{height:11vh;background:#FF8C00;display:flex;align-items:center;justify-content:center;position:relative}
+#tv-view #tvHeader h1{font-size:6.5vh;color:#000;font-weight:900;text-transform:uppercase}
+.logo{position:absolute;top:50%;transform:translateY(-50%);height:6.5vh;background:#fff;border-radius:6px;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.logo img{height:100%;width:auto;max-width:14vw;object-fit:contain;padding:3px 8px}#logoEsq{left:.8vw}#logoDir{right:.8vw}
+#relogioTopo{position:absolute;right:15.5vw;top:50%;transform:translateY(-50%);background:#000;border-radius:20px;padding:4px 16px;color:#FFD700;font-size:2.1vh;font-weight:900}
+#ranking{flex:1;display:flex;flex-direction:column;gap:.4vh;padding:.4vh.6vw;overflow:hidden;justify-content:space-between}
+.linha-tv{display:flex;align-items:center;background:#1a1a1a;border-radius:8px;padding:0 0.8vw;height:6.1vh}
+.linha-tv.ouro{background:#FFD700}.linha-tv.prata{background:#C0C0C0}.linha-tv.bronze{background:#CD7F32}
+.linha-tv.ouro .pos, .linha-tv.ouro .nome, .linha-tv.ouro .prova, .linha-tv.ouro .total, .linha-tv.ouro .detalhe,
+.linha-tv.prata .pos, .linha-tv.prata .nome, .linha-tv.prata .prova, .linha-tv.prata .total, .linha-tv.prata .detalhe,
+.linha-tv.bronze .pos, .linha-tv.bronze .nome, .linha-tv.bronze .prova, .linha-tv.bronze .total, .linha-tv.bronze .detalhe{color:#000 !important;}
+.pos{width:3.5vw;font-weight:900;text-align:center;font-size:2.3vh}.nome{flex:1;font-size:2.3vh;font-weight:800;text-transform:uppercase;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:flex;align-items:center;gap:.6vw}
+.prova{width:8vw;text-align:center;font-size:2.8vh;font-weight:900;color:#00E5FF}.total{width:10vw;text-align:center;font-size:3vh;font-weight:900;color:#FFD700}
+.detalhe{width:34vw;text-align:right;font-size:2.05vh;font-weight:800;white-space:nowrap;overflow:hidden;color:#fff}
+#rodape{height:5.5vh;background:#000;border-top:2px solid #FF8C00;display:flex;align-items:center;justify-content:center;overflow:hidden}
+#textoRodape{color:#FFD700;font-weight:900;text-align:center;opacity:0;transition:opacity.8s;white-space:nowrap;width:100%}#textoRodape.show{opacity:1}
+#full{position:fixed;inset:0;background:#000;display:none;align-items:center;justify-content:center;z-index:9999}#full img{width:100vw;height:100vh;object-fit:contain;background:#000}
+/* RESULTADO / CONTROLE */
+#resultado-view, #controle-view, #celular-view{background:#f5f5f7;color:#111;overflow:auto}
+.tabela-resultado{width:100%;border-collapse:collapse;font-size:12px;margin-top:10px;background:#fff}
+.tabela-resultado th{background:#000;color:#FF8C00;padding:8px 6px;text-align:center;position:sticky;top:0;z-index:2;font-size:10px}
+.tabela-resultado td{padding:7px 6px;border-bottom:1px solid #eee;text-align:center}
+.tabela-resultado .nome{ text-align:left; font-weight:800; text-transform:uppercase; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:180px }
+.pos1{background:linear-gradient(90deg,#FFD700,#FFB700)!important}.pos2{background:linear-gradient(90deg,#E8E8E8,#C0C0C0)!important}.pos3{background:linear-gradient(90deg,#FF8C00,#CD7F32)!important;color:#fff}
+.filtro-resultado{display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap;padding:10px}
+.header-controle{background:#000;color:#FF8C00;padding:14px;text-align:center;font-weight:900;display:flex;justify-content:center;align-items:center;gap:10px}
+.tabs{display:flex;background:#fff;border-bottom:1px solid #ddd;position:sticky;top:0;z-index:10;overflow-x:auto}
+.tab{flex:1;padding:12px 8px;text-align:center;font-weight:700;cursor:pointer;border-bottom:3px solid transparent;color:#888;font-size:11px;white-space:nowrap}
+.tab.active{color:#000;border-bottom-color:#FF8C00}
+.painel{display:none;padding:16px;max-width:1100px;margin:0 auto}.painel.active{display:block}
+.card{background:#fff;border-radius:16px;padding:16px;margin-bottom:16px;box-shadow:0 2px 10px rgba(0,0,0,0.06);border:1px solid #eee}
+.card h3{font-size:14px;margin-bottom:12px;color:#FF6A00}
+.nav-top{position:fixed;top:0;right:0;z-index:9999;background:rgba(0,0,0,0.8);padding:4px 8px;border-radius:0 0 0 8px;font-size:10px;display:flex;gap:6px}
+.nav-top a{color:#FFD700;text-decoration:none;font-weight:900;padding:4px 8px;border:1px solid #FF8C00;border-radius:4px}
+.nav-top a:hover{background:#FF8C00;color:#000}
+</style></head><body>
+<div class="nav-top"><a href="#" onclick="navigate('/');return false">INDEX</a><a href="#" onclick="navigate('/tv');return false">TV</a><a href="#" onclick="navigate('/tv1');return false">TV1</a><a href="#" onclick="navigate('/tv2');return false">TV2</a><a href="#" onclick="navigate('/resultado');return false">RESULTADO</a><a href="#" onclick="navigate('/celular');return false">CELULAR</a><a href="#" onclick="navigate('/controle');return false">CONTROLE</a></div>
+
+<!-- INDEX VIEW -->
+<div id="index-view" class="view"><div id="telaLogin"><div style="background:#1e1e1e;padding:20px;border-radius:12px;text-align:center;border:2px solid #FF8C00;min-width:340px"><h2 style="color:#FF8C00;font-size:15px">FTERJ V38 UNIFICADO</h2><p style="font-size:10px;color:#00ff88;margin-top:4px">GITHUB PAGES - SEM ?= - LEITURA = V36.6</p><input id="emailLogin" type="email" placeholder="E-mail" value="thiago1.elb@gmail.com" style="text-align:center;margin-top:10px"><input id="senhaLogin" type="password" placeholder="Senha" style="text-align:center;margin-top:8px"><button onclick="fazerLogin()" style="width:100%;margin-top:10px;padding:10px;background:#FF8C00;color:#000;border:none;border-radius:6px;font-weight:900;cursor:pointer">ENTRAR</button><p id="erroLogin" style="color:#ff5555;display:none;margin-top:10px;font-size:11px;white-space:pre-wrap;background:#2a0000;padding:6px;border-radius:4px"></p></div></div>
+<div id="header"><div style="display:flex;gap:8px;align-items:center"><span>V38 UNIFICADO - SEM ?=</span><span class="badge badge-offline" id="badgeNet">VERIFICANDO</span><span class="badge badge-pend" id="badgePend" style="display:none">0 PENDENTES</span></div><div style="display:flex;gap:5px;align-items:center"><button class="btn-csv" onclick="exportarCSVIndex()">📥 CSV</button><button class="btn-csv" style="background:#FFD700" onclick="forcarSync(true)">🔄 FORÇAR</button><span id="userEmail" style="font-size:9px;margin-left:4px"></span><button onclick="firebase.auth().signOut()" style="background:#000;color:#fff;border:1px solid #444;padding:3px 6px;border-radius:4px;cursor:pointer;font-size:10px">SAIR</button></div></div>
+<div id="main"><div id="left"><div class="row"><div style="flex:1;position:relative"><input id="nomeAtleta" placeholder="NOME" style="text-transform:uppercase" autocomplete="off" oninput="buscarNome(this.value)" onfocus="buscarNome(this.value)"><div id="sugestoes"></div></div><select id="provaSelect" style="width:80px"><option>C</option><option>R1</option><option>R2</option><option>R3</option><option>R4</option><option>R5</option><option>C/R</option></select></div><div id="tirosContainer"></div><div class="total">TOTAL: <span id="totalPontos">0.00</span></div><div style="display:flex;gap:5px"><button class="btn btn-salvar" onclick="salvarLancamento()">SALVAR [F2]</button><button class="btn btn-nova" onclick="novoLancamento()">NOVA [F3]</button></div><div id="statusBar"><div><b>Logado:</b> <span id="statusQuem" style="color:#FF8C00">-</span></div><div style="display:flex;justify-content:space-between"><span>Firebase:</span><span id="statusNet">Verificando...</span></div><div style="display:flex;justify-content:space-between"><span>No navegador:</span><span id="statusLocal">0</span></div><div style="display:flex;justify-content:space-between"><span>Fila:</span><span id="statusFila" style="color:#FF8C00;font-weight:900">0</span></div><div id="logSync"></div></div></div><div id="right"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><span style="font-size:11px;color:#888" id="infoPlacar">Carregando...</span><span style="font-size:9px;color:#ff5555">Ordem igual V36.6 (último em cima)</span></div><div id="listaLancamentos"></div></div></div></div>
+
+<!-- TV VIEW -->
+<div id="tv-view" class="view"><div id="tvHeader"><div class="logo" style="left:.8vw"><img id="imgLogoMinu" src="logo-minha.png"></div><h1>3x7 MinuT&Ra - FTERJ</h1><div id="relogioTopo"><span id="dhTopo">--:--:--</span></div><div class="logo" style="right:.8vw"><img id="imgLogoClube" src="logo-clube.png"></div></div><div id="ranking">CARREGANDO V38...</div><div id="rodape"><div id="textoRodape"></div></div><div id="full"><img id="imgFull"></div></div>
+
+<!-- RESULTADO VIEW -->
+<div id="resultado-view" class="view"><div style="background:#000;color:#FF8C00;padding:14px 18px;display:flex;justify-content:space-between;align-items:center;font-weight:900"><h1 style="font-size:16px">🏆 RESULTADO OFICIAL - SEM ANÚNCIO - X>10>9>8...</h1><div id="infoQtdResultado" style="font-size:11px;color:#aaa"></div></div><div class="filtro-resultado"><select id="filtroProvaResultado" onchange="renderResultado()"><option value="TODAS">TODAS</option><option value="C">C</option><option value="R1">R1</option><option value="R2">R2</option><option value="R3">R3</option><option value="R4">R4</option><option value="R5">R5</option><option value="C/R">C/R</option></select><input id="filtroNomeResultado" placeholder="Filtrar por nome..." oninput="renderResultado()" style="min-width:200px;padding:8px;border:1px solid #ddd;border-radius:8px"><select id="filtroAgruparResultado" onchange="renderResultado()"><option value="todos">Todos lançamentos</option><option value="melhorPorNome" selected>Melhor por atleta</option></select><button class="btn" style="background:#FF8C00;color:#000;width:auto;padding:8px 14px" onclick="exportarResultadoCSV()">📥 CSV</button></div><div style="padding:0 14px 14px;overflow:auto;flex:1"><table class="tabela-resultado"><thead><tr><th>#</th><th>ATLETA</th><th>PROVA</th><th>PTS</th><th>X</th><th>10</th><th>9</th><th>8</th><th>7</th><th>6</th><th>5</th><th>4</th><th>TIROS</th></tr></thead><tbody id="tbodyResultado"></tbody></table></div></div>
+
+<!-- CELULAR VIEW -->
+<div id="celular-view" class="view"><div style="height:56px;background:#000;border-bottom:4px solid #FF8C00;display:flex;align-items:center;padding:0 10px;gap:8px"><img src="logo-minha.png" style="height:28px;background:#fff;border-radius:4px;padding:2px 4px"><span style="color:#FFD700;font-weight:900">MinuT&Ra V38</span><span style="font-weight:900;color:#fff">FTERJ</span></div><div id="listaCelular" style="height:calc(100vh - 56px);overflow:auto;padding:6px;display:flex;flex-direction:column;gap:7px"></div></div>
+
+<!-- CONTROLE VIEW -->
+<div id="controle-view" class="view"><div class="header-controle"><span>MinuT&Ra - CONTROLE V38 UNIFICADO - SEM ?=</span></div><div class="tabs"><div class="tab active" onclick="abaControle('full',this)">🖥 FULL</div><div class="tab" onclick="abaControle('rodape',this)">🔥 RODAPÉ</div><div class="tab" onclick="abaControle('resultado-controle',this)">🏆 RESULTADO</div><div class="tab" onclick="abaControle('prova',this)">🎮 PROVA</div><div class="tab" onclick="abaControle('tv',this)">⚙ TV</div><div class="tab" onclick="abaControle('links',this)">🔗 LINKS SEM ?=</div></div>
+<div id="painel-full" class="painel active"><div class="card"><h3>Novo Anúncio Tela Cheia</h3><input id="fullNome" placeholder="Nome"><input id="fullUrl" placeholder="URL imagem (opcional)" style="margin-top:6px"><div style="display:flex;gap:6px;margin-top:6px"><input id="fullTempo" type="number" value="11" placeholder="Tempo s"><input id="fullGrupo" type="number" value="1" placeholder="Grupo"></div><label style="border:2px dashed #FF8C00;border-radius:12px;padding:12px;text-align:center;background:#fff8f0;margin-top:8px;cursor:pointer;display:block" for="fullFile">📁 Enviar imagem<input type="file" id="fullFile" accept="image/*" hidden></label><button class="btn" style="background:#000;color:#fff;margin-top:8px" onclick="addFull()">+ ADICIONAR</button></div><div class="card"><div id="listaFull">Carregando...</div></div></div>
+<div id="painel-rodape" class="painel"><div class="card"><h3>Novo Rodapé</h3><input id="rdProp" placeholder="Texto"><input id="rdCont" placeholder="Contato" style="margin-top:6px"><button class="btn" style="background:#FF8C00;color:#000;margin-top:8px" onclick="addRodape()">+ ADICIONAR</button></div><div class="card"><div id="listaRodape"></div></div></div>
+<div id="painel-resultado-controle" class="painel"><div class="card"><h3>🏆 Classificação Oficial - Sem anúncio</h3><div style="display:flex;gap:8px;flex-wrap:wrap"><select id="filtroProvaControle" onchange="renderResultadoControle()"><option value="TODAS">TODAS</option><option value="C">C</option><option value="R1">R1</option><option value="R2">R2</option><option value="R3">R3</option><option value="R4">R4</option><option value="R5">R5</option></select><input id="filtroNomeControle" placeholder="Filtrar nome..." oninput="renderResultadoControle()" style="min-width:180px"><button class="btn" style="width:auto;background:#00c853" onclick="exportarResultadoCSV()">📥 CSV</button></div><div style="max-height:60vh;overflow:auto;margin-top:10px"><table class="tabela-resultado"><thead><tr><th>#</th><th>ATLETA</th><th>PROVA</th><th>PTS</th><th>X</th><th>10</th><th>9</th><th>8</th><th>DETALHE</th></tr></thead><tbody id="tbodyResultadoControle"></tbody></table></div></div></div>
+<div id="painel-prova" class="painel"><div class="card"><h3>🎮 Prova</h3><p id="infoPlacarControle" style="font-size:12px;color:#666"></p><div style="display:flex;gap:8px;margin-top:10px"><button class="btn" style="background:#FF8C00;color:#000" onclick="if(confirm('ZERAR C/R?')){db.ref('FTERJ').once('value').then(s=>{let d=s.val()||{};Object.keys(d).forEach(k=>{if(k.startsWith('serie_'))db.ref('FTERJ/'+k).update({pontos:0,tiros:[]});});})}">ZERAR C/R</button><button class="btn" style="background:#ff3b30;color:#fff" onclick="if(confirm('APAGAR TUDO?')&&confirm('CONFIRMA?'))db.ref('FTERJ').remove()">🗑️ APAGAR PLACAR TODO</button></div></div></div>
+<div id="painel-tv" class="painel"><div class="card"><h3>⚙ Config TV</h3><p style="font-size:11px;color:#666">Mesmas configs do controle antigo - use /tv , /tv1 , /tv2 sem ?=</p><div id="statusTV" style="font-size:11px;color:#0a0;font-weight:800"></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px"><input id="cfgTempoRodape" type="number" placeholder="Tempo Rodapé s"><input id="cfgTempoFull" type="number" placeholder="Tempo Full s"><input id="cfgIntervalo" type="number" placeholder="Intervalo Full s"></div><button class="btn" style="background:#FF8C00;color:#000;margin-top:10px" onclick="salvarTV()">SALVAR TV</button></div></div>
+<div id="painel-links" class="painel"><div class="card"><h3>🔗 Links sem ?= (GitHub Pages)</h3><div style="font-size:13px;line-height:2.2" id="linksSemInterrogacao">Carregando...</div><p style="font-size:11px;color:#666;margin-top:10px">No GitHub Pages, esses links funcionam porque o 404.html é igual ao index.html. Basta subir index.html e 404.html iguais.</p></div></div>
+</div>
+
+<script>
+// FIREBASE + CORE
+const firebaseConfig={apiKey:"AIzaSyA6DCLCJ86Qoe2Ph3VuCF6_vYv6EARedKE",authDomain:"placar-minutera.firebaseapp.com",databaseURL:"https://placar-minutera-default-rtdb.firebaseio.com",projectId:"placar-minutera",storageBucket:"placar-minutera.firebasestorage.app",messagingSenderId:"689991648080",appId:"1:689991648080:web:9deeb958183eaeaa23e255"};
+firebase.initializeApp(firebaseConfig);const db=firebase.database();const storage=firebase.storage();
+const ORDEM=['X','10','9','8','7','6','5','4','3','2','1','0'];
+function getContagem(tiros){let c={X:0,'10':0,'9':0,'8':0,'7':0,'6':0,'5':0,'4':0,'3':0,'2':0,'1':0,'0':0};(tiros||[]).forEach(t=>{let k=String(t).toUpperCase().trim();if(c.hasOwnProperty(k))c[k]++;});return c;}
+function comparar(a,b){let pa=parseFloat(a.pontos||0),pb=parseFloat(b.pontos||0);if(pb!==pa)return pb-pa;let ca=getContagem(a.tiros),cb=getContagem(b.tiros);for(let v of ORDEM){if(cb[v]!==ca[v])return cb[v]-ca[v];}return(a.data||0)-(b.data||0);}
+let cacheFTERJ={}, cacheLista={}; let LISTA_PATH="LISTA_ATLETAS_FTERJ";
+let currentUser=null, isFirebaseConnected=false;
+const LS_KEY="FTERJ_LOCAL_V38", LS_FILA="FTERJ_FILA_V38";
+function getLocalData(){try{return JSON.parse(localStorage.getItem(LS_KEY)||"{}")}catch(e){return{}}}
+function setLocalData(d){localStorage.setItem(LS_KEY,JSON.stringify(d))}
+function getFila(){try{return JSON.parse(localStorage.getItem(LS_FILA)||"[]")}catch(e){return[]}}
+function setFila(f){localStorage.setItem(LS_FILA,JSON.stringify(f))}
+function logSync(m){let el=document.getElementById('logSync');if(el)el.innerText="["+new Date().toLocaleTimeString()+"] "+m+"\n"+el.innerText;}
+
+// ROUTER SEM ?=
+function getBasePath(){let p=window.location.pathname; // /placar-fterj/tv1 ou /placar-fterj/ ou /placar-fterj/index.html
+ // remove /placar-fterj prefix e index.html
+ let base=p.replace(/\/index\.html$/,'').replace(/\/$/,'');
+ let parts=base.split('/').filter(Boolean);
+ // parts = ['placar-fterj','tv1'] ou ['placar-fterj'] etc
+ let last=parts[parts.length-1]||'';
+ if(last==='placar-fterj') return '/';
+ return '/'+last.toLowerCase();
+}
+function navigate(path){
+ // path = '/', '/tv', '/tv1', '/resultado', '/resultado/C' etc
+ let basePath=window.location.pathname.split('/placar-fterj')[0]+'/placar-fterj';
+ if(path==='/') history.pushState(null,'', basePath+'/');
+ else history.pushState(null,'', basePath+path);
+ router();
+}
+function router(){
+ let path=window.location.pathname.toLowerCase();
+ // remove /placar-fterj
+ let route=path.split('placar-fterj')[1]||'/';
+ route=route.replace(/\/index\.html/,'').replace(/\/$/,'')||'/';
+ // route = '', '/', '/tv', '/tv1', '/tv2', '/resultado', '/resultado/c', '/celular', '/controle'
+ if(route===''||route==='/') showView('index-view');
+ else if(route.startsWith('/tv1')) showView('tv-view','TV1');
+ else if(route.startsWith('/tv2')) showView('tv-view','TV2');
+ else if(route.startsWith('/tv')) showView('tv-view','TV');
+ else if(route.startsWith('/resultado')){ let prova=route.split('/')[2]||''; showView('resultado-view'); if(prova){ setTimeout(()=>{let sel=document.getElementById('filtroProvaResultado'); if(sel) sel.value=prova.toUpperCase(); renderResultado();},200);} }
+ else if(route.startsWith('/celular')) showView('celular-view');
+ else if(route.startsWith('/controle')) showView('controle-view');
+ else showView('index-view');
+ updateLinksDisplay();
+}
+function showView(id, param){
+ document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+ let el=document.getElementById(id); if(el) el.classList.add('active');
+ if(id==='tv-view') initTV(param||'TV');
+ if(id==='index-view') initIndex();
+ if(id==='resultado-view') initResultado();
+ if(id==='celular-view') initCelular();
+ if(id==='controle-view') initControle();
+}
+window.addEventListener('popstate', router);
+
+// LINKS SEM ?=
+function updateLinksDisplay(){
+ let base=window.location.origin+window.location.pathname.split('/placar-fterj')[0]+'/placar-fterj';
+ let html=`<div>INDEX: <b>${base}/</b></div><div>TV: <b>${base}/tv</b></div><div>TV1: <b>${base}/tv1</b></div><div>TV2: <b>${base}/tv2</b></div><div>RESULTADO: <b>${base}/resultado</b></div><div>RESULTADO filtrado: <b>${base}/resultado/C</b></div><div>CELULAR: <b>${base}/celular</b></div><div>CONTROLE: <b>${base}/controle</b></div>`;
+ let el=document.getElementById('linksSemInterrogacao'); if(el) el.innerHTML=html;
+}
+
+// INDEX LOGIC (igual V36.6)
+const PERMITIDOS=['X','10','9','8','7','6','5','4','3','2','1','0'];
+function fazerLogin(){let e=document.getElementById('emailLogin').value.trim(),s=document.getElementById('senhaLogin').value.trim(),er=document.getElementById('erroLogin');er.style.display='none';if(!e||!s){er.style.display='block';er.innerText='Preenche';return;}firebase.auth().signInWithEmailAndPassword(e,s).catch(err=>{er.style.display='block';er.innerText=err.code+'\n'+err.message});}
+firebase.auth().onAuthStateChanged(u=>{if(u){currentUser=u;let l=document.getElementById('telaLogin'); if(l) l.style.display='none';let ue=document.getElementById('userEmail'); if(ue) ue.innerText=u.email; let sq=document.getElementById('statusQuem'); if(sq) sq.innerText=u.email;}else{let l=document.getElementById('telaLogin'); if(l) l.style.display='flex'; currentUser=null;}});
+function valorTiro(v){v=String(v).trim().toUpperCase();if(v=='X')return 12;let n=parseFloat(v);return isNaN(n)?0:n;}
+function calcTotal(){let s=0,x=0;for(let i=1;i<=10;i++){let el=document.getElementById('t'+i);if(!el)continue;let v=el.value.toUpperCase();if(v=='X')x++;s+=valorTiro(v);}let t=document.getElementById('totalPontos'); if(t) t.innerText=(s+x*0.01).toFixed(2);}
+function criarTiros(){let c=document.getElementById('tirosContainer'); if(!c) return; c.innerHTML='';for(let i=1;i<=10;i++)c.innerHTML+=`<div class="linha-tiro"><b>${i}°</b><input id="t${i}" list="vals" oninput="calcTotal()"></div>`;c.innerHTML+=`<datalist id="vals"><option value="X"><option value="10"><option value="9"><option value="8"><option value="7"><option value="6"><option value="5"><option value="4"><option value="3"><option value="2"><option value="1"><option value="0"></datalist>`;}
+function monitorarFirebase(){db.ref(".info/connected").on("value",snap=>{isFirebaseConnected=snap.val()===true;let b=document.getElementById('badgeNet'); if(b){b.innerText=isFirebaseConnected?"FIREBASE ONLINE":"OFFLINE"; b.className="badge "+(isFirebaseConnected?"badge-online":"badge-offline");}let sn=document.getElementById('statusNet'); if(sn) sn.innerText=isFirebaseConnected?"ONLINE":"OFFLINE"; if(isFirebaseConnected) forcarSync(false);});}
+function forcarSync(m){let fila=getFila();if(fila.length==0){if(m)logSync("Nada na fila"); atualizarStatus();return;}if(!isFirebaseConnected){logSync("Offline");return;}logSync("Subindo "+fila.length);let ps=fila.map(f=>db.ref("FTERJ/"+f.key).set(f.dados).then(()=>{let nf=getFila().filter(x=>x.key!=f.key);setFila(nf);}).catch(e=>logSync("Erro "+e.message)));Promise.all(ps).then(()=>{logSync("Fila zerada");atualizarStatus();});}
+function atualizarStatus(){let local=getLocalData();let fila=getFila();let sl=document.getElementById('statusLocal'); if(sl) sl.innerText=Object.keys(local).filter(k=>k.startsWith('serie_')).length;let sf=document.getElementById('statusFila'); if(sf) sf.innerText=fila.length;let bp=document.getElementById('badgePend'); if(bp){bp.style.display=fila.length>0?"inline-block":"none"; bp.innerText=fila.length+" PENDENTES";}}
+function isLancamentoF2(v){return v&&v.tiros&&Array.isArray(v.tiros)&&v.tiros.length>=1;}
+function proximoRdisponivel(nome){let lista=Object.keys({...cacheFTERJ, ...getLocalData()}).filter(k=>k.startsWith('serie_')).map(k=>({...cacheFTERJ, ...getLocalData()})[k]).filter(s=>s&&s.nome&&s.nome.toUpperCase().trim()==nome.toUpperCase().trim());let nums=lista.map(s=>{let m=(s.prova||'').match(/R(\d+)/);return m?parseInt(m[1]):0}).filter(n=>n>0);let maxR=nums.length?Math.max(...nums):0;return 'R'+(maxR+1);}
+function garantirOpcao(prova){let sel=document.getElementById('provaSelect');if(!sel)return;if(![...sel.options].some(o=>o.value==prova)){let opt=document.createElement('option');opt.value=prova;opt.textContent=prova;sel.appendChild(opt);}}
+function buscarNome(texto){texto=texto.toUpperCase().trim();let div=document.getElementById('sugestoes');let listaSerie=Object.entries(cacheFTERJ).filter(([k,v])=>k.startsWith('serie_')).map(([k,v])=>v);let nomesSerie=listaSerie.filter(k=>k.nome).map(x=>x.nome.toUpperCase().trim());let nomesLista=Object.values(cacheLista).map(v=> (v.nome||v).toUpperCase().trim()).filter(Boolean);let nomes=[...new Set([...nomesSerie, ...nomesLista])].sort();let info=document.getElementById('infoLista'); if(info) info.innerText="Pré-carga: "+nomesLista.length+" nomes";if(texto.length>=1 &&!editKey){if(nomes.includes(texto)){let prox=proximoRdisponivel(texto);garantirOpcao(prox);let ps=document.getElementById('provaSelect'); if(ps) ps.value=prox;}}if(texto.length<1 || editKey){if(div)div.style.display='none';return;}let filtrados=nomes.filter(n=>n.includes(texto)).slice(0,8);if(filtrados.length==0){if(div)div.style.display='none';return;}if(div){div.innerHTML=filtrados.map(n=>`<div onclick="selecionarNome('${n.replace(/'/g,"\\'")}')">${n}</div>`).join('');div.style.display='block';}}
+function selecionarNome(nome){let inp=document.getElementById('nomeAtleta'); if(inp) inp.value=nome; let div=document.getElementById('sugestoes'); if(div) div.style.display='none'; let prox=proximoRdisponivel(nome); garantirOpcao(prox); let ps=document.getElementById('provaSelect'); if(ps) ps.value=prox; let t1=document.getElementById('t1'); if(t1) t1.focus();}
+let editKey=null;
+function initIndex(){
+ criarTiros(); monitorarFirebase();
+ db.ref(LISTA_PATH).on('value',s=>{cacheLista=s.val()||{};});
+ db.ref("FTERJ").on('value',s=>{
+   let val=s.val();
+   if(!val || Object.keys(val).filter(k=>k.startsWith('serie_')).length===0){
+     if(isFirebaseConnected){ let localCount=Object.keys(getLocalData()).filter(k=>k.startsWith('serie_')).length; if(localCount>0){ logSync("⚠️ Firebase vazio - limpando "+localCount); localStorage.removeItem(LS_KEY); localStorage.removeItem(LS_FILA); cacheFTERJ={}; renderIndex(); atualizarStatus(); return; } }
+   }
+   cacheFTERJ=val||{}; renderIndex();
+ });
+ renderIndex(); setInterval(atualizarStatus,3000);
+}
+function renderIndex(){
+ let local=getLocalData(); let filaKeys=new Set(getFila().map(f=>f.key));
+ let todas={...cacheFTERJ, ...local};
+ let listaCompleta=Object.keys(todas).filter(k=>k.startsWith('serie_')).map(k=>({key:k,...todas[k], _pendente:filaKeys.has(k)}));
+ let lista=listaCompleta.filter(v=>isLancamentoF2(v));
+ let crescente=[...lista].sort((a,b)=>(a.data||0)-(b.data||0));
+ let mapaOrdem={};crescente.forEach((it,i)=>mapaOrdem[it.key]=i+1);
+ let html=''; [...crescente].reverse().forEach(it=>{
+  let ord=mapaOrdem[it.key]; let cls=it._pendente?'item offline':'item'; let tag=it._pendente?' 🔴 OFFLINE':'';
+  html+=`<div class="${cls}"><div>${String(ord).padStart(3,'0')}</div><div><b>${it.prova}</b>${tag}</div><div>${it.nome}</div><div>${parseFloat(it.pontos||0).toFixed(2)}</div><div style="color:#aaa;font-size:10px">${(it.tiros||[]).join(' | ')}</div><div style="text-align:right"><button class="btn-editar" onclick="editarIndex('${it.key}')">EDITAR</button><button class="btn-excluir" onclick="excluirIndex('${it.key}')">X</button></div></div>`;
+ });
+ let el=document.getElementById('listaLancamentos'); if(el) el.innerHTML=html||"<div style='color:#666;text-align:center;padding:16px'>Nenhuma prova</div>";
+ let ip=document.getElementById('infoPlacar'); if(ip) ip.innerText=lista.length+" lançamentos";
+}
+function exportarCSVIndex(){
+  let todas={...cacheFTERJ, ...getLocalData()}; let lista=Object.keys(todas).filter(k=>k.startsWith('serie_')).map(k=>({key:k,...todas[k]})).filter(v=>isLancamentoF2(v));
+  if(lista.length==0){alert("Nada");return;} let crescente=[...lista].sort((a,b)=>(a.data||0)-(b.data||0));
+  let header=["ORDEM","NOME","PROVA","PONTOS","T1","T2","T3","T4","T5","T6","T7","T8","T9","T10","DATA","KEY"]; let linhas=[header.join(";")]; crescente.forEach((it,i)=>{ let tiros=it.tiros||[]; let data=it.data?new Date(it.data).toLocaleString('pt-BR'):""; let row=[i+1,'"'+(it.nome||'').replace(/"/g,'""')+'"',it.prova||'',parseFloat(it.pontos||0).toFixed(2),tiros[0]||'',tiros[1]||'',tiros[2]||'',tiros[3]||'',tiros[4]||'',tiros[5]||'',tiros[6]||'',tiros[7]||'',tiros[8]||'',tiros[9]||'',data,it.key]; linhas.push(row.join(";")); });
+  let blob=new Blob(["\ufeff"+linhas.join("\n")],{type:"text/csv"}); let url=URL.createObjectURL(blob); let a=document.createElement("a"); a.href=url; a.download="BKP_FTERJ_"+new Date().toISOString().slice(0,10)+".csv"; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
+}
+function salvarLancamento(){
+  let nomeEl=document.getElementById('nomeAtleta'); let nome=nomeEl?nomeEl.value.toUpperCase().trim():''; if(!nome)return alert("NOME");
+  let provaEl=document.getElementById('provaSelect'); let prova=provaEl?provaEl.value:'C'; let tiros=[];
+  for(let i=1;i<=10;i++){let el=document.getElementById('t'+i);let v=el?el.value.trim():'';if(!v){alert("Tiro "+i+" branco");return;}v=v.toUpperCase();if(!PERMITIDOS.includes(v))return alert("Inválido: "+v);tiros.push(v);}
+  let x=tiros.filter(t=>t=='X').length; let total=parseFloat((tiros.reduce((a,b)=>a+valorTiro(b),0)+x*0.01).toFixed(2));
+  let key=editKey||"serie_"+Date.now(); let obj={ nome,prova,tiros,pontos:total,data:Date.now(), operadorEmail: currentUser?currentUser.email:"offline" };
+  let local=getLocalData(); local[key]=obj; setLocalData(local);
+  if(!isFirebaseConnected){ let fila=getFila(); if(!fila.some(f=>f.key==key)) fila.push({key, dados:obj}); setFila(fila); logSync("Offline - fila "+key); }
+  else { db.ref("FTERJ/"+key).set(obj).then(()=>{ let fila=getFila().filter(f=>f.key!=key); setFila(fila); logSync("Subiu "+key); }).catch(e=>{ let fila=getFila(); if(!fila.some(f=>f.key==key)) fila.push({key, dados:obj}); setFila(fila); logSync("Falha "+e.message); }); }
+  editKey=null;novoLancamento();renderIndex();
+}
+function novoLancamento(){editKey=null;let ne=document.getElementById('nomeAtleta'); if(ne) ne.value='';for(let i=1;i<=10;i++){let el=document.getElementById('t'+i);if(el)el.value='';}let tp=document.getElementById('totalPontos'); if(tp) tp.innerText='0.00';let ps=document.getElementById('provaSelect'); if(ps) ps.value='C';let sg=document.getElementById('sugestoes'); if(sg) sg.style.display='none'; if(ne) ne.focus();}
+function editarIndex(k){ let todas={...cacheFTERJ, ...getLocalData()}; let v=todas[k]; if(!v){alert("Não achou");return;} let ne=document.getElementById('nomeAtleta'); if(ne) ne.value=v.nome;garantirOpcao(v.prova);let ps=document.getElementById('provaSelect'); if(ps) ps.value=v.prova;(v.tiros||[]).forEach((t,i)=>{let el=document.getElementById('t'+(i+1));if(el)el.value=t;});calcTotal();editKey=k; }
+function excluirIndex(k){ if(!confirm("Excluir?"))return; let local=getLocalData();delete local[k];setLocalData(local); let fila=getFila().filter(f=>f.key!=k);setFila(fila); if(isFirebaseConnected){db.ref("FTERJ/"+k).remove();} renderIndex(); logSync("Excluido "+k); }
+
+// TV LOGIC
+let RODAPES=[],FULL=[], CFG={}, rodapeIndex=0, rodapeTimer=null, TEMPO_RODAPE=7000,TEMPO_FULL=11000,INTERVALO_FULL=90000;
+let CONFIG_PATH="CONFIG_ANUNCIOS_FTERJ", tvNome="TV";
+function toArr(d){if(!d)return[];if(Array.isArray(d))return d.filter(x=>x);return Object.values(d).filter(x=>x)}
+function applyConfigTV(){
+  if(CFG.logoMinu && CFG.logoMinu.startsWith('http')){let im=document.getElementById('imgLogoMinu'); if(im) im.src=CFG.logoMinu;}
+  if(CFG.logoClube && CFG.logoClube.startsWith('http')){let im=document.getElementById('imgLogoClube'); if(im) im.src=CFG.logoClube;}
+  TEMPO_RODAPE=(CFG.tempoRodape||7)*1000; TEMPO_FULL=(CFG.tempoFull||11)*1000; INTERVALO_FULL=(CFG.intervaloFull||90)*1000;
+  renderRodapeTV(); agendaBlocoFull();
+}
+function renderRodapeTV(){
+  let el=document.getElementById('textoRodape'); if(!el) return;
+  if(RODAPES.length==0){el.innerHTML='ADQUIRA JA SUA MinuT&Ra';el.classList.add('show');return}
+  if(rodapeTimer)clearInterval(rodapeTimer);
+  function mostraProximo(){
+    el.classList.remove('show');
+    setTimeout(()=>{
+      let r=RODAPES[rodapeIndex];
+      let prop=r.prop||r.nome||''; let cont=r.contato||'';
+      if(prop&&cont){el.innerHTML=`<span style="font-size:35px">${prop}</span><span style="font-size:35px;color:#fff"> | ${cont}</span>`;}
+      else{el.innerHTML=`<span style="font-size:35px">${prop} ${cont}</span>`;}
+      el.classList.add('show'); rodapeIndex=(rodapeIndex+1)%RODAPES.length
+    },800)
+  }
+  mostraProximo(); rodapeTimer=setInterval(mostraProximo,TEMPO_RODAPE);
+}
+function contaTirosXa0(tiros){ let c=getContagem(tiros); return `X:${c.X} |10:${c['10']} |9:${c['9']} |8:${c['8']} |7:${c['7']} |6:${c['6']}` }
+function filtraTop5Unico(listaOrdenada){
+ let vistosTop5=new Set();let top5=[];let resto=[];
+ for(let i=0;i<listaOrdenada.length;i++){let at=listaOrdenada[i];let nomeNorm=(at.nome||'').trim().toUpperCase();if(top5.length<5){if(!vistosTop5.has(nomeNorm)){vistosTop5.add(nomeNorm);top5.push({...at,subiu:i>top5.length});}else{resto.push({...at,subiu:false});}}else{resto.push({...at,subiu:false});}}
+ return [...top5,...resto];
+}
+function initTV(nome){
+ tvNome=nome||'TV';
+ if(tvNome==='TV1') CONFIG_PATH="CONFIG_ANUNCIOS_FTERJ_TV1";
+ else if(tvNome==='TV2') CONFIG_PATH="CONFIG_ANUNCIOS_FTERJ_TV2";
+ else CONFIG_PATH="CONFIG_ANUNCIOS_FTERJ";
+ db.ref("PATROCINADORES_RODAPE_FTERJ").on('value',s=>{RODAPES=toArr(s.val()).filter(r=>{if(r.hasOwnProperty('ativo'))return r.ativo==true||r.ativo=="true";return true});renderRodapeTV()});
+ db.ref("PATROCINADORES_FULL_FTERJ").on('value',s=>{FULL=toArr(s.val()).filter(r=>{if(r.hasOwnProperty('ativo'))return r.ativo==true||r.ativo=="true";return true}).map(i=>typeof i==='string'?{arte:i}:i).filter(f=>f.arte||f.url||f.imagem).map(f=>({...f,tempo:f.tempo||11,grupo:parseInt(f.grupo)||1}))});
+ db.ref(CONFIG_PATH).on('value',s=>{let v=s.val();if(!v){if(CONFIG_PATH!="CONFIG_ANUNCIOS_FTERJ"){db.ref("CONFIG_ANUNCIOS_FTERJ").once('value',snap=>{let vb=snap.val();if(vb){CFG={...CFG,...vb};applyConfigTV();}});return;}return;} CFG={...CFG,...v}; applyConfigTV();});
+ db.ref("FTERJ").on('value',snap=>{
+   let data=snap.val();if(!data)return;let lista=[];
+   Object.keys(data).forEach(k=>{if(k.startsWith("serie_")){let s=data[k];let tiros=s.tiros||[];lista.push({nome:s.nome||'TESTE',prova:s.prova||'R2',pontos:parseFloat(s.pontos||0),tiros:tiros,data:s.data||0})}});
+   lista.sort(comparar);
+   let listaFinal=filtraTop5Unico(lista);
+   let html="";listaFinal.slice(0,10).forEach((at,i)=>{let cls=i==0?'ouro':i==1?'prata':i==2?'bronze':'';html+=`<div class="linha-tv ${cls}"><div class="pos">${i+1}º</div><div class="nome">${at.nome}</div><div class="prova">P:${at.prova}</div><div class="total">${at.pontos.toFixed(2)}</div><div class="detalhe">${contaTirosXa0(at.tiros)}</div></div>`});
+   let rk=document.getElementById('ranking'); if(rk) rk.innerHTML=html;
+ });
+ setInterval(()=>{let txt=new Date().toLocaleString('pt-BR');let el=document.getElementById('dhTopo');if(el)el.innerText=txt},1000);
+}
+let emBloco=false, timerFullBloco=null, grupoAtualIdx=0;
+function getGruposDisponiveis(){let grupos=[...new Set(FULL.map(f=>parseInt(f.grupo)||1))].sort((a,b)=>a-b);return grupos.length?grupos:[1];}
+async function mostraBlocoFull(){ if(FULL.length==0||emBloco) return; emBloco=true; let grupos=getGruposDisponiveis(); if(grupoAtualIdx>=grupos.length) grupoAtualIdx=0; let grupoDaVez=grupos[grupoAtualIdx]; let listaGrupo=FULL.filter(f=>(parseInt(f.grupo)||1)==grupoDaVez); for(let i=0;i<listaGrupo.length;i++){ let f=listaGrupo[i];let url=f.arte||f.url||f.imagem||'';if(!url) continue; let imgF=document.getElementById('imgFull'); if(imgF) imgF.src=url; let fullEl=document.getElementById('full'); if(fullEl) fullEl.style.display='flex'; let tempoUsado=(f.tempo||11)*1000; await new Promise(r=>setTimeout(r,tempoUsado)); } let fullEl=document.getElementById('full'); if(fullEl) fullEl.style.display='none';emBloco=false; grupoAtualIdx=(grupoAtualIdx+1)%grupos.length; agendaBlocoFull();}
+function agendaBlocoFull(){if(timerFullBloco) clearTimeout(timerFullBloco);timerFullBloco=setTimeout(mostraBlocoFull,INTERVALO_FULL);}
+
+// RESULTADO
+function initResultado(){ db.ref("FTERJ").on('value',snap=>{cacheFTERJ=snap.val()||{}; renderResultado();}); renderResultado();}
+function renderResultado(){
+ let todos=Object.keys(cacheFTERJ).filter(k=>k.startsWith('serie_')).map(k=>({key:k, ...cacheFTERJ[k]}));
+ let filtroProvaEl=document.getElementById('filtroProvaResultado'); let filtroProva=filtroProvaEl?filtroProvaEl.value:'TODAS';
+ let filtroNomeEl=document.getElementById('filtroNomeResultado'); let filtroNome=(filtroNomeEl?filtroNomeEl.value:'').toUpperCase().trim();
+ let agruparEl=document.getElementById('filtroAgruparResultado'); let agrupar=agruparEl?agruparEl.value:'melhorPorNome';
+ let lista=todos;
+ if(filtroProva!=='TODAS') lista=lista.filter(x=> (x.prova||'')===filtroProva);
+ if(filtroNome) lista=lista.filter(x=> (x.nome||'').toUpperCase().includes(filtroNome));
+ lista.sort(comparar);
+ if(agrupar==='melhorPorNome'){ let mapa={}; lista.forEach(it=>{ let n=(it.nome||'').trim().toUpperCase(); if(!mapa[n]) mapa[n]=it; }); lista=Object.values(mapa).sort(comparar); }
+ let tbody=document.getElementById('tbodyResultado'); if(!tbody) return;
+ let html=''; lista.forEach((it,i)=>{ let c=getContagem(it.tiros); let cls=i==0?'pos1':i==1?'pos2':i==2?'pos3':''; html+=`<tr class="${cls}"><td>${i+1}º</td><td class="nome" style="text-align:left;font-weight:800">${it.nome||''}</td><td>${it.prova||''}</td><td><b>${parseFloat(it.pontos||0).toFixed(2)}</b></td><td>${c.X}</td><td>${c['10']}</td><td>${c['9']}</td><td>${c['8']}</td><td>${c['7']}</td><td>${c['6']}</td><td>${c['5']}</td><td>${c['4']}</td><td style="font-size:10px">${(it.tiros||[]).join(' | ')}</td></tr>`; }); tbody.innerHTML=html||'<tr><td colspan="13">Nenhum</td></tr>';
+ let info=document.getElementById('infoQtdResultado'); if(info) info.innerText=lista.length+' classificados';
+}
+function exportarResultadoCSV(){
+ let todos=Object.keys(cacheFTERJ).filter(k=>k.startsWith('serie_')).map(k=>({key:k, ...cacheFTERJ[k]})); todos.sort(comparar);
+ let agruparEl=document.getElementById('filtroAgruparResultado'); let agrupar=agruparEl?agruparEl.value:'melhorPorNome';
+ if(agrupar==='melhorPorNome'){ let mapa={}; todos.forEach(it=>{ let n=(it.nome||'').trim().toUpperCase(); if(!mapa[n]) mapa[n]=it; }); todos=Object.values(mapa).sort(comparar); }
+ let header=["POS","NOME","PROVA","PONTOS","X","10","9","8","7","6","5","4","TIROS"]; let linhas=[header.join(";")];
+ todos.forEach((it,i)=>{ let c=getContagem(it.tiros); let row=[i+1,'"'+(it.nome||'').replace(/"/g,'""')+'"',it.prova||'',parseFloat(it.pontos||0).toFixed(2),c.X,c['10'],c['9'],c['8'],c['7'],c['6'],c['5'],c['4'],'"'+(it.tiros||[]).join(' | ')+'"']; linhas.push(row.join(";")); });
+ let blob=new Blob(["\ufeff"+linhas.join("\n")],{type:"text/csv"}); let url=URL.createObjectURL(blob); let a=document.createElement("a"); a.href=url; a.download="RESULTADO_FTERJ_"+new Date().toISOString().slice(0,10)+".csv"; a.click(); URL.revokeObjectURL(url);
+}
+
+// CELULAR
+function initCelular(){ db.ref("FTERJ").on('value',s=>{renderCelular(s.val()||{});}); }
+function renderCelular(dados){
+ let arr=Object.keys(dados).filter(k=>k.startsWith("serie_")).map(k=>({key:k,...dados[k]})); arr.sort(comparar);
+ let mapa={}; arr.forEach(it=>{ let n=(it.nome||'').trim().toUpperCase(); if(!mapa[n]) mapa[n]=it; }); let melhores=Object.values(mapa).sort(comparar);
+ let h=""; melhores.slice(0,100).forEach((at,i)=>{ let c=getContagem(at.tiros); let detalhe=`X${c.X}·10:${c['10']}·9:${c['9']}`; let cls=i==0?'pos1':i==1?'pos2':i==2?'pos3':''; h+=`<div class="linha-tv ${cls}" style="height:auto;padding:10px 12px;border-left:8px solid ${i<3?'#FFD700':'#555'}"><div class="pos">${i+1}º</div><div style="flex:1"><div style="font-weight:900;text-transform:uppercase">${at.nome} <span style="font-size:9px;background:#fff3e0;color:#000;padding:2px 6px;border-radius:6px">${detalhe}</span></div><div style="font-size:12px">${at.prova} • ${(at.tiros||[]).join('/')} • ${parseFloat(at.pontos||0).toFixed(2)}</div></div></div>`; });
+ let el=document.getElementById('listaCelular'); if(el) el.innerHTML=h||'Aguardando...';
+}
+
+// CONTROLE
+function abaControle(nome,el){document.querySelectorAll('#controle-view .tab').forEach(t=>t.classList.remove('active'));document.querySelectorAll('#controle-view .painel').forEach(p=>p.classList.remove('active'));el.classList.add('active');let pa=document.getElementById('painel-'+nome); if(pa) pa.classList.add('active');}
+function initControle(){
+ db.ref("FTERJ").on('value',s=>{cacheFTERJ=s.val()||{}; renderResultadoControle(); let info=document.getElementById('infoPlacarControle'); if(info) info.innerText=Object.keys(cacheFTERJ).filter(k=>k.startsWith('serie_')).length+" provas";});
+ db.ref("PATROCINADORES_FULL_FTERJ").on('value',s=>{let d=s.val()||{};let h="";Object.keys(d).forEach(k=>{let r=d[k];let on=r.ativo!==false;h+=`<div style="display:flex;align-items:center;gap:8px;background:#f9f9fb;padding:8px;border-radius:8px;margin-top:6px"><img src="${r.arte}" style="width:48px;height:32px;object-fit:cover;border-radius:6px"><div style="flex:1;font-size:12px"><b>${r.nome}</b> G${r.grupo||1} <span style="font-size:10px;padding:2px 6px;border-radius:10px;background:${on?'#d4f8d4':'#ffd6d6'}">${on?'ATIVO':'OFF'}</span></div><button onclick="db.ref('PATROCINADORES_FULL_FTERJ/${k}').update({ativo:${!on}})" style="width:32px;height:32px;border-radius:8px;border:none;background:#000;color:#fff;cursor:pointer">${on?'||':'▶'}</button><button onclick="if(confirm('Apagar?'))db.ref('PATROCINADORES_FULL_FTERJ/${k}').remove()" style="width:32px;height:32px;border-radius:8px;border:none;background:#ff3b30;color:#fff;cursor:pointer">✕</button></div>`});let el=document.getElementById('listaFull'); if(el) el.innerHTML=h||"Nenhum";});
+ db.ref("PATROCINADORES_RODAPE_FTERJ").on('value',s=>{let d=s.val()||{};let h="";Object.keys(d).forEach(k=>{let r=d[k];let on=r.ativo!==false;h+=`<div style="display:flex;align-items:center;gap:8px;background:#f9f9fb;padding:8px;border-radius:8px;margin-top:6px"><div style="flex:1;font-size:12px"><b>${r.prop}</b><br>${r.contato||''}</div><button onclick="db.ref('PATROCINADORES_RODAPE_FTERJ/${k}').update({ativo:${!on}})" style="width:32px;height:32px;border-radius:8px;border:none;background:#000;color:#fff">||</button><button onclick="db.ref('PATROCINADORES_RODAPE_FTERJ/${k}').remove()" style="width:32px;height:32px;border-radius:8px;border:none;background:#ff3b30;color:#fff">✕</button></div>`});let el=document.getElementById('listaRodape'); if(el) el.innerHTML=h||"Nenhum";});
+}
+function renderResultadoControle(){
+ let todos=Object.keys(cacheFTERJ).filter(k=>k.startsWith('serie_')).map(k=>({key:k, ...cacheFTERJ[k]}));
+ let fpEl=document.getElementById('filtroProvaControle'); let fp=fpEl?fpEl.value:'TODAS';
+ let fnEl=document.getElementById('filtroNomeControle'); let fn=(fnEl?fnEl.value:'').toUpperCase().trim();
+ let lista=todos; if(fp!=='TODAS') lista=lista.filter(x=> (x.prova||'')===fp); if(fn) lista=lista.filter(x=> (x.nome||'').toUpperCase().includes(fn));
+ lista.sort(comparar); let mapa={}; lista.forEach(it=>{ let n=(it.nome||'').trim().toUpperCase(); if(!mapa[n]) mapa[n]=it; }); lista=Object.values(mapa).sort(comparar);
+ let tbody=document.getElementById('tbodyResultadoControle'); if(!tbody) return;
+ let html=''; lista.forEach((it,i)=>{ let c=getContagem(it.tiros); let cls=i==0?'pos1':i==1?'pos2':i==2?'pos3':''; html+=`<tr class="${cls}"><td>${i+1}º</td><td style="text-align:left;font-weight:800">${it.nome}</td><td>${it.prova}</td><td>${parseFloat(it.pontos||0).toFixed(2)}</td><td>${c.X}</td><td>${c['10']}</td><td>${c['9']}</td><td>${c['8']}</td><td style="font-size:10px">X:${c.X} 10:${c['10']} 9:${c['9']}</td></tr>`; }); tbody.innerHTML=html||'<tr><td colspan="9">Nenhum</td></tr>';
+}
+function addFull(){let nome=document.getElementById('fullNome').value||"Patrocinador"; let url=document.getElementById('fullUrl').value; let tempo=parseInt(document.getElementById('fullTempo').value)||11; let grupo=parseInt(document.getElementById('fullGrupo').value)||1; let file=document.getElementById('fullFile').files[0]; if(file){ let ref=storage.ref("anuncios_fterj/"+Date.now()+"_"+file.name); let task=ref.put(file); task.on('state_changed',()=>{},e=>alert(e.message),async()=>{ let dl=await task.snapshot.ref.getDownloadURL(); db.ref("PATROCINADORES_FULL_FTERJ").push({nome,arte:dl,tempo,ativo:true,grupo}); alert("Enviado G"+grupo); }); } else if(url){ db.ref("PATROCINADORES_FULL_FTERJ").push({nome,arte:url,tempo,ativo:true,grupo}); alert("Adicionado G"+grupo); } else alert("Escolha imagem"); }
+function addRodape(){let p=document.getElementById('rdProp').value,c=document.getElementById('rdCont').value;if(!p)return alert("Texto");db.ref("PATROCINADORES_RODAPE_FTERJ").push({prop:p,contato:c,ativo:true});}
+function salvarTV(){let novo={tempoRodape:parseInt(document.getElementById('cfgTempoRodape').value)||7,tempoFull:parseInt(document.getElementById('cfgTempoFull').value)||11,intervaloFull:parseInt(document.getElementById('cfgIntervalo').value)||90};db.ref(CONFIG_PATH).update(novo).then(()=>{let st=document.getElementById('statusTV'); if(st){st.innerText="✅ ATUALIZADA!"; setTimeout(()=>st.innerText="",3000);}});}
+
+// INIT
+document.addEventListener('DOMContentLoaded',()=>{router(); setTimeout(router,100);});
+</script></body></html>
