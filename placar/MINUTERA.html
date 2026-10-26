@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MINUTERA</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:'Share Tech Mono',Consolas,monospace}
+body{background:#000;color:#dff5df;min-height:100vh;display:flex;justify-content:center;padding:6px}
+.wrap{width:100%;max-width:480px;background:linear-gradient(#f5e6c8,#d8c3a3);border:4px solid #ff6a00;border-radius:22px;padding:10px 10px 0 10px;display:flex;flex-direction:column}
+.header{display:flex;justify-content:center;align-items:center;background:#fff8;border-radius:12px;padding:8px;margin-bottom:8px}
+.header h1{font-size:20px;color:#222;letter-spacing:2px} .header h1 span{color:#ff4500}
+.lcd{width:100%;background:#0a2a6a;border:3px solid #001a44;border-radius:8px;padding:8px 10px;min-height:92px;box-shadow:inset 0 0 12px #000}
+.lcd-line{font-size:15px;line-height:1.35;color:#6ec8ff;text-shadow:0 0 6px #6ec8ff;white-space:pre;letter-spacing:0.5px}
+.timer{text-align:center;font-size:42px;font-weight:900;color:#002200;text-shadow:0 0 12px #7aff7a;margin:8px 0}
+.targets{display:flex;gap:12px;align-items:center;justify-content:center;margin:6px 0}
+.alvo{width:110px;height:130px;background:linear-gradient(#222,#111);border:3px solid #555;border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:transform 0.45s, border-color 0.3s, box-shadow 0.3s}
+.alvo.aberto{transform:rotateY(0deg);border-color:#3cff3c;box-shadow:0 0 20px #3cff3c88}
+.alvo.fechado{transform:rotateY(75deg);border-color:#ff3333;box-shadow:0 0 12px #ff333388;background:#2a1111}
+.circ{width:66px;height:66px;border-radius:50%;border:2px dashed #888;position:relative}
+.circ::before{content:'';position:absolute;inset:22%;border:1px solid #aaa;border-radius:50%}
+.circ::after{content:'';position:absolute;inset:42%;background:#3cff3c;border-radius:50%;box-shadow:0 0 8px #3cff3c}
+.fechado .circ::after{background:#ff3333;box-shadow:0 0 8px #ff3333}
+.rgb{width:26px;height:26px;border-radius:50%;background:#111;border:2px solid #444;transition:0.2s}
+.rgb.red{background:#ff2222;box-shadow:0 0 18px #ff2222}
+.rgb.yellow{background:#ffdd22;box-shadow:0 0 18px #ffdd22}
+.rgb.blue{background:#22aaff;box-shadow:0 0 18px #22aaff}
+.panel{background:#fff9;border-radius:14px;padding:10px;margin-top:8px;flex:1}
+.chaves{display:flex;gap:10px}
+.ch{flex:1;background:#0f1a0f;border:1px solid #2a4a2a;border-radius:12px;padding:8px;text-align:center}
+.ch h3{font-size:10px;color:#c8e6c8;letter-spacing:1px;margin-bottom:6px}
+.track{width:46px;height:118px;background:#111;border:1px solid #333;border-radius:18px;margin:0 auto;position:relative;display:flex;flex-direction:column;justify-content:space-between;padding:6px 0}
+.pos{width:100%;height:34px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:10px;color:#555;z-index:2;font-weight:bold}
+.pos.active{color:#7aff7a}
+.lever{position:absolute;left:3px;right:3px;height:32px;background:linear-gradient(#eee,#888);border-radius:12px;box-shadow:0 2px 6px #000;transition:top 0.2s;z-index:1;border:1px solid #aaa}
+.slider-wrap{margin:14px 0 10px 0}
+.slider-wrap h3{font-size:12px;color:#222;letter-spacing:1px;margin-bottom:8px;text-align:center}
+input[type=range]{width:100%;height:38px;accent-color:#ff6a00}
+.btn{width:100%;padding:16px;border-radius:14px;border:none;font-weight:900;letter-spacing:1.5px;cursor:pointer}
+.start{background:linear-gradient(#22aa22,#0a660a);color:white;box-shadow:0 4px 0 #044404,0 0 18px #22aa2288;font-size:22px}
+.start:active{transform:translateY(3px)}
+.footer-black{margin-top:12px;background:#111;border-radius:12px 12px 0 0;padding:10px 12px;display:flex;justify-content:space-between;align-items:center;gap:8px}
+.footer-black span{font-size:10px;color:#999;letter-spacing:1px}
+.footer-black b{font-size:11px;color:#ddd}
+.status{font-size:11px;color:#bbb;text-align:center;padding:6px 0 10px 0;letter-spacing:0.5px;min-height:18px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="header"><h1>MINUT<span>&</span>RA</h1></div>
+<div class="lcd"><div class="lcd-line" id="l0"></div><div class="lcd-line" id="l1"></div><div class="lcd-line" id="l2"></div><div class="lcd-line" id="l3"></div></div>
+<div class="timer" id="timer">--</div>
+<div class="targets">
+<div class="alvo aberto" id="alvo"><div class="circ"></div><div style="font-size:8px;margin-top:6px;letter-spacing:1px;color:#aaa">ALVO</div></div>
+<div style="display:flex;flex-direction:column;align-items:center;gap:6px"><div class="rgb" id="rgb"></div><div style="font-size:9px;color:#333;font-weight:bold">GIROS: <span id="giros">0</span></div></div>
+</div>
+
+<div class="panel">
+<div class="chaves">
+<div class="ch"><h3>CH1</h3><div class="track"><div class="lever" id="lev1"></div><div class="pos" onclick="setCh1('DUELO')">▲ DUELO</div><div class="pos" onclick="setCh1('OFF')">OFF</div><div class="pos" onclick="setCh1('X37')">▼ 30-5-30</div></div></div>
+<div class="ch"><h3>CH2</h3><div class="track"><div class="lever" id="lev2"></div><div class="pos" onclick="setCh2('SAQUE')">▲ SAQUE</div><div class="pos" onclick="setCh2('OFF')">OFF</div><div class="pos" onclick="setCh2('LIVRE')">▼ LIVRE</div></div></div>
+</div>
+
+<div class="slider-wrap"><h3>POTENCIÔMETRO</h3><input type="range" min="0" max="1023" value="512" id="pot" oninput="onPot(this.value)"></div>
+
+<button class="btn start" onclick="pressStart()">▶ START</button>
+
+<div class="footer-black"><span>POT DESLIZANTE</span><b>OFF+OFF</b></div>
+<div class="status" id="status"></div>
+</div>
+</div>
+
+<script>
+let ch1='OFF', ch2='OFF', pot=512, etapa=0, livreFec=5, livreUni=0, livreExp=10, livreRep=2, giros=0, running=false, estado='MENU', timerH=null;
+const L=[document.getElementById('l0'),document.getElementById('l1'),document.getElementById('l2'),document.getElementById('l3')];
+function setLCD(a,b,c,d){L[0].textContent=a||'';L[1].textContent=b||'';L[2].textContent=c||'';L[3].textContent=d||'';}
+function setRele(ab){const e=document.getElementById('alvo');e.classList.toggle('aberto',ab);e.classList.toggle('fechado',!ab);}
+function setRGB(c){document.getElementById('rgb').className='rgb '+(c||'');}
+function onPot(v){pot=parseInt(v); if(estado.startsWith('LIVRE_PREP')){updateEtapaDisplay();} else if(!running){checkMenu();}}
+function setLever(){
+  const m={'DUELO':'4px','OFF':'40px','X37':'76px'}; document.getElementById('lev1').style.top=m[ch1]||'40px';
+  const m2={'SAQUE':'4px','OFF':'40px','LIVRE':'76px'}; document.getElementById('lev2').style.top=m2[ch2]||'40px';
+  document.querySelectorAll('.ch:first-child .pos').forEach((el,i)=>{el.classList.toggle('active',(i===0&&ch1==='DUELO')||(i===1&&ch1==='OFF')||(i===2&&ch1==='X37'));});
+  document.querySelectorAll('.ch:last-child .pos').forEach((el,i)=>{el.classList.toggle('active',(i===0&&ch2==='SAQUE')||(i===1&&ch2==='OFF')||(i===2&&ch2==='LIVRE'));});
+}
+function setCh1(v){ch1=v;setLever();if(ch1==='OFF'&&ch2==='OFF'){abortAll();return;}if(running)return;checkMenu();}
+function setCh2(v){ch2=v;setLever();if(ch1==='OFF'&&ch2==='OFF'){abortAll();return;}if(running)return;checkMenu();}
+function abortAll(){running=false; if(timerH){clearTimeout(timerH);timerH=null;} setRele(true);setRGB('');setLCD(' SELECIONE A PROVA:','DUELO 30s * SAQUE RA',' >CH1< * >CH2<',' 30 5 30 * Pr.LIVRE'); document.getElementById('timer').textContent='ABERTO'; estado='MENU'; document.getElementById('status').textContent='';}
+function checkMenu(){
+  if(running) return;
+  if(ch1==='OFF'&&ch2==='OFF'){setLCD(' SELECIONE A PROVA:','DUELO 30s * SAQUE RA',' >CH1< * >CH2<',' 30 5 30 * Pr.LIVRE');estado='MENU';setRele(true);setRGB('');document.getElementById('timer').textContent='ABERTO';document.getElementById('status').textContent='';return;}
+  if(ch2==='LIVRE'&&ch1==='OFF'){iniciarLivrePrep();return;}
+  if(ch1==='DUELO'&&ch2==='OFF'){let AJ=(pot*3.915/1000).toFixed(0);setLCD('>>>  DUELO  30s  <<<',' ATENCAO 05',' PROVA  30  AJ '+AJ,' FIM   05');estado='DUELO_PRONTO';setRele(true);return;}
+  if(ch1==='X37'&&ch2==='OFF'){setLCD('...30....05....30...',' PREPARO 05',' DISPARO 30',' FIM     05');estado='X30_PRONTO';setRele(true);return;}
+  if(ch1==='X37'&&ch2==='LIVRE'){setLCD('...15....05....15...',' PREPARO 05',' DISPARO 15',' FIM     05');estado='X15_PRONTO';setRele(true);return;}
+  if(ch2==='SAQUE'&&ch1==='OFF'){let AJ=Math.round(pot*3.915/1000);setLCD('>>> SAQUE RAPIDO <<<','{SERIE 1} '+(6+AJ)+'s  AJ '+AJ,'{SERIE 2} '+(4+AJ)+'s  AJ '+AJ,'{SERIE 3} '+(2+AJ)+'s  AJ '+AJ);estado='SAQUE10_PRONTO';setRele(true);return;}
+  if(ch2==='SAQUE'&&ch1==='X37'){let AJ=Math.round(pot*3.915/1000);setLCD('SAQUE RAPIDO 5METROS','{SERIE 1} '+(4+AJ)+'s  AJ '+AJ,'{SERIE 2} '+(2+AJ)+'s  AJ '+AJ,'{SERIE 3} '+(1+AJ)+'s  AJ '+AJ);estado='SAQUE5_PRONTO';setRele(true);return;}
+  setLCD(' SELECIONE A PROVA:','DUELO 30s * SAQUE RA',' >CH1< * >CH2<',' 30 5 30 * Pr.LIVRE');
+}
+function recalcLivre(){
+  if(etapa===0){livreFec=Math.max(1,Math.min(60,Math.round(pot/1023*59)+1));}
+  else if(etapa===1){livreUni=pot<512?0:1;}
+  else if(etapa===2){let max=livreUni===0?120:15;livreExp=Math.max(1,Math.round(pot/1023*(max-1))+1);}
+  else if(etapa===3){livreRep=Math.max(1,Math.round(pot/1023*19)+1);}
+}
+function updateEtapaDisplay(){
+  recalcLivre();
+  if(etapa===0)setLCD('PROVA LIVRE 1/4',' TEMPO FECHADO','  '+livreFec+'s','');
+  else if(etapa===1)setLCD('PROVA LIVRE 2/4',' UNIDADE ABERTO',livreUni===0?'  SEGUNDOS':'  MINUTOS','');
+  else if(etapa===2)setLCD('PROVA LIVRE 3/4',' TEMPO ABERTO','  '+livreExp+(livreUni===0?'s':'m'),'');
+  else if(etapa===3)setLCD('PROVA LIVRE 4/4',' REPETICOES','  '+livreRep+'x','');
+}
+function iniciarLivrePrep(){estado='LIVRE_PREP';etapa=0;recalcLivre();updateEtapaDisplay();setRele(true);}
+function pressStart(){
+  if(ch1==='OFF'&&ch2==='OFF'){abortAll();return;}
+  if(estado==='LIVRE_PREP'){etapa++; if(etapa<4){updateEtapaDisplay();} else {setLCD('PROVA LIVRE PRONTA',livreFec+'s / '+livreExp+(livreUni===0?'s':'m')+' / '+livreRep+'x','','> START INICIAR');estado='LIVRE_PRONTA';} return;}
+  if(estado==='LIVRE_PRONTA'||estado==='ENCERRADA'){startFazLivre();return;}
+  if(estado==='DUELO_PRONTO'){startDuelo();return;}
+  if(estado==='X30_PRONTO'){startX(false);return;}
+  if(estado==='X15_PRONTO'){startX(true);return;}
+  if(estado==='SAQUE10_PRONTO'||estado==='SAQUE5_PRONTO'){window._saqueGo=true;}
+}
+function sleep(ms){return new Promise(r=>{timerH=setTimeout(r,ms);});}
+async function startDuelo(){
+  running=true; setLCD('      ATENCAO','','',''); setRele(false); setRGB('red'); document.getElementById('timer').textContent='5s ATENÇÃO';
+  for(let t=5;t>0;t--){if(!running)break; if(ch1==='OFF'&&ch2==='OFF'){abortAll();return;} document.getElementById('timer').textContent=t+'s'; await sleep(1000);}
+  if(!running) return; giros++;document.getElementById('giros').textContent=giros; setLCD('PROVA','TEMPO DE PROVA','',''); setRele(true); setRGB('yellow');
+  for(let t=30;t>0;t--){if(!running)break; if(ch1==='OFF'&&ch2==='OFF'){abortAll();return;} document.getElementById('timer').textContent=t+'s PROVA'; await sleep(984);}
+  if(!running) return; setRele(false); setRGB('blue'); setLCD('FIM DE PROVA','TEMPO DE ESPERA','',''); 
+  for(let t=5;t>0;t--){document.getElementById('timer').textContent=t+'s FIM'; await sleep(1000);}
+  setRele(true); setRGB(''); setLCD('PROVA ENCERRADA','TROCA DE ALVOS','START=NOVA OFF=MENU',''); document.getElementById('timer').textContent='ABERTO TROCA'; estado='ENCERRADA'; running=false;
+}
+async function startX(is15){
+  running=true; let TEMDU=is15?15:30; 
+  for(let ciclo=1;ciclo<=2;ciclo++){
+    if(!running) break; if(ch1==='OFF'&&ch2==='OFF'){abortAll();return;}
+    setLCD('PREPARAR '+ciclo,'','',''); setRele(false); setRGB('red');
+    for(let t=5;t>0;t--){document.getElementById('timer').textContent=t+'s PREP '+ciclo; await sleep(1000); if(ch1==='OFF'&&ch2==='OFF'){abortAll();return;}}
+    if(!running) break; giros++;document.getElementById('giros').textContent=giros; setLCD('ATIRAR   '+ciclo,'','',''); setRele(true); setRGB('yellow');
+    for(let t=TEMDU;t>0;t--){if(ch1==='OFF'&&ch2==='OFF'){abortAll();return;} document.getElementById('timer').textContent=t+'s TIRO '+ciclo; await sleep(984); if(!running)break;}
+    setRele(false);
+  }
+  setLCD('FIM DE PROVA','','',''); setRGB('blue'); await sleep(500); setRele(true); setRGB(''); setLCD('PROVA ENCERRADA','TROCA DE ALVOS','START=NOVA OFF=MENU',''); document.getElementById('timer').textContent='ABERTO'; estado='ENCERRADA'; running=false;
+}
+window._saqueGo=false;
+async function runSaqueSeries(){
+  let is5m=(ch1==='X37'); let AJ=Math.round(pot*3.915/1000); let t1=is5m?4+AJ:6+AJ, t2=is5m?2+AJ:4+AJ, t3=is5m?1+AJ:2+AJ; let series=[t1,t2,t3];
+  running=true;
+  for(let i=0;i<3;i++){
+    if(!running) break; if(ch1==='OFF'&&ch2==='OFF'){abortAll();return;}
+    setLCD('A ESPERA','','PRESSIONE START P','SERIE '+(i+1)); setRele(false); setRGB(''); document.getElementById('timer').textContent='AGUARDA START';
+    window._saqueGo=false;
+    while(!window._saqueGo && running){await sleep(200); if(ch1==='OFF'&&ch2==='OFF'){abortAll();return;}}
+    if(!running) break; window._saqueGo=false;
+    setLCD('SERIE '+(i+1),'','TEMPO: '+series[i]+' s',''); setRele(true); setRGB(i===0?'red':i===1?'yellow':'blue'); giros++;document.getElementById('giros').textContent=giros;
+    for(let t=series[i];t>0;t--){if(ch1==='OFF'&&ch2==='OFF'){abortAll();return;} document.getElementById('timer').textContent=t+'s S'+(i+1); await sleep(1000);}
+    setRele(false); setRGB(''); setLCD('FIM DA SERIE '+(i+1),'','PRESSIONE START P','SERIE '+(i+2)); await sleep(700);
+  }
+  if(is5m && running){
+    setLCD('PRES P SERIE RAPIDA','','',''); document.getElementById('timer').textContent='AGUARDA START'; window._saqueGo=false;
+    while(!window._saqueGo && running){await sleep(200); if(ch1==='OFF'&&ch2==='OFF'){abortAll();return;}}
+    if(running){let tr=t3; setLCD('SERIE RAPIDA','','TEMPO: '+tr+' s',''); setRele(true); setRGB('yellow'); for(let t=tr;t>0;t--){if(ch1==='OFF'&&ch2==='OFF'){abortAll();return;} document.getElementById('timer').textContent=t+'s RAPIDA'; await sleep(1000);} setRele(false);}
+  }
+  setRele(true); setLCD('FIM DE PROVA','','',''); document.getElementById('timer').textContent='ABERTO'; estado='ENCERRADA'; running=false;
+}
+const _oldPress=pressStart;
+pressStart=function(){
+  if(estado.startsWith('SAQUE')){window._saqueGo=true; if(!running){runSaqueSeries();} return;}
+  _oldPress();
+}
+async function startFazLivre(){
+  running=true; let expSeg=livreUni===0?livreExp:livreExp*60; setLCD('      ATENCAO','','',''); await sleep(1000);
+  for(let ciclo=1;ciclo<=livreRep;ciclo++){
+    if(!running) break; if(ch1==='OFF'&&ch2==='OFF'){abortAll();return;}
+    setLCD('FECHADO '+ciclo+'/'+livreRep,'','',''); setRele(false); setRGB('red');
+    for(let t=livreFec;t>0;t--){if(!running)break; if(ch1==='OFF'&&ch2==='OFF'){abortAll();return;} document.getElementById('timer').textContent=t+'s FECHADO'; await sleep(984);}
+    if(!running) break;
+    giros++;document.getElementById('giros').textContent=giros; setLCD('EXPOSTO '+ciclo+'/'+livreRep,'','',''); setRele(true); setRGB('yellow');
+    for(let t=expSeg;t>0;t--){if(!running)break; if(ch1==='OFF'&&ch2==='OFF'){abortAll();return;} let txt=t>=60?Math.floor(t/60)+':'+String(t%60).padStart(2,'0'):t+'s'; document.getElementById('timer').textContent=txt+' ABERTO'; await sleep(984);}
+    setRele(false);
+  }
+  if(!running) return;
+  setLCD('FIM DE PROVA','FECHAMENTO FINAL','',''); setRGB('blue'); setRele(false);
+  for(let t=7;t>0;t--){if(ch1==='OFF'&&ch2==='OFF'){abortAll();return;} document.getElementById('timer').textContent=t+'s FIM'; await sleep(1000);}
+  setRele(true); setRGB(''); setLCD('PROVA ENCERRADA','TROCA DE ALVOS','START=NOVA OFF=MENU',''); document.getElementById('timer').textContent='ABERTO TROCA'; estado='ENCERRADA'; running=false;
+}
+setLCD(' SELECIONE A PROVA:','DUELO 30s * SAQUE RA',' >CH1< * >CH2<',' 30 5 30 * Pr.LIVRE');
+setRele(true); setLever();
+</script>
+</body>
+</html>
